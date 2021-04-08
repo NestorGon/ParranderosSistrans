@@ -70,7 +70,7 @@ class SQLUtil
 	 * @param pm - El manejador de persistencia
 	 * @return Un arreglo con 14 números que indican el número de tuplas borradas en las tablas EPS, ROLES, 
 	 * ESTADO, ETAPA, CONDICIONPRIORIZACION, PUNTO, VACUNA, ASIGNADA, CIUDADANO, VACUNACION,
-	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA, AGENDADA
+	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA
 	 */
 	public Long[] limpiarVacuAndes( PersistenceManager pm )
 	{
@@ -88,7 +88,6 @@ class SQLUtil
 		Query qInfoUsuario = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaInfoUsuario() );
 		Query qUsuario = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaUsuario() );
 		Query qCita = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaCita() );
-		Query qAgendada = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaAgendada() );
 
         Long epsEliminados = (Long) qEps.executeUnique ();
         Long rolesEliminados = (Long) qRoles.executeUnique ();
@@ -104,11 +103,31 @@ class SQLUtil
         Long infoUsuarioEliminados = (Long) qInfoUsuario.executeUnique ();
         Long usuarioEliminados = (Long) qUsuario.executeUnique ();
         Long citaEliminados = (Long) qCita.executeUnique ();
-        Long agendadaEliminados = (Long) qAgendada.executeUnique ();
         return new Long[] {epsEliminados, rolesEliminados, estadoEliminadas, etapaEliminadas,
         		condPriorEliminados, puntoEliminados, vacunaEliminados, asignadaEliminados,
         		ciudadanoEliminados, vacunacionEliminados, priorizacionEliminados, infoUsuarioEliminados,
-        		usuarioEliminados, citaEliminados, agendadaEliminados};
+        		usuarioEliminados, citaEliminados};
+	}
+	
+	//TODO Condicionales de acuerdo a los parámetros
+	//TODO Parametros
+	public Long darIndiceVacunacion( PersistenceManager pm ) {
+		Query q = pm.newQuery( SQL, "SELECT COUNT(*) "
+				+ "FROM " + pp.darTablaCiudadano() + " C," + pp.darTablaEps() + " E," + pp.darTablaEstado() + " ES,"
+				+ pp.darTablaPriorizacion() + " P," + pp.darTablaCita() + " CI "
+				+ "WHERE E.ID = C.IS_EPS AND "
+				+ "ES.ID = C.ID_ESTADO AND "
+				+ "C.DOCUMENTO = P.DOCUMENTO_CIUDADANO AND "
+				+ "CI.DOCUMENTO_CIUDADANO = C.DOCUMENTO AND "
+				+ "E.ID IN (?) AND "
+				+ "ES.ID IN (?) AND "
+				+ "P.DESCRIPCION_CONDPRIOR = ? AND"
+				+ "E.REGION IN (?) AND\r\n"
+				+ "(CI.FECHAHORA BETWEEN ? AND ? OR "
+				+ "CI.FECHAHORA = ?);" );
+        q.setResultClass( Long.class );
+        Long resp = (Long) q.executeUnique();
+        return resp;
 	}
 
 }

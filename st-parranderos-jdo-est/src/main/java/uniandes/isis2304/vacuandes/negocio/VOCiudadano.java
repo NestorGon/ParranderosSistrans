@@ -49,7 +49,7 @@ public interface VOCiudadano {
 	/**
 	 * @return El id del estado en el que se encuentra el ciudadano en la vacunación
 	 */
-	public String getId_estado();
+	public Long getId_estado();
 	
 	/**
 	 * @return El id de la EPS a la que el ciuadano se encuentra afiliado
@@ -59,7 +59,7 @@ public interface VOCiudadano {
 	/**
 	 * @return El número de la etapa a la que el ciudadano pertenece
 	 */
-	public String getNumero_etapa();
+	public Integer getNumero_etapa();
 	
 	@Override
 	/**

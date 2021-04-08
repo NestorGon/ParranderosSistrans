@@ -1,28 +1,41 @@
 {
-	"title": "Aplicación transaccional de Parranderos Uniandes",
+	"title": "Aplicación transaccional de VacuAndes",
 	"frameH": 600,
-	"frameW": 800,
+	"frameW": 900,
 	"bannerPath": "./src/main/resources/config/logo.png",
 	"menuBar":
 	[
-		{ "menuTitle": "TipoBebida",
+		{ "menuTitle": "Requerimientos Funcionales de Modificación",
 		  "options":
 			[
 				{
-					"label": "Adicionar",
-					"event": "adicionarTipoBebida"
+					"label": "Asignar ciudadano a punto de vacunación",
+					"event": "adicionarVacunacion"
 				},
 				{
-					"label": "Listar",
-					"event": "listarTipoBebida"
+					"label": "Asignar cita de vacunación a un ciudadano",
+					"event": "asignarCita"
 				},
 				{
-					"label": "Borrar por Id",
-					"event": "eliminarTipoBebidaPorId"
+					"label": "Registrar avance de vacunación",
+					"event": "registrarAvanceVacunacion"
+				}
+			]
+		},
+		{ "menuTitle": "Requerimientos Funcionales de Consulta",
+		  "options":
+			[
+				{
+					"label": "Ciudadanos atendidos por punto de vacunación",
+					"event": "mostrarCiudadanosPunto"
 				},
 				{
-					"label": "Buscar por Nombre",
-					"event": "buscarTipoBebidaPorNombre"
+					"label": "20 puntos de vacunación más efectivos",
+					"event": "mostrarPuntosMasEfectivos"
+				},
+				{
+					"label": "Índice de vacunación",
+					"event": "mostrarIndiceGrupoPoblacional"
 				}
 			]
 		},
@@ -30,16 +43,16 @@
 		  "options":
 			[
 				{
-					"label": "Mostrar log Parranderos",
-					"event": "mostrarLogParranderos"
+					"label": "Mostrar log VacuAndes",
+					"event": "mostrarLogVacuAndes"
 				},
 				{
 					"label": "Mostrar log datanucleus",
 					"event": "mostrarLogDatanuecleus"
 				},
 				{
-					"label": "Limpiar log de parranderos",
-					"event": "limpiarLogParranderos"
+					"label": "Limpiar log de VacuAndes",
+					"event": "limpiarLogVacuAndes"
 				},
 				{
 					"label": "Limpiar log de datanucleus",
@@ -75,7 +88,7 @@
 					"event": "mostrarArqRef"
 				},
 				{
-					"label": "Javadoc Parranderos",
+					"label": "Javadoc VacuAndes",
 					"event": "mostrarJavadoc"
 				}
 			]

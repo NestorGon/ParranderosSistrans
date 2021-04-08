@@ -1,9 +1,0 @@
-{
-	"title": "Nombres de las tablas de Parranderos Uniandes para la aplicación A",
-	"unidadPersistencia": "Parranderos",
-	"tablas":
-	[
-		"Parranderos_sequence",
-		"MITABLA"
-	]
-}

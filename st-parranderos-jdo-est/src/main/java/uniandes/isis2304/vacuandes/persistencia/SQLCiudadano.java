@@ -69,10 +69,29 @@ public class SQLCiudadano {
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, String estado, String eps, Integer etapa) 
+	public Long adicionarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa) 
 	{
         Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCiudadano() + "(DOCUMENTO, NOMBRE, NACIMIENTO, HABILITADO, ID_ESTADO, ID_EPS, NUMERO_ETAPA) values (?, ?, ?, ?, ?, ?, ?)");
         q.setParameters(documento, nombre, nacimiento, habilitado, estado, eps, etapa);
+        return (Long) q.executeUnique();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para adicionar un CIUDADANO a la base de datos de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param nombre - El nombre del ciudadano
+	 * @param nacimiento - La fecha de nacimiento del ciudadano
+	 * @param habilitado - Si el ciudadano está o no habilitado para vacunación
+	 * @param estado - El id del estado en el que se encuentra el ciudadano en la vacunación
+	 * @param eps - El id de la EPS a la que el ciuadano se encuentra afiliado
+	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
+	 * @return El número de tuplas actualizadas
+	 */
+	public Long actualizarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa) 
+	{
+        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaCiudadano() + " SET NOMBRE = ?, NACIMIENTO = ?, HABILITADO = ?, ID_ESTADO = ?, ID_EPS = ?, NUMERO_ETAPA = ? WHERE DOCUMENTO = ?");
+        q.setParameters(nombre, nacimiento, habilitado, estado, eps, etapa, documento);
         return (Long) q.executeUnique();
 	}
 	
@@ -82,7 +101,7 @@ public class SQLCiudadano {
 	 * @param documento - El documento de identificación del ciudadano
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarCiudadanoPorDocumento( PersistenceManager pm, String documento )
+	public Long eliminarCiudadano( PersistenceManager pm, String documento )
 	{
         Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCiudadano() + " WHERE DOCUMENTO = ?");
         q.setParameters(documento);
@@ -96,7 +115,7 @@ public class SQLCiudadano {
 	 * @param documento - El documento de identificación del ciudadano
 	 * @return El objeto CIUDADANO que tiene el identificador dado
 	 */
-	public Ciudadano darCiudadanoPorDocumento( PersistenceManager pm, String documento ) 
+	public Ciudadano darCiudadano( PersistenceManager pm, String documento ) 
 	{
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCiudadano () + " WHERE DOCUMENTO = ?" );
 		q.setResultClass( Ciudadano.class );

@@ -73,15 +73,16 @@ public class SQLCita {
 	}
 	
 	/**
-	 * Crea y ejecuta la sentencia SQL para eliminar un CIUDADANO de la base de datos de VacuAndes por su documento
+	 * Crea y ejecuta la sentencia SQL para eliminar una CITA de la base de datos de VacuAndes por su fecha 
+	 * y documento de identificación del ciudadano asociado
 	 * @param pm - El manejador de persistencia
 	 * @param fechaHora - Fecha y hora de la cita
 	 * @param documento - El documento de identificación del ciudadano asociado a la cita
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarCitaPorFechaYDocumento( PersistenceManager pm, Date fechaHora, String documento )
+	public Long eliminarCita( PersistenceManager pm, Date fechaHora, String documento )
 	{
-        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCita() + " WHERE FECHAHORA = ? AND DOCUMENTO = ?");
+        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCita() + " WHERE FECHAHORA = ? AND DOCUMENTO_CIUDADANO = ?");
         q.setParameters( fechaHora, documento );
         return (Long) q.executeUnique();
 	}
@@ -90,12 +91,13 @@ public class SQLCita {
 	 * Crea y ejecuta la sentencia SQL para encontrar la información de una CITA de la 
 	 * base de datos de VacuAndes por su fecha y hora y documento de identificación del ciudadano asociado
 	 * @param pm - El manejador de persistencia
+	 * @param fechaHora - Fecha y hora de la cita
 	 * @param documento - El documento de identificación del ciudadano
 	 * @return El objeto CITA que tiene el identificador dado
 	 */
-	public Cita darCitaPorFechaYDocumento( PersistenceManager pm, Date fechaHora, String documento ) 
+	public Cita darCita( PersistenceManager pm, Date fechaHora, String documento ) 
 	{
-		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCiudadano () + " WHERE FECHAHORA = ? AND DOCUMENTO = ?" );
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCita() + " WHERE FECHAHORA = ? AND DOCUMENTO_CIUDADANO = ?" );
 		q.setResultClass( Cita.class );
 		q.setParameters( fechaHora, documento );
 		return (Cita) q.executeUnique();

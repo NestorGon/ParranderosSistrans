@@ -4,12 +4,11 @@
  * Licenciado	bajo	el	esquema	Academic Free License versión 2.1
  * 		
  * Curso: isis2304 - Sistemas Transaccionales
- * Proyecto: Parranderos Uniandes
+ * Proyecto: VacuAndes
  * @version 1.0
- * @author Germán Bravo
- * Julio de 2018
+ * @author Néstor González
+ * Abril de 2021
  * 
- * Revisado por: Claudia Jiménez, Christian Ariza
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -18,6 +17,7 @@ package uniandes.isis2304.vacuandes.interfazApp;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -26,16 +26,22 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.jdo.JDODataStoreException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
@@ -46,15 +52,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
-import uniandes.isis2304.vacuandes.negocio.VOTipoBebida;
+import uniandes.isis2304.vacuandes.negocio.VOCiudadano;
+import uniandes.isis2304.vacuandes.negocio.VOVacunacion;
 import uniandes.isis2304.vacuandes.negocio.VacuAndes;
 
 /**
  * Clase principal de la interfaz
- * @author Germán Bravo
+ * @author Néstor González
+ * @author Mariana Zamora
  */
 @SuppressWarnings("serial")
-
 public class InterfazVacuAndesApp extends JFrame implements ActionListener
 {
 	/* ****************************************************************
@@ -63,7 +70,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	/**
 	 * Logger para escribir la traza de la ejecución
 	 */
-	private static Logger log = Logger.getLogger(InterfazVacuAndesApp.class.getName());
+	private static Logger log = Logger.getLogger( InterfazVacuAndesApp.class.getName() );
 	
 	/**
 	 * Ruta al archivo de configuración de la interfaz
@@ -73,7 +80,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	/**
 	 * Ruta al archivo de configuración de los nombres de tablas de la base de datos
 	 */
-	private static final String CONFIG_TABLAS = "./src/main/resources/config/TablasBD_A.json"; 
+	private static final String CONFIG_TABLAS = "./src/main/resources/config/TablasBD.json"; 
 	
 	/* ****************************************************************
 	 * 			Atributos
@@ -86,7 +93,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     /**
      * Asociación a la clase principal del negocio.
      */
-    private VacuAndes parranderos;
+    private VacuAndes vacuAndes;
     
 	/* ****************************************************************
 	 * 			Atributos de interfaz
@@ -126,7 +133,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
         }
         
         tableConfig = openConfig ("Tablas BD", CONFIG_TABLAS);
-        parranderos = new VacuAndes (tableConfig);
+        vacuAndes = new VacuAndes (tableConfig);
         
     	String path = guiConfig.get("bannerPath").getAsString();
         panelDatos = new PanelDatos ( );
@@ -140,7 +147,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 * 			Métodos de configuración de la interfaz
 	 *****************************************************************/
     /**
-     * Lee datos de configuración para la aplicació, a partir de un archivo JSON o con valores por defecto si hay errores.
+     * Lee datos de configuración para la aplicación, a partir de un archivo JSON o con valores por defecto si hay errores.
      * @param tipo - El tipo de configuración deseada
      * @param archConfig - Archivo Json que contiene la configuración
      * @return Un objeto JSON con la configuración del tipo especificado
@@ -149,16 +156,14 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     private JsonObject openConfig (String tipo, String archConfig)
     {
     	JsonObject config = null;
-		try 
-		{
+		try {
 			Gson gson = new Gson( );
 			FileReader file = new FileReader (archConfig);
 			JsonReader reader = new JsonReader ( file );
 			config = gson.fromJson(reader, JsonObject.class);
 			log.info ("Se encontró un archivo de configuración válido: " + tipo);
 		} 
-		catch (Exception e)
-		{
+		catch (Exception e) {
 //			e.printStackTrace ();
 			log.info ("NO se encontró un archivo de configuración válido");			
 			JOptionPane.showMessageDialog(null, "No se encontró un archivo de configuración de interfaz válido: " + tipo, "Parranderos App", JOptionPane.ERROR_MESSAGE);
@@ -169,25 +174,23 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     /**
      * Método para configurar el frame principal de la aplicación
      */
-    private void configurarFrame(  )
+    private void configurarFrame( )
     {
     	int alto = 0;
     	int ancho = 0;
     	String titulo = "";	
     	
-    	if ( guiConfig == null )
-    	{
+    	if ( guiConfig == null ) {
     		log.info ( "Se aplica configuración por defecto" );			
-			titulo = "Parranderos APP Default";
+			titulo = "VacuAndes APP Default";
 			alto = 300;
 			ancho = 500;
     	}
-    	else
-    	{
+    	else {
 			log.info ( "Se aplica configuración indicada en el archivo de configuración" );
-    		titulo = guiConfig.get("title").getAsString();
-			alto= guiConfig.get("frameH").getAsInt();
-			ancho = guiConfig.get("frameW").getAsInt();
+    		titulo = guiConfig.get( "title" ).getAsString();
+			alto = guiConfig.get( "frameH" ).getAsInt();
+			ancho = guiConfig.get( "frameW" ).getAsInt();
     	}
     	
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -213,8 +216,8 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
         	// Creación de cada uno de los menús
         	JsonObject jom = men.getAsJsonObject(); 
 
-        	String menuTitle = jom.get("menuTitle").getAsString();        	
-        	JsonArray opciones = jom.getAsJsonArray("options");
+        	String menuTitle = jom.get( "menuTitle" ).getAsString();        	
+        	JsonArray opciones = jom.getAsJsonArray( "options" );
         	
         	JMenu menu = new JMenu( menuTitle);
         	
@@ -222,8 +225,8 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
         	{       	
         		// Creación de cada una de las opciones del menú
         		JsonObject jo = op.getAsJsonObject(); 
-        		String lb =   jo.get("label").getAsString();
-        		String event = jo.get("event").getAsString();
+        		String lb =   jo.get( "label" ).getAsString();
+        		String event = jo.get( "event" ).getAsString();
         		
         		JMenuItem mItem = new JMenuItem( lb );
         		mItem.addActionListener( this );
@@ -237,26 +240,36 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     }
     
 	/* ****************************************************************
-	 * 			CRUD de TipoBebida
+	 * 			Requerimientos Funcionales de Modificación
 	 *****************************************************************/
+    
     /**
-     * Adiciona un tipo de bebida con la información dada por el usuario
-     * Se crea una nueva tupla de tipoBebida en la base de datos, si un tipo de bebida con ese nombre no existía
+     * Asigna un ciudadano a un único punto de vacunación
+     * Se crea una nueva tupla de VACUNACION en la base de datos
      */
-    public void adicionarTipoBebida( )
+    public void adicionarVacunacion( )
     {
     	try 
     	{
-    		String nombreTipo = JOptionPane.showInputDialog (this, "Nombre del tipo de bedida?", "Adicionar tipo de bebida", JOptionPane.QUESTION_MESSAGE);
-    		if (nombreTipo != null)
+    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+    		String puntoVac = JOptionPane.showInputDialog (this, "Ingrese el identificador del punto de vacunación", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+    		if ( documento != null && !documento.trim().equals("") && puntoVac != null && !puntoVac.trim().equals("") )
     		{
-        		VOTipoBebida tb = parranderos.adicionarTipoBebida (nombreTipo);
-        		if (tb == null)
+    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+    			//TODO Asegurar que el punto de vacunación existe
+    			VOVacunacion vac = vacuAndes.darVacunacion( documento, puntoVac );
+    			if ( vac != null ) {
+    				throw new Exception ("El ciudadano con documento " + documento + " ya se encuentra asignado al punto de vacunación con id " + puntoVac );
+    			}
+    			if ( ciudadano != null ) {
+    				vac = vacuAndes.adicionarVacunacion( documento, ciudadano.getId_eps(), puntoVac );
+    			}
+        		if (vac == null)
         		{
-        			throw new Exception ("No se pudo crear un tipo de bebida con nombre: " + nombreTipo);
+        			throw new Exception ("No se pudo asignar al ciudadano " + documento + " al punto de vacunación " + puntoVac);
         		}
-        		String resultado = "En adicionarTipoBebida\n\n";
-        		resultado += "Tipo de bebida adicionado exitosamente: " + tb;
+        		String resultado = "En adicionarVacunacion\n\n";
+        		resultado += "Ciudadano asignado correctamente al punto de vacunación: " + vac;
     			resultado += "\n Operación terminada";
     			panelDatos.actualizarInterfaz(resultado);
     		}
@@ -272,81 +285,32 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
     }
-
+    
     /**
-     * Consulta en la base de datos los tipos de bebida existentes y los muestra en el panel de datos de la aplicación
+     * Asigna un ciudadano a un único punto de vacunación
+     * Se crea una nueva tupla de VACUNACION en la base de datos
      */
-    public void listarTipoBebida( )
+    public void registrarAvanceVacunacion( )
     {
     	try 
     	{
-			List <VOTipoBebida> lista = parranderos.darVOTiposBebida();
-
-			String resultado = "En listarTipoBebida";
-			resultado +=  "\n" + listarTiposBebida (lista);
-			panelDatos.actualizarInterfaz(resultado);
-			resultado += "\n Operación terminada";
-		} 
-    	catch (Exception e) 
-    	{
-//			e.printStackTrace();
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-    }
-
-    /**
-     * Borra de la base de datos el tipo de bebida con el identificador dado po el usuario
-     * Cuando dicho tipo de bebida no existe, se indica que se borraron 0 registros de la base de datos
-     */
-    public void eliminarTipoBebidaPorId( )
-    {
-    	try 
-    	{
-    		String idTipoStr = JOptionPane.showInputDialog (this, "Id del tipo de bedida?", "Borrar tipo de bebida por Id", JOptionPane.QUESTION_MESSAGE);
-    		if (idTipoStr != null)
+    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
     		{
-    			long idTipo = Long.valueOf (idTipoStr);
-    			long tbEliminados = parranderos.eliminarTipoBebidaPorId (idTipo);
-
-    			String resultado = "En eliminar TipoBebida\n\n";
-    			resultado += tbEliminados + " Tipos de bebida eliminados\n";
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    		}
-    		else
-    		{
-    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-    		}
-		} 
-    	catch (Exception e) 
-    	{
-//			e.printStackTrace();
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-    }
-
-    /**
-     * Busca el tipo de bebida con el nombre indicado por el usuario y lo muestra en el panel de datos
-     */
-    public void buscarTipoBebidaPorNombre( )
-    {
-    	try 
-    	{
-    		String nombreTb = JOptionPane.showInputDialog (this, "Nombre del tipo de bedida?", "Buscar tipo de bebida por nombre", JOptionPane.QUESTION_MESSAGE);
-    		if (nombreTb != null)
-    		{
-    			VOTipoBebida tipoBebida = parranderos.darTipoBebidaPorNombre (nombreTb);
-    			String resultado = "En buscar Tipo Bebida por nombre\n\n";
-    			if (tipoBebida != null)
-    			{
-        			resultado += "El tipo de bebida es: " + tipoBebida;
+    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+    			if ( ciudadano != null ) {
+    				if ( ciudadano.getId_estado().equals( Long.getLong(idEstado) ) ) {
+    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+    				}
+    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.getLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
     			}
-    			else
-    			{
-        			resultado += "Un tipo de bebida con nombre: " + nombreTb + " NO EXISTE\n";    				
-    			}
+        		if (ciudadano == null)
+        		{
+        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+        		}
+        		String resultado = "En registrarAvanceVacunacion\n\n";
+        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
     			resultado += "\n Operación terminada";
     			panelDatos.actualizarInterfaz(resultado);
     		}
@@ -362,17 +326,59 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
     }
-
+    
+    /* ****************************************************************
+	 * 			Requerimientos Funcionales de Consulta
+	 *****************************************************************/
+    
+    /**
+     * Consulta la base de datos para hallar el índice de vacunación para un grupo poblacional
+     */
+    public void mostrarIndiceGrupoPoblacional() 
+    {
+    	Boolean region, eps, estado, grupo;
+    	List<String> selecRegion, selecEps;
+    	String selecEtapa, selecGrupo;
+    	JList<String> list = new JList<>( new String[]{"Región","Eps","Estado","Grupo de priorización"} );
+    	JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+    	List<String> seleccionados = list.getSelectedValuesList();
+    	region = seleccionados.contains("Región") ? true: false;
+    	eps = seleccionados.contains("Eps") ? true: false;
+    	estado = seleccionados.contains("Estado") ? true: false;
+    	grupo = seleccionados.contains("Grupo de priorización") ? true: false;
+    	
+    	if ( region ) {
+    		list = new JList<>( darRegiones() );
+            JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+            selecRegion = list.getSelectedValuesList();
+    	}
+    	if ( eps ) {
+    		list = new JList<>( darTodasEps() );
+            JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+            selecEps = list.getSelectedValuesList();
+    	}
+    	if ( estado ) {
+    		list = new JList<>( darEstados() );
+            JOptionPane.showMessageDialog(null, list, "Selecccione el estado", JOptionPane.PLAIN_MESSAGE);
+            selecEtapa = list.getSelectedValue();
+    	}
+    	if ( grupo ) {
+    		list = new JList<>( darGruposDePriorizacion() );
+            JOptionPane.showMessageDialog(null, list, "Selecccione el grupo", JOptionPane.PLAIN_MESSAGE);
+            selecGrupo = list.getSelectedValue();
+    	}
+    	
+    }
 
 	/* ****************************************************************
 	 * 			Métodos administrativos
 	 *****************************************************************/
 	/**
-	 * Muestra el log de Parranderos
+	 * Muestra el log de VacuAndes
 	 */
-	public void mostrarLogParranderos ()
+	public void mostrarLogVacuAndes()
 	{
-		mostrarArchivo ("parranderos.log");
+		mostrarArchivo( "vacuandes.log" );
 	}
 	
 	/**
@@ -380,20 +386,20 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 */
 	public void mostrarLogDatanuecleus ()
 	{
-		mostrarArchivo ("datanucleus.log");
+		mostrarArchivo( "datanucleus.log" );
 	}
 	
 	/**
-	 * Limpia el contenido del log de parranderos
+	 * Limpia el contenido del log de vacuandes
 	 * Muestra en el panel de datos la traza de la ejecución
 	 */
-	public void limpiarLogParranderos ()
+	public void limpiarLogVacuAndes()
 	{
 		// Ejecución de la operación y recolección de los resultados
-		boolean resp = limpiarArchivo ("parranderos.log");
+		boolean resp = limpiarArchivo( "vacuandes.log" );
 
 		// Generación de la cadena de caracteres con la traza de la ejecución de la demo
-		String resultado = "\n\n************ Limpiando el log de parranderos ************ \n";
+		String resultado = "\n\n************ Limpiando el log de vacuandes ************ \n";
 		resultado += "Archivo " + (resp ? "limpiado exitosamente" : "NO PUDO ser limpiado !!");
 		resultado += "\nLimpieza terminada";
 
@@ -404,10 +410,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 * Limpia el contenido del log de datanucleus
 	 * Muestra en el panel de datos la traza de la ejecución
 	 */
-	public void limpiarLogDatanucleus ()
+	public void limpiarLogDatanucleus()
 	{
 		// Ejecución de la operación y recolección de los resultados
-		boolean resp = limpiarArchivo ("datanucleus.log");
+		boolean resp = limpiarArchivo("datanucleus.log");
 
 		// Generación de la cadena de caracteres con la traza de la ejecución de la demo
 		String resultado = "\n\n************ Limpiando el log de datanucleus ************ \n";
@@ -421,22 +427,29 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 * Limpia todas las tuplas de todas las tablas de la base de datos de parranderos
 	 * Muestra en el panel de datos el número de tuplas eliminadas de cada tabla
 	 */
-	public void limpiarBD ()
+	public void limpiarBD()
 	{
 		try 
 		{
     		// Ejecución de la demo y recolección de los resultados
-			long eliminados [] = parranderos.limpiarParranderos();
+			Long eliminados [] = vacuAndes.limpiarVacuAndes();
 			
 			// Generación de la cadena de caracteres con la traza de la ejecución de la demo
 			String resultado = "\n\n************ Limpiando la base de datos ************ \n";
-			resultado += eliminados [0] + " Gustan eliminados\n";
-			resultado += eliminados [1] + " Sirven eliminados\n";
-			resultado += eliminados [2] + " Visitan eliminados\n";
-			resultado += eliminados [3] + " Bebidas eliminadas\n";
-			resultado += eliminados [4] + " Tipos de bebida eliminados\n";
-			resultado += eliminados [5] + " Bebedores eliminados\n";
-			resultado += eliminados [6] + " Bares eliminados\n";
+			resultado += eliminados [0] + " EPS eliminados\n";
+			resultado += eliminados [1] + " ROLES eliminados\n";
+			resultado += eliminados [2] + " ESTADOS eliminados\n";
+			resultado += eliminados [3] + " ETAPAS eliminadas\n";
+			resultado += eliminados [4] + " CONDICIONPRIORIZACION eliminadas\n";
+			resultado += eliminados [5] + " PUNTOS eliminados\n";
+			resultado += eliminados [6] + " VACUNAS eliminadas\n";
+			resultado += eliminados [7] + " ASIGNADAS eliminadas\n";
+			resultado += eliminados [8] + " CIUDADANOS eliminados\n";
+			resultado += eliminados [9] + " VACUNACIONES eliminadas\n";
+			resultado += eliminados [10] + " PRIORIZACIONES eliminadas\n";
+			resultado += eliminados [11] + " INFOUSUARIOS eliminadas\n";
+			resultado += eliminados [12] + " USUARIOS eliminados\n";
+			resultado += eliminados [13] + " CITAS eliminadas\n";
 			resultado += "\nLimpieza terminada";
    
 			panelDatos.actualizarInterfaz(resultado);
@@ -508,12 +521,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		resultado += " * Licenciado	bajo	el	esquema	Academic Free License versión 2.1\n";
 		resultado += " * \n";		
 		resultado += " * Curso: isis2304 - Sistemas Transaccionales\n";
-		resultado += " * Proyecto: Parranderos Uniandes\n";
+		resultado += " * Proyecto: VacuAndes\n";
 		resultado += " * @version 1.0\n";
-		resultado += " * @author Germán Bravo\n";
-		resultado += " * Julio de 2018\n";
+		resultado += " * @author Néstor González\n";
+		resultado += " * @author Mariana Zamora\n";
+		resultado += " * Abril de 2021\n";
 		resultado += " * \n";
-		resultado += " * Revisado por: Claudia Jiménez, Christian Ariza\n";
 		resultado += "\n ************************************\n\n";
 
 		panelDatos.actualizarInterfaz(resultado);		
@@ -523,22 +536,41 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	/* ****************************************************************
 	 * 			Métodos privados para la presentación de resultados y otras operaciones
 	 *****************************************************************/
-    /**
-     * Genera una cadena de caracteres con la lista de los tipos de bebida recibida: una línea por cada tipo de bebida
-     * @param lista - La lista con los tipos de bebida
-     * @return La cadena con una líea para cada tipo de bebida recibido
-     */
-    private String listarTiposBebida(List<VOTipoBebida> lista) 
-    {
-    	String resp = "Los tipos de bebida existentes son:\n";
-    	int i = 1;
-        for (VOTipoBebida tb : lista)
-        {
-        	resp += i++ + ". " + tb.toString() + "\n";
-        }
-        return resp;
-	}
 
+    private String[] darRegiones() {
+    	//TODO
+//    	List<String> regiones = vacuAndes.darRegiones();
+//    	String[] retorno = new String[regiones.size()];
+//    	regiones.toArray(retorno);
+    	return new String[]{"Bogota","Medellin","Cali"};
+    }
+    
+    private String[] darEstados() {
+//    	List<String> etapas = vacuAndes.darEtapas();
+//    	String[] retorno = new String[etapas.size()];
+//    	etapas.toArray(retorno);
+//    	return retorno;
+    	return null;
+    }
+    
+    private String[] darTodasEps() {
+    	//Revisar nombramiento de método que retorna todas las eps
+//    	List<String> eps = vacuAndes.darEtapas();
+//    	String[] retorno = new String[eps.size()];
+//    	eps.toArray(retorno);
+//    	return retorno;
+    	return null;
+    }
+    
+    private String[] darGruposDePriorizacion() {
+    	//Revisar nombramiento de método que retorna todas las condiciones de priorizacion
+//    	List<String> grupos = vacuAndes.darEtapas();
+//    	String[] retorno = new String[grupos.size()];
+//    	grupos.toArray(retorno);
+//    	return retorno;
+    	return null;
+    }
+    
     /**
      * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
      * @param e - La excepción recibida

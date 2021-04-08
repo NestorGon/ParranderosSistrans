@@ -48,7 +48,7 @@ public class Ciudadano implements VOCiudadano {
 	/**
 	 * El id del estado en el que se encuentra el ciudadano en la vacunación
 	 */
-	private String id_estado;
+	private Long id_estado;
 	
 	/**
 	 * El id de la EPS a la que el ciuadano se encuentra afiliado
@@ -58,7 +58,7 @@ public class Ciudadano implements VOCiudadano {
 	/**
 	 * El número de la etapa a la que el ciudadano pertenece
 	 */
-	private String numero_etapa;
+	private Integer numero_etapa;
 
 	/* ****************************************************************
 	 * 			Métodos
@@ -67,14 +67,14 @@ public class Ciudadano implements VOCiudadano {
 	public Ciudadano() {
 	}
 
-	public Ciudadano( String documento, String nombre, Date nacimiento, String habilitado, String id_estado, String id_eps, String nombre_etapa ) {
+	public Ciudadano( String documento, String nombre, Date nacimiento, String habilitado, Long id_estado, String id_eps, Integer numero_etapa ) {
 		this.documento = documento;
 		this.nombre = nombre;
 		this.nacimiento = nacimiento;
 		this.habilitado = habilitado;
 		this.id_estado = id_estado;
 		this.id_eps = id_eps;
-		this.numero_etapa = nombre_etapa;
+		this.numero_etapa = numero_etapa;
 	}
 
 	public String getDocumento() {
@@ -109,11 +109,11 @@ public class Ciudadano implements VOCiudadano {
 		this.habilitado = habilitado;
 	}
 
-	public String getId_estado() {
+	public Long getId_estado() {
 		return id_estado;
 	}
 
-	public void setId_estado( String id_estado ) {
+	public void setId_estado( Long id_estado ) {
 		this.id_estado = id_estado;
 	}
 
@@ -125,11 +125,11 @@ public class Ciudadano implements VOCiudadano {
 		this.id_eps = id_eps;
 	}
 
-	public String getNumero_etapa() {
+	public Integer getNumero_etapa() {
 		return numero_etapa;
 	}
 
-	public void setNumero_etapa( String numero_etapa ) {
+	public void setNumero_etapa( Integer numero_etapa ) {
 		this.numero_etapa = numero_etapa;
 	}
 	

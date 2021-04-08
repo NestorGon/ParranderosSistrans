@@ -15,6 +15,7 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,15 @@ import org.apache.log4j.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import uniandes.isis2304.vacuandes.negocio.Cita;
+import uniandes.isis2304.vacuandes.negocio.Ciudadano;
+import uniandes.isis2304.vacuandes.negocio.Estado;
+import uniandes.isis2304.vacuandes.negocio.InfoUsuario;
+import uniandes.isis2304.vacuandes.negocio.Priorizacion;
+import uniandes.isis2304.vacuandes.negocio.Rol;
+import uniandes.isis2304.vacuandes.negocio.Usuario;
+import uniandes.isis2304.vacuandes.negocio.Vacunacion;
 
 /**
  * Clase para el manejador de persistencia de VacuAndes
@@ -145,7 +155,6 @@ public class PersistenciaVacuAndes
 		tablas.add ("INFOUSUARIO");
 		tablas.add ("USUARIO");
 		tablas.add ("CITA");
-		tablas.add ("AGENDADA");
 }
 
 	/**
@@ -353,14 +362,6 @@ public class PersistenciaVacuAndes
 	}
 	
 	/**
-	 * @return La cadena de caracteres con el nombre de la tabla de Agendada de VacuAndes
-	 */
-	public String darTablaAgendada()
-	{
-		return tablas.get( 15 );
-	}
-	
-	/**
 	 * Transacción para el generador de secuencia de VacuAndes
 	 * Adiciona entradas al log de la aplicación
 	 * @return El siguiente número del secuenciador de VacuAndes
@@ -386,6 +387,793 @@ public class PersistenciaVacuAndes
 			return je.getNestedExceptions() [0].getMessage();
 		}
 		return resp;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar las CITAS
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla CITA
+	 * Adiciona entradas al log de la aplicación
+	 * @param fechaHora - Fecha y hora de la cita
+	 * @param finalizada - Si la cita ya se finalizó o no
+	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
+	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
+	 */
+	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlCita.adicionarCita( pm, fechaHora, finalizada, ciudadano );
+            tx.commit();
+            
+            log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Cita( fechaHora, finalizada, ciudadano );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla CITA
+	 * Adiciona entradas al log de la aplicación
+	 * @param fechaHora - Fecha y hora de la cita
+	 * @param documento - El documento de identificación del ciudadano asociado a la cita
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarCita( Date fechaHora, String ciudadano ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlCita.eliminarCita( pm, fechaHora, ciudadano );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla CITA que tiene la fecha y hora y documento
+	 * de identificación del ciudadano asociado
+	 * @param fechaHora - Fecha y hora de la cita
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return El objeto Cita, construidos con base en las tuplas de la tabla CITA
+	 */
+	public Cita darCita( Date fechaHora, String ciudadano )
+	{
+		return sqlCita.darCita( pmf.getPersistenceManager(), fechaHora, ciudadano );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla CITA
+	 * @return La lista de objetos Cita, construidos con base en las tuplas de la tabla CITA
+	 */
+	public List<Cita> darCitas()
+	{
+		return sqlCita.darCitas( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la PRIORIZACION
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla PRIORIZACION
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param descripcion - La descripción de la condición de priorización
+	 * @return El objeto Priorizacion adicionado. null si ocurre alguna Excepción
+	 */
+	public Priorizacion adicionarPriorizacion( String documento, String descripcion )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlPriorizacion.adicionarPriorizacion( pm, documento, descripcion );
+            tx.commit();
+            
+            log.trace( "Inserción de priorizacion: " + documento + " - " + descripcion + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Priorizacion( documento, descripcion );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla PRIORIZACION
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param descripcion - La descripción de la condición de priorización
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarPriorizacion( String documento, String descripcion ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlPriorizacion.eliminarPriorizacion( pm, documento, descripcion );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla PRIORIZACION que tiene el documento y descripción
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param descripcion - La descripción de la condición de priorización
+	 * @return El objeto Priorizacion, construidos con base en las tuplas de la tabla PRIORIZACION
+	 */
+	public Priorizacion darPriorizacion( String documento, String descripcion )
+	{
+		return sqlPriorizacion.darPriorizacion( pmf.getPersistenceManager(), documento, descripcion );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla PRIORIZACION
+	 * @return La lista de objetos Priorizacion, construidos con base en las tuplas de la tabla PRIORIZACION
+	 */
+	public List<Priorizacion> darPriorizaciones()
+	{
+		return sqlPriorizacion.darPriorizaciones( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar los ROLES
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla ROLES
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - El identificador del rol
+	 * @param rol - La cadena de texto con el rol
+	 * @return El objeto Rol adicionado. null si ocurre alguna Excepción
+	 */
+	public Rol adicionarRol( String rol )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long idRol = nextval();
+            Long tuplasInsertadas = sqlRoles.adicionarRol( pm, idRol, rol );
+            tx.commit();
+            
+            log.trace( "Inserción de rol: " + idRol + " - " + rol + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Rol( idRol, rol );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla ROLES
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - El identificador del rol
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarRol( Long id ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlRoles.eliminarRol( pm, id );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla ROLES que el id
+	 * @param id - El identificador del rol
+	 * @return El objeto Rol, construidos con base en las tuplas de la tabla ROLES
+	 */
+	public Rol darRol( Long id )
+	{
+		return sqlRoles.darRol( pmf.getPersistenceManager(), id );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla ROLES
+	 * @return La lista de objetos Rol, construidos con base en las tuplas de la tabla ROLES
+	 */
+	public List<Rol> darRoles()
+	{
+		return sqlRoles.darRoles( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la INFORMACION DE LOS USUARIOS
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla INFOUSUARIO
+	 * Adiciona entradas al log de la aplicación
+	 * @param login - El login del usuario
+	 * @param trabajo - El trabajo del usuario
+	 * @param roles - El rol del usuario en la aplicación
+	 * @param punto - El punto de vacunación al que se encuentra asociado
+	 * @return El objeto InfoUsuario adicionado. null si ocurre alguna Excepción
+	 */
+	public InfoUsuario adicionarInfoUsuario( String login, String trabajo, Long roles, String punto )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlInfoUsuario.adicionarInfoUsuario( pm, login, trabajo, roles, punto );
+            tx.commit();
+            
+            log.trace( "Inserción de la información de un usuario: " + login + " - " + trabajo + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new InfoUsuario( login, trabajo, roles, punto );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla INFOUSUARIO
+	 * Adiciona entradas al log de la aplicación
+	 * @param login - El login único de un usuario
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarInfoUsuario( String login ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlInfoUsuario.eliminarInfoUsuario( pm, login );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla INFOUSUARIO que tiene el login
+	 * @param login - El login único de un usuario
+	 * @return El objeto InfoUsuario, construidos con base en las tuplas de la tabla INFOUSUARIO
+	 */
+	public InfoUsuario darInfoUsuario( String login )
+	{
+		return sqlInfoUsuario.darInfoUsuario( pmf.getPersistenceManager(), login );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla INFOUSUARIO
+	 * @return La lista de objetos InfoUsuario, construidos con base en las tuplas de la tabla INFOUSUARIO
+	 */
+	public List<InfoUsuario> darInfoUsuarios()
+	{
+		return sqlInfoUsuario.darInfoUsuarios( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar los ESTADOS
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla ESTADO
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripción del estado
+	 * @return El objeto Estado adicionado. null si ocurre alguna Excepción
+	 */
+	public Estado adicionarEstado( String descripcion )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long idEstado = nextval();
+            Long tuplasInsertadas = sqlEstado.adicionarEstado( pm, idEstado, descripcion );
+            tx.commit();
+            
+            log.trace( "Inserción de estado: " + idEstado + " - " + descripcion + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Estado( idEstado, descripcion );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla ESTADO
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - El identificador del estado
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarEstado( Long id ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlEstado.eliminarEstado( pm, id  );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla ESTADO que tiene el id
+	 * @param id - El identificador del estado
+	 * @return El objeto Estado, construidos con base en las tuplas de la tabla ESTADO
+	 */
+	public Estado darEstado( Long id )
+	{
+		return sqlEstado.darEstado( pmf.getPersistenceManager(), id );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla ESTADO
+	 * @return La lista de objetos Estado, construidos con base en las tuplas de la tabla ESTADO
+	 */
+	public List<Estado> darEstados()
+	{
+		return sqlEstado.darEstados( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar los CIUDADANOS
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla CIUDADANO
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param nombre - El nombre del ciudadano
+	 * @param nacimiento - La fecha de nacimiento del ciudadano
+	 * @param habilitado - Si el ciudadano está o no habilitado para vacunación
+	 * @param estado - El id del estado en el que se encuentra el ciudadano en la vacunación
+	 * @param eps - El id de la EPS a la que el ciuadano se encuentra afiliado
+	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
+	 * @return El objeto Ciudadano adicionado. null si ocurre alguna Excepción
+	 */
+	public Ciudadano adicionarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlCiudadano.adicionarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            tx.commit();
+            
+            log.trace( "Inserción de ciudadano: " + documento + " - " + nombre + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que actualiza, de manera transaccional, una tupla en la tabla CIUDADANO
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param nombre - El nombre del ciudadano
+	 * @param nacimiento - La fecha de nacimiento del ciudadano
+	 * @param habilitado - Si el ciudadano está o no habilitado para vacunación
+	 * @param estado - El id del estado en el que se encuentra el ciudadano en la vacunación
+	 * @param eps - El id de la EPS a la que el ciuadano se encuentra afiliado
+	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
+	 * @return El objeto Ciudadano actualizado. null si ocurre alguna Excepción
+	 */
+	public Ciudadano actualizarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasActualizadas = sqlCiudadano.actualizarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            tx.commit();
+            
+            log.trace( "Actualización de ciudadano: " + documento + " - " + nombre + ": " + tuplasActualizadas + " tuplas actualizadas" );
+            
+            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla CIUDADANO
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarCiudadano( String documento ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlCiudadano.eliminarCiudadano( pm, documento );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla CIUDADANO que tiene el documento
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return El objeto Ciudadano, construidos con base en las tuplas de la tabla CIUDADANO
+	 */
+	public Ciudadano darCiudadano( String documento )
+	{
+		return sqlCiudadano.darCiudadano( pmf.getPersistenceManager(), documento);
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla CIUDADANO
+	 * @return La lista de objetos Ciudadano, construidos con base en las tuplas de la tabla CIUDADANO
+	 */
+	public List<Ciudadano> darCiudadanos()
+	{
+		return sqlCiudadano.darCiudadanos( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar los USUARIOS
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla USUARIO
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param login - El login del usuario
+	 * @return El objeto Usuario adicionado. null si ocurre alguna Excepción
+	 */
+	public Usuario adicionarUsuario( String documento, String login )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlUsuario.adicionarUsuario( pm, documento, login );
+            tx.commit();
+            
+            log.trace( "Inserción de usuario: " + documento + " - " + login + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Usuario( documento, login );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla USUARIO
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarUsuario( String documento ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlUsuario.eliminarUsuario( pm, documento );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla USUARIO que tiene el documento
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return El objeto Usuario, construidos con base en las tuplas de la tabla USUARIO
+	 */
+	public Usuario darUsuario( String documento )
+	{
+		return sqlUsuario.darUsuario( pmf.getPersistenceManager(), documento );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla USUARIO
+	 * @return La lista de objetos Usuario, construidos con base en las tuplas de la tabla USUARIO
+	 */
+	public List<Usuario> darUsuarios()
+	{
+		return sqlUsuario.darUsuarios( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la VACUNACION
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla VACUNACION
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la eps
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El objeto Vacunacion adicionado. null si ocurre alguna Excepción
+	 */
+	public Vacunacion adicionarVacunacion( String documento, String eps, String punto )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlVacunacion.adicionarVacunacion( pm, documento, eps, punto );
+            tx.commit();
+            
+            log.trace( "Inserción de vacunación: " + documento + " - " + eps + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Vacunacion( documento, eps, punto );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla VACUNACION
+	 * Adiciona entradas al log de la aplicación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la eps
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarVacunacion( String documento, String eps ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlVacunacion.eliminarVacunacion( pm, documento, eps );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla VACUNACION que tiene el documento y eps
+	 * de identificación del ciudadano asociado
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la eps
+	 * @return El objeto Vacunacion, construidos con base en las tuplas de la tabla VACUNACION
+	 */
+	public Vacunacion darVacunacion( String documento, String eps )
+	{
+		return sqlVacunacion.darVacunacion( pmf.getPersistenceManager(), documento, eps );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla VACUNACION
+	 * @return La lista de objetos Vacunacion, construidos con base en las tuplas de la tabla VACUNACION
+	 */
+	public List<Vacunacion> darVacunaciones()
+	{
+		return sqlVacunacion.darVacunaciones( pmf.getPersistenceManager() );
 	}
 	
 //Ejemplo de cómo hacerlo
@@ -535,7 +1323,7 @@ public class PersistenciaVacuAndes
 	 * @param pm - El manejador de persistencia
 	 * @return Un arreglo con 14 números que indican el número de tuplas borradas en las tablas EPS, ROLES, 
 	 * ESTADO, ETAPA, CONDICIONPRIORIZACION, PUNTO, VACUNA, ASIGNADA, CIUDADANO, VACUNACION,
-	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA, AGENDADA
+	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA
 	 */
 	public Long[] limpiarVacuAndes()
 	{
@@ -553,7 +1341,7 @@ public class PersistenciaVacuAndes
         {
 //        	e.printStackTrace();
         	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
+        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
         }
         finally
         {

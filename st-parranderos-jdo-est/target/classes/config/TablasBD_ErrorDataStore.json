@@ -1,15 +1,22 @@
 {
-	"title": "Nombres de las tablas de Parranderos Uniandes para pruebas de la aplicación cuando la base de datos no existe o está caida",
-	"unidadPersistencia": "ParranderosErrorDS",
+	"title": "Nombres de las tablas de VacuAndes para pruebas de la aplicación cuando la base de datos no existe o está caida",
+	"unidadPersistencia": "VacuAndesErrorDS",
 	"tablas":
 	[
-		"Parranderos_sequence",
-		"X_TIPOBEBIDA",
-		"X_BEBIDA",
-		"X_BAR",
-		"X_BEBEDOR",
-		"X_GUSTAN",
-		"X_SIRVEN",
-		"X_VISITAN"
+		"VACUANDES_SEQUENCE",
+		"XEPS",
+		"XROLES",
+		"XESTADO",
+		"XETAPA",
+		"XCONDICIONPRIORIZACION",
+		"XPUNTO",
+		"XVACUNA",
+		"XASIGNADA",
+		"XCIUDADANO",
+		"XVACUNACION",
+		"XPRIORIZACION",
+		"XINFOUSUARIO",
+		"XUSUARIO",
+		"XCITA"
 	]
 }

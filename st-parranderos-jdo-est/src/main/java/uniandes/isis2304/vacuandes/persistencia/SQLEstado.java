@@ -76,7 +76,7 @@ public class SQLEstado {
 	 * @param id - El identificador del estado
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarEstadoPorId( PersistenceManager pm, Long id )
+	public Long eliminarEstado( PersistenceManager pm, Long id )
 	{
         Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaEstado() + " WHERE ID = ?");
         q.setParameters( id );
@@ -90,7 +90,7 @@ public class SQLEstado {
 	 * @param id - El identificador del estado
 	 * @return El objeto ESTADO que tiene el identificador dado
 	 */
-	public Estado darEstadoPorId( PersistenceManager pm, Long id ) 
+	public Estado darEstado( PersistenceManager pm, Long id ) 
 	{
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaEstado () + " WHERE ID = ?" );
 		q.setResultClass( Estado.class );

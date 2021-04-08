@@ -78,7 +78,7 @@ public class SQLInfoUsuario {
 	 * @param login - El login único de un usuario
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarInfoUsuarioPorLogin( PersistenceManager pm, String login )
+	public Long eliminarInfoUsuario( PersistenceManager pm, String login )
 	{
         Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaInfoUsuario() + " WHERE LOGIN = ?");
         q.setParameters( login );
@@ -92,7 +92,7 @@ public class SQLInfoUsuario {
 	 * @param login - El login único de un usuario
 	 * @return El objeto INFOUSUARIO que tiene el identificador dado
 	 */
-	public InfoUsuario darInfoUsuarioPorLogin( PersistenceManager pm, String login ) 
+	public InfoUsuario darInfoUsuario( PersistenceManager pm, String login ) 
 	{
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaInfoUsuario() + " WHERE DOCUMENTO = ?" );
 		q.setResultClass( InfoUsuario.class );

@@ -74,7 +74,6 @@ public class SQLRoles {
 	 * Crea y ejecuta la sentencia SQL para eliminar un ROL de la base de datos de VacuAndes por su id
 	 * @param pm - El manejador de persistencia
 	 * @param id - El identificador del rol
-	 * @param rol - La cadena de texto con el rol
 	 * @return EL número de tuplas eliminadas
 	 */
 	public Long eliminarRol( PersistenceManager pm, Long id )
@@ -91,11 +90,11 @@ public class SQLRoles {
 	 * @param id - El identificador del rol
 	 * @return El objeto ROL que tiene el identificador dado
 	 */
-	public Rol darRolPorId( PersistenceManager pm, String documento ) 
+	public Rol darRol( PersistenceManager pm, Long id ) 
 	{
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaRoles () + " WHERE ID = ?" );
 		q.setResultClass( Rol.class );
-		q.setParameters(documento);
+		q.setParameters(id);
 		return (Rol) q.executeUnique();
 	}
 

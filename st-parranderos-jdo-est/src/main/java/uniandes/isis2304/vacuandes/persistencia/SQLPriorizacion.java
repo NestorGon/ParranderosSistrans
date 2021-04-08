@@ -79,7 +79,7 @@ public class SQLPriorizacion {
 	 * @param descripcion - La descripción de la condición de priorización
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarPriorización( PersistenceManager pm, String documento, String descripcion )
+	public Long eliminarPriorizacion( PersistenceManager pm, String documento, String descripcion )
 	{
         Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaPriorizacion() + " WHERE DOCUMENTO_CIUDADANO = ? AND DESCRIPCION_CONDPRIOR = ?");
         q.setParameters( documento, descripcion );
