@@ -701,6 +701,481 @@ public class VacuAndes
 		return vacunacion;
 	}
 	
+	/* ****************************************************************
+	 * 			Métodos para manejar el PUNTO
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente un punto de vacunacion
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - Id del punto de vacunacion
+	 * @param region - Region del punto de vacunacion
+	 * @param direccion - Direccion del putno de vacunacion
+	 * @param aplicadas - Numero de vacunas aplicadas en el punto de vacunacion
+	 * @param capacidad -Capacidad del punto de vacunacion
+	 * @param id_eps - Id de la eps a la que pertenece el punto de vacunacion
+	 * @return El objeto Punto adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps )
+	{
+       log.info( "Adicionando Punto: " + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps );
+       Long resp = pp.adicionarPunto( id, region, direccion, aplicadas, capacidad, id_eps );		
+       log.info( "Punto adicionado: "  + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps);
+       return resp;
+	}
+	
+	/**
+	 * Elimina un punto por su id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id del punto de vacunacion
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarPunto( String id )
+	{
+		log.info( "Eliminando Punto: " + id );
+		Long numero = pp.eliminarPunto( id );		
+		log.info( "Punto eliminado: " + numero + " tuplas eliminadas" );
+		return numero;
+	}
+	
+	/**
+	 * Encuentra todas los puntos en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
+	 */
+	public List<Punto> darPuntos()
+	{
+		log.info ("Consultando Punto");
+		List<Punto> puntos = pp.darPuntos();	
+		log.info ("Consultando Punto: " + puntos.size() + " existentes");
+		return puntos;
+	}
+
+	/**
+	 * Encuentra todas los puntos en VacuAndes y los devuelve como una lista de VOPunto
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOPunto contodos los puntos que conoce la aplicación
+	 */
+	public List<VOPunto> darVOPuntos()
+	{
+		log.info ("Generando los VO de Puntos");        
+       List<VOPunto> voPuntos = new LinkedList<VOPunto>();
+       for( Punto punto : pp.darPuntos() ) {
+    	   voPuntos.add (punto);
+       }
+       log.info ("Generando los VO de los puntos: " + voPuntos.size() + " existentes");
+       return voPuntos;
+	}
+
+	/**
+	 * Encuentra el punto en VacuAndes con el id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id del punto a buscar
+	 * @return Un objeto Punto con el id, lleno con su información básica
+	 */
+	public Punto darPunto( String id )
+	{
+		log.info ("Buscando Punto: " + id );
+		Punto punto = pp.darPunto( id );
+		log.info ("Punto encontrado: " + id );
+		return punto;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la VACUNA
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una vacuna
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - Id de la vacuna
+	 * @param preservacion - Condiciones de preservacion de la vacuna 
+	 * @param aplicada - Estado de aplicacion de la vacuna
+	 * @param dosis - Numero de dosis de la vacuna
+	 * @param tipo - Tipo de la vacuna
+	 * @return El objeto Vacuna adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarVacuna( String id, String preservacion, String aplicada, Long dosis, String tipo )
+	{
+       log.info( "Adicionando Vacuna: " + id + " - " + preservacion+" -"+ aplicada+" - "+ dosis+" - "+ tipo );
+       Long resp = pp.adicionarVacuna( id, preservacion, aplicada, dosis, tipo );		
+       log.info( "Vacuna adicionada: "  + id + " - " + preservacion+" -"+ aplicada+" - "+ dosis+" - "+ tipo);
+       return resp;
+	}
+	
+	/**
+	 * Elimina una vacuna por su id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id de la vacuna
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarVacuna( String id )
+	{
+		log.info( "Eliminando Vacuna: " + id );
+		Long numero = pp.eliminarVacuna( id );		
+		log.info( "Vacuna eliminada: " + numero + " tuplas eliminadas" );
+		return numero;
+	}
+	
+	/**
+	 * Encuentra todas las vacunas en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Vacuna con todas las vacunas que conoce la aplicación
+	 */
+	public List<Vacuna> darVacunas()
+	{
+		log.info ("Consultando Vacunas");
+		List<Vacuna> vacunas = pp.darVacunas();	
+		log.info ("Consultando Vacunas: " + vacunas.size() + " existentes");
+		return vacunas;
+	}
+
+	/**
+	 * Encuentra todas las vacunas en VacuAndes y las devuelve como una lista de VOVacuna
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOVacuna con todas las vacunas que conoce la aplicación
+	 */
+	public List<VOVacuna> darVOVacunas()
+	{
+		log.info ("Generando los VO de Vacunas");        
+       List<VOVacuna> voVacunas = new LinkedList<VOVacuna>();
+       for( Vacuna vacuna : pp.darVacunas() ) {
+    	   voVacunas.add (vacuna);
+       }
+       log.info ("Generando los VO de las vacunas: " + voVacunas.size() + " existentes");
+       return voVacunas;
+	}
+
+	/**
+	 * Encuentra la vacuna en VacuAndes con el id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id de la vacuna a buscar
+	 * @return Un objeto Vacuna con el id, lleno con su información básica
+	 */
+	public Vacuna darVacuna( String id )
+	{
+		log.info ("Buscando Vacuna: " + id );
+		Vacuna vacuna = pp.darVacuna( id );
+		log.info ("Vacuna encontrada: " + id );
+		return vacuna;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la ETAPA
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una etapa
+	 * Adiciona entradas al log de la aplicación
+	 * @param numero - Numero de la etapa de vacunacion
+	 * @param descripcion - descripcion de la etapa
+	 * @return El objeto Etapa adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarEtapa( Long numero, String descripcion )
+	{
+       log.info( "Adicionando Etapa: " + numero+ " - "+ descripcion );
+       Long resp = pp.adicionarEtapa( numero,descripcion );		
+       log.info( "Etapa adicionada: "  + numero+ " - "+ descripcion);
+       return resp;
+	}
+	
+	/**
+	 * Elimina una etapa por su numero 
+	 * Adiciona entradas al log de la aplicación
+	 * @param numero - numero de la etapa
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarEtapa( Long numero )
+	{
+		log.info( "Eliminando Etapa: " + numero );
+		Long resp = pp.eliminarEtapa( numero );		
+		log.info( "Etapa eliminada: " + resp + " tuplas eliminadas" );
+		return resp;
+	}
+	
+	/**
+	 * Encuentra todas las etapas en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Etapa con todas las etapas que conoce la aplicación
+	 */
+	public List<Etapa> darEtapas()
+	{
+		log.info ("Consultando Etapas");
+		List<Etapa> etapas = pp.darEtapas();	
+		log.info ("Consultando Etapas: " + etapas.size() + " existentes");
+		return etapas;
+	}
+
+	/**
+	 * Encuentra todas las etapas en VacuAndes y las devuelve como una lista de VOEtapa
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOEtapa con todas las etapas que conoce la aplicación
+	 */
+	public List<VOEtapa> darVOEtapas()
+	{
+		log.info ("Generando los VO de Etapas");        
+       List<VOEtapa> voEtapas = new LinkedList<VOEtapa>();
+       for( Etapa etapa : pp.darEtapas() ) {
+    	   voEtapas.add (etapa);
+       }
+       log.info ("Generando los VO de las etapas: " + voEtapas.size() + " existentes");
+       return voEtapas;
+	}
+
+	/**
+	 * Encuentra la etapa en VacuAndes con el numero
+	 * Adiciona entradas al log de la aplicación
+	 * @param numero - el numero de la etapa a buscar
+	 * @return Un objeto Etapa con el numero, lleno con su información básica
+	 */
+	public Etapa darEtapa( Long numero )
+	{
+		log.info ("Buscando Etapa: " + numero );
+		Etapa etapa = pp.darEtapa( numero );
+		log.info ("Etapa encontrada: " + numero );
+		return etapa;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la CONDICIONPRIORIZACION
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una condicion de priorizacion
+	 * Adiciona entradas al log de la aplicación
+	 * @param numero_etapa - Numero de la etapa a la que pertenece la condicion de priorizacion
+	 * @param descripcion - descripcion de la condicion de priorizacion
+	 * @return El objeto Vacuna adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarCondicionPriorizacion( Long numero_etapa, String descripcion )
+	{
+       log.info( "Adicionando Condicion de Priorizacion: " + numero_etapa + " - " + descripcion );
+       Long resp = pp.adicionarCondicionPriorizacion( numero_etapa, descripcion );		
+       log.info( "Condicion de priorizacion adicionada: "  + numero_etapa + " - " + descripcion);
+       return resp;
+	}
+	
+	/**
+	 * Elimina una condicion de priorizacion por su descripcion
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - decsripcion condicion de priorizacion
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarCondicionPriorizacion( String descripcion )
+	{
+		log.info( "Eliminando Condicion de priorizacion: " + descripcion );
+		Long numero = pp.eliminarCondicionPriorizacion( descripcion );		
+		log.info( "Condicion de priorizacion eliminada: " + numero + " tuplas eliminadas" );
+		return numero;
+	}
+	
+	/**
+	 * Encuentra todas las condiciones de priorizacion en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos CondicionPriorizacion con todas las condiciones de priorizacion que conoce la aplicación
+	 */
+	public List<CondicionPriorizacion> darCondicionesPriorizacion()
+	{
+		log.info ("Consultando Condiciones de priorizacion");
+		List<CondicionPriorizacion> condiciones = pp.darCondicionesPriorizacion();	
+		log.info ("Consultando Condiciones de priorizacion: " + condiciones.size() + " existentes");
+		return condiciones;
+	}
+
+	/**
+	 * Encuentra todas las condiciones de priorizacion en VacuAndes y las devuelve como una lista de VOCondicionPriorizacion
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOCondicionPriorizacion con todas las condiciones de priorizacion que conoce la aplicación
+	 */
+	public List<VOCondicionPriorizacion> darVOCondicionPriorizacion()
+	{
+		log.info ("Generando los VO de las Condiciones de priorizaciones");        
+       List<VOCondicionPriorizacion> voCondicionPriorizacion = new LinkedList<VOCondicionPriorizacion>();
+       for( CondicionPriorizacion condicionPriorizacion : pp.darCondicionesPriorizacion() ) {
+    	   voCondicionPriorizacion.add (condicionPriorizacion);
+       }
+       log.info ("Generando los VO de las Condiciones de Priorizacion: " + voCondicionPriorizacion.size() + " existentes");
+       return voCondicionPriorizacion;
+	}
+
+	/**
+	 * Encuentra la Condicion de Priorizacion en VacuAndes con la descripcion 
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - descripcion de la condicion de priorizacion
+	 * @return Un objeto CondicionPriorizacion con la descripcion, lleno con su información básica
+	 */
+	public CondicionPriorizacion darCondicionPriorizacion( String descripcion )
+	{
+		log.info ("Buscando CondicionPriorizacion: " + descripcion );
+		CondicionPriorizacion condicionPriorizacion = pp.darCondicionPriorizacion( descripcion );
+		log.info ("CondicionPriorizacion encontrada: " + descripcion );
+		return condicionPriorizacion;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la EPS
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una eps
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id de la eps
+	 * @param region - region en la que se encuentra la eps
+	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
+	 * @return El objeto EPS adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarEps( String id, String descripcion, String region, Long vacunas )
+	{
+       log.info( "Adicionando EPS: " + id + " - " + descripcion+ " - "+ region + " - "+vacunas );
+       Long resp = pp.adicionarEps( id, descripcion, region, vacunas );		
+       log.info( "EPS adicionada: "  + id + " - " + descripcion+ " - "+ region + " - "+vacunas);
+       return resp;
+	}
+	
+	/**
+	 * Elimina una EPS por su id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id de la EPS
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarEPS( String id )
+	{
+		log.info( "Eliminando EPS: " + id );
+		Long numero = pp.eliminarEps( id );		
+		log.info( "EPS eliminada: " + numero + " tuplas eliminadas" );
+		return numero;
+	}
+	
+	/**
+	 * Encuentra todas las regiones de las EPSs en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos String con todas las regiones de las EPSs que conoce la aplicación
+	 */
+	public List<String> darRegiones()
+	{
+		log.info ("Consultando Regiones");
+		List<String> regiones = pp.darRegiones();	
+		log.info ("Consultando Regiones: " + regiones.size() + " existentes");
+		return regiones;
+	}
+	
+	/**
+	 * Encuentra todas las EPSs en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos EPS con todas las EPSs que conoce la aplicación
+	 */
+	public List<EPS> darEPSs()
+	{
+		log.info ("Consultando EPSs");
+		List<EPS> epss = pp.darEPSs();	
+		log.info ("Consultando EPSs: " + epss.size() + " existentes");
+		return epss;
+	}
+
+	/**
+	 * Encuentra todas las EPS en VacuAndes y las devuelve como una lista de VOEPS
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOEPS con todas las EPS que conoce la aplicación
+	 */
+	public List<VOEPS> darVOEPS()
+	{
+		log.info ("Generando los VO de EPS");        
+       List<VOEPS> voEPS = new LinkedList<VOEPS>();
+       for( EPS eps : pp.darEPSs() ) {
+    	   voEPS.add (eps);
+       }
+       log.info ("Generando los VO de las EPS: " + voEPS.size() + " existentes");
+       return voEPS;
+	}
+
+	/**
+	 * Encuentra la EPS en VacuAndes con el id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id - id de la EPS a buscar
+	 * @return Un objeto EPS con el id, lleno con su información básica
+	 */
+	public EPS darEPS( String id )
+	{
+		log.info ("Buscando EPS: " + id );
+		EPS eps = pp.darEPS( id );
+		log.info ("EPS encontrada: " + id );
+		return eps;
+	}
+	
+	/* ****************************************************************
+	 * 			Métodos para manejar la ASIGNADA
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una vacuna ASIGNADA
+	 * Adiciona entradas al log de la aplicación
+	 * @param id_eps - Id de la eps a la que pertenece la vacuna
+	 * @param id_punto - Id del punto al que pertenece la vacuna 
+	 * @param id_vacuna - Id de la vacuna asignada
+	 * @return El objeto Vacuna adicionado. -1 si ocurre alguna Excepción
+	 */
+	public Long adicionarAsignada( String id_eps, String id_punto, String id_vacuna )
+	{
+       log.info( "Adicionando Asignada: " + id_eps+ " - "+ id_punto+ " - "+id_vacuna );
+       Long resp = pp.adicionarAsignada( id_eps, id_punto, id_vacuna );		
+       log.info( "Vacuna adicionada: "  + id_eps+ " - "+ id_punto+ " - "+id_vacuna);
+       return resp;
+	}
+	
+	/**
+	 * Elimina una asignada por su id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id_vacuna - id de la vacuna asignada
+	 * @param id_punto - id del punto de la vacuna asignada
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarAsignada( String id_punto, String id_vacuna )
+	{
+		log.info( "Eliminando Asignada: " + id_vacuna);
+		Long numero = pp.eliminarAsignada( id_punto, id_vacuna );		
+		log.info( "Asignada eliminada: " + numero + " tuplas eliminadas" );
+		return numero;
+	}
+	
+	/**
+	 * Encuentra todas las vacunas asignadas en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Asignada con todas las vacunas asignadas que conoce la aplicación
+	 */
+	public List<Asignada> darAsignada()
+	{
+		log.info ("Consultando Asignadas");
+		List<Asignada> asignadas = pp.darAsignadas();	
+		log.info ("Consultando Asignadas: " + asignadas.size() + " existentes");
+		return asignadas;
+	}
+
+	/**
+	 * Encuentra todas las vacunas asignadas en VacuAndes y las devuelve como una lista de VOAsignada
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOAsignada con todas las vacunas asignadas que conoce la aplicación
+	 */
+	public List<VOAsignada> darVOAsignadas()
+	{
+		log.info ("Generando los VO de Asignada");        
+       List<VOAsignada> voAsignadas = new LinkedList<VOAsignada>();
+       for( Asignada asignada : pp.darAsignadas() ) {
+    	   voAsignadas.add (asignada);
+       }
+       log.info ("Generando los VO de las asignadas: " + voAsignadas.size() + " existentes");
+       return voAsignadas;
+	}
+
+	/**
+	 * Encuentra la vacuna asignada en VacuAndes con el id
+	 * Adiciona entradas al log de la aplicación
+	 * @param id_vacuna - id de la vacuna asignada
+	 * @param id_punto - id del punto de la vacuna asignada
+	 * @return Un objeto Vacuna con el id, lleno con su información básica
+	 */
+	public Asignada darAsignada( String id_punto, String id_vacuna )
+	{
+		log.info ("Buscando Asignada: " + id_vacuna );
+		Asignada asignada = pp.darAsignada( id_punto, id_vacuna );
+		log.info ("Vacuna encontrada: " + id_vacuna );
+		return asignada;
+	}
+
+	
 //Ejemplo de cómo hacerlo
 //	
 //	/* ****************************************************************
