@@ -1669,7 +1669,7 @@ public class PersistenciaVacuAndes
 	/**
 	 * Método que elimina, de manera transaccional, una tupla en la tabla CONDICIONPRIORIZACION
 	 * Adiciona entradas al log de la aplicación
-	 * @param descripcion - descripcion de la etapa a eliminar
+	 * @param descripcion - descripcion de la condicion de priorizacion a eliminar
 	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
 	 */
 	public Long eliminarCondicionPriorizacion( String descripcion ) 
@@ -1701,7 +1701,7 @@ public class PersistenciaVacuAndes
 	
 	/**
 	 * Método que consulta la tupla en la tabla CONDICIONPRIORIZACION con la descripcion
-	 * @param descripcion - descripcion de la etapa a buscar
+	 * @param descripcion - descripcion de la condicion de priorizacion a buscar
 	 * @return El objeto Condicion Priorizacion, construidos con base en las tuplas de la tabla CONDICIONPRIORIZACION
 	 */
 	public CondicionPriorizacion darCondicionPriorizacion( String descripcion )
@@ -2017,6 +2017,30 @@ public class PersistenciaVacuAndes
 	public List<String> darAtendidosPuntoFechas(  String id, String fecha1, String fecha2 )
 	{
 		return sqlUtil.darAtendidosPuntoFechas(pmf.getPersistenceManager(), id, fecha1, fecha2);
+	}
+	
+	/**
+	 * Metodo que consulta los puntos efectivos en un rango de fechas
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darPuntosEfectivosFechas( String fecha1, String fecha2 )
+	{
+		return sqlUtil.darPuntosEfectivosFechas(pmf.getPersistenceManager(), fecha1, fecha2);
+	}
+	
+	/**
+	 * Metodo que consulta los puntos efectivos en un rango de horas
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto incial
+	 * @param min2 - minuto final 
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darPuntosEfectivosHoras( Long hora1, Long hora2, Long min1, Long min2 )
+	{
+		return sqlUtil.darPuntosEfectivosHoras(pmf.getPersistenceManager(), hora1, hora2, min1, min2);
 	}
 	
 	

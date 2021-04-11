@@ -22,7 +22,7 @@ public class Vacuna implements VOVacuna{
 	private String preservacion;
 	
 	/**
-	 * Estado de aplocación de la Vacuna. T si es aplicada, F si no
+	 * Estado de aplicación de la Vacuna. T si es aplicada, F si no
 	 */
 	private String aplicada;
 	

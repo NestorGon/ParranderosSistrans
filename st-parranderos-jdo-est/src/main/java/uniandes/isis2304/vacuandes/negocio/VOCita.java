@@ -46,4 +46,9 @@ public interface VOCita {
 	 * @return Una cadena de caracteres con todos los atributos de la cita
 	 */
 	public String toString();
+	
+	/**
+	 * @return Entrega el id del punto de vacunacion
+	 */
+	public String getId_punto();
 }
