@@ -441,7 +441,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						throw new Exception("La región ingresada no se encuentra en la base de datos");
 
 					JList<String> list = new JList<>( new String[]{"Una fecha","Rango de fechas","Rango de horas"} );
-					JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(null, list, "Selecccione la opcion para realizar la consulta (seleccione únicamente una)", JOptionPane.PLAIN_MESSAGE);
 					List<String> seleccionados = list.getSelectedValuesList();
 					boolean fecha = seleccionados.contains("Una fecha") ? true: false;
 					boolean fechas = seleccionados.contains("Rango de fechas") ? true: false;
@@ -462,10 +462,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada"; 
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado); 
 
 						}
@@ -486,13 +486,14 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada"; 
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado);
 						}
 						catch(Exception e){
+							
 							throw new Exception("Existen errores en el formato de fecha y hora");
 						}
 					}
@@ -511,14 +512,15 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada"; 
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado);
 						}
 						catch(Exception e){
 							throw new Exception("Existen errores en el formato de fecha y hora");
+							
 						}
 
 					}
@@ -531,7 +533,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						throw new Exception("El punto ingresado no se encuentra en la base de datos");
 
 					JList<String> list = new JList<>( new String[]{"Una fecha","Rango de fechas","Rango de horas"} );
-					JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showMessageDialog(null, list, "Selecccione la opcion para relizar la consulta (seleccione únicamente una)", JOptionPane.PLAIN_MESSAGE);
 					List<String> seleccionados = list.getSelectedValuesList();
 					boolean fecha = seleccionados.contains("Una fecha") ? true: false;
 					boolean fechas = seleccionados.contains("Rango de fechas") ? true: false;
@@ -551,10 +553,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada";
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado);
 
 						}
@@ -575,10 +577,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada"; 
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado);
 
 						}
@@ -601,10 +603,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 								resultado+=documentos.get(i)+"\n";
 							}
 							resultado += "\n Operación terminada"; 
-							
+
 							if(documentos.size()==0)
 								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
-							
+
 							panelDatos.actualizarInterfaz(resultado);
 						}
 						catch(Exception e){
@@ -623,6 +625,118 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
+
+	/**
+	 * Consulta la base de datos para hallar los 20 puntos de vacunación más efectivos
+	 */
+	public void mostrarPuntosMasEfectivos() {
+		try
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+
+			JList<String> list = new JList<>( new String[]{"Una fecha","Rango de fechas","Rango de horas"} );
+			JOptionPane.showMessageDialog(null, list, "Selecccione la opcion para realizar la consulta (seleccione únicamente una)", JOptionPane.PLAIN_MESSAGE);
+			List<String> seleccionados = list.getSelectedValuesList();
+			boolean fecha = seleccionados.contains("Una fecha") ? true: false;
+			boolean fechas = seleccionados.contains("Rango de fechas") ? true: false;
+			boolean horas = seleccionados.contains("Rango de horas") ? true: false;
+
+			if(fecha == true){
+				String fechaResp = JOptionPane.showInputDialog(this, "Ingrese la fecha en formato DD-MM-YYYY", "Hallar 20 puntos más efectivos", JOptionPane.QUESTION_MESSAGE);
+				String fecha1 = fechaResp+" 00:00";
+				String fecha2 = fechaResp+ " 23:59";
+				try{
+
+					List<String> puntos = vacuAndes.darPuntosEfectivosFechas(fecha1, fecha2);
+
+					String resultado = "En mostrarPuntosMasEfectivos\n\n"; 
+					resultado += "Puntos hallados correctamente: \n";
+
+					for(int i= 0; i<puntos.size(); i++){
+						resultado+=puntos.get(i)+"\n";
+					}
+					resultado += "\n Operación terminada"; 
+
+					if(puntos.size()==0)
+						resultado = "No se hallaron puntos efectivos con las especificaciones dadas";
+
+					panelDatos.actualizarInterfaz(resultado); 
+
+				}
+				catch(Exception e){
+					String resultado = generarMensajeError(e);
+					panelDatos.actualizarInterfaz(resultado);
+					
+				}
+			}
+			else if(fechas == true){
+				String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+				String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE)+ " 23:59";
+				try{
+
+					List<String> puntos = vacuAndes.darPuntosEfectivosFechas(fecha1, fecha2);
+
+					String resultado = "En mostrarPuntosMasEfectivos\n\n"; 
+					resultado += "Puntos hallados correctamente: \n";
+
+					for(int i= 0; i<puntos.size(); i++){
+						resultado+=puntos.get(i)+"\n";
+					}
+					resultado += "\n Operación terminada"; 
+
+					if(puntos.size()==0)
+						resultado = "No se hallaron puntos efectivos con las especificaciones dadas";
+
+					panelDatos.actualizarInterfaz(resultado); 
+				}
+				catch(Exception e){
+					String resultado = generarMensajeError(e);
+					panelDatos.actualizarInterfaz(resultado);
+					
+				}
+			}
+			else if(horas == true){
+				Long hora1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora de inicio en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+				Long min1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de inicio en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+				Long hora2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora final en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+				Long min2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de fin en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+				try{
+					List<String> puntos = vacuAndes.darPuntosEfectivosHoras( hora1, hora2,min1, min2);
+
+					String resultado = "En mostrarPuntosMasEfectivos\n\n"; 
+					resultado += "Puntos hallados correctamente: \n";
+
+					for(int i= 0; i<puntos.size(); i++){
+						resultado+=puntos.get(i)+"\n";
+					}
+					resultado += "\n Operación terminada"; 
+
+					if(puntos.size()==0)
+						resultado = "No se hallaron puntos efectivos con las especificaciones dadas";
+
+					panelDatos.actualizarInterfaz(resultado); 
+				}
+				catch(Exception e){
+					String resultado = generarMensajeError(e);
+					panelDatos.actualizarInterfaz(resultado);;
+				}
+			}
+		}
+		catch (Exception e) {
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+	}
+
 	/**
 	 * Consulta la base de datos para hallar el índice de vacunación para un grupo poblacional
 	 */

@@ -1291,6 +1291,34 @@ public class VacuAndes
 		log.info("Atendidos por punto horas encontrados");
 		return resultado;
 	}
+	
+	/**
+	 * Metodo que consulta los puntos efectivos en rangos de fechas
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darPuntosEfectivosFechas( String fecha1, String fecha2 ){
+		log.info("Buscando puntos efectivos fechas");
+		List<String> resultado = pp.darPuntosEfectivosFechas(fecha1, fecha2);
+		log.info("Puntos efectivos fechas encontrados");
+		return resultado;
+	}
+	
+	/**
+	 * Metodo que consulta los puntos efectivos en rangos de horas
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final 
+	 * @param min1 - min inicial
+	 * @param min2 - min final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darPuntosEfectivosHoras( Long hora1, Long hora2, Long min1, Long min2 ){
+		log.info("Buscando puntos efectivos horas");
+		List<String> resultado = pp.darPuntosEfectivosHoras( hora1, hora2, min1, min2);
+		log.info("Puntos efectivos horas encontrados");
+		return resultado;
+	}
 
 	/* ****************************************************************
 	 * 			Métodos para administración

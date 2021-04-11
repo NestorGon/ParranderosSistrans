@@ -22,7 +22,7 @@ public class EPS implements VOEPS{
 	private String region;
 	
 	/**
-	 * Número d evacunas con el que cuenta la eps
+	 * Número de vacunas con el que cuenta la eps
 	 */
 	private Long vacunas;
 	

@@ -58,17 +58,17 @@ class SQLUtil
 	public SQLUtil( PersistenciaVacuAndes pp ) {
 		this.pp = pp;
 	}
-	
+
 	/**
 	 * Crea y ejecuta la sentencia SQL para obtener un nuevo número de secuencia
 	 * @param pm - El manejador de persistencia
 	 * @return El número de secuencia generado
 	 */
 	public Long nextval( PersistenceManager pm ) {
-        Query q = pm.newQuery( SQL, "SELECT "+ pp.darSeqVacuAndes() + ".nextval FROM DUAL" );
-        q.setResultClass( Long.class );
-        Long resp = (Long) q.executeUnique();
-        return resp;
+		Query q = pm.newQuery( SQL, "SELECT "+ pp.darSeqVacuAndes() + ".nextval FROM DUAL" );
+		q.setResultClass( Long.class );
+		Long resp = (Long) q.executeUnique();
+		return resp;
 	}
 
 	/**
@@ -95,26 +95,26 @@ class SQLUtil
 		Query qUsuario = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaUsuario() );
 		Query qCita = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaCita() );
 
-        Long epsEliminados = (Long) qEps.executeUnique ();
-        Long rolesEliminados = (Long) qRoles.executeUnique ();
-        Long estadoEliminadas = (Long) qEstado.executeUnique ();
-        Long etapaEliminadas = (Long) qEtapa.executeUnique ();
-        Long condPriorEliminados = (Long) qCondPrior.executeUnique ();
-        Long puntoEliminados = (Long) qPunto.executeUnique ();
-        Long vacunaEliminados = (Long) qVacuna.executeUnique ();
-        Long asignadaEliminados = (Long) qAsignada.executeUnique ();
-        Long ciudadanoEliminados = (Long) qCiudadano.executeUnique ();
-        Long vacunacionEliminados = (Long) qVacunacion.executeUnique ();
-        Long priorizacionEliminados = (Long) qPriorizacion.executeUnique ();
-        Long infoUsuarioEliminados = (Long) qInfoUsuario.executeUnique ();
-        Long usuarioEliminados = (Long) qUsuario.executeUnique ();
-        Long citaEliminados = (Long) qCita.executeUnique ();
-        return new Long[] {epsEliminados, rolesEliminados, estadoEliminadas, etapaEliminadas,
-        		condPriorEliminados, puntoEliminados, vacunaEliminados, asignadaEliminados,
-        		ciudadanoEliminados, vacunacionEliminados, priorizacionEliminados, infoUsuarioEliminados,
-        		usuarioEliminados, citaEliminados};
+		Long epsEliminados = (Long) qEps.executeUnique ();
+		Long rolesEliminados = (Long) qRoles.executeUnique ();
+		Long estadoEliminadas = (Long) qEstado.executeUnique ();
+		Long etapaEliminadas = (Long) qEtapa.executeUnique ();
+		Long condPriorEliminados = (Long) qCondPrior.executeUnique ();
+		Long puntoEliminados = (Long) qPunto.executeUnique ();
+		Long vacunaEliminados = (Long) qVacuna.executeUnique ();
+		Long asignadaEliminados = (Long) qAsignada.executeUnique ();
+		Long ciudadanoEliminados = (Long) qCiudadano.executeUnique ();
+		Long vacunacionEliminados = (Long) qVacunacion.executeUnique ();
+		Long priorizacionEliminados = (Long) qPriorizacion.executeUnique ();
+		Long infoUsuarioEliminados = (Long) qInfoUsuario.executeUnique ();
+		Long usuarioEliminados = (Long) qUsuario.executeUnique ();
+		Long citaEliminados = (Long) qCita.executeUnique ();
+		return new Long[] {epsEliminados, rolesEliminados, estadoEliminadas, etapaEliminadas,
+				condPriorEliminados, puntoEliminados, vacunaEliminados, asignadaEliminados,
+				ciudadanoEliminados, vacunacionEliminados, priorizacionEliminados, infoUsuarioEliminados,
+				usuarioEliminados, citaEliminados};
 	}
-	
+
 	/**
 	 * Crea y ejecuta una sentencia SQL variable para encontrar el índice de vacunación de un grupo poblacional
 	 * @param pm - El manejador de persistencia
@@ -133,29 +133,29 @@ class SQLUtil
 		String qPrior = "AND P.DESCRIPCION_CONDPRIOR = :prior ";
 		String qRegion = "AND E.REGION IN ";
 		String qFecha = "AND (CI.FECHAHORA BETWEEN TO_DATE(:inicio, 'DD-MM-YYYY HH24:MI') AND TO_DATE(:fin, 'DD-MM-YYYY HH24:MI'))";
-		
+
 		if ( eps != null ) {
 			String strOut = "";
 			for(int i=0; i< eps.size(); i++){
-			    strOut += "'"+eps.get(i)+"'";
-			    if ( i < eps.size()-1) {
-			    	strOut += ",";
-			    }
+				strOut += "'"+eps.get(i)+"'";
+				if ( i < eps.size()-1) {
+					strOut += ",";
+				}
 			}
 			qEps += "(" + strOut + ") ";
 		}
-		
+
 		if ( regiones != null ) {
 			String strOut = "";
 			for(int i=0; i< regiones.size(); i++){
-			    strOut += "'"+regiones.get(i)+"'";
-			    if ( i < regiones.size()-1) {
-			    	strOut += ",";
-			    }
+				strOut += "'"+regiones.get(i)+"'";
+				if ( i < regiones.size()-1) {
+					strOut += ",";
+				}
 			}
 			qRegion += "(" + strOut + ") ";
 		}
-		
+
 		if ( estado != null ) {
 			parametros.put("estado", estado);
 		}
@@ -173,7 +173,7 @@ class SQLUtil
 				parametros.put("fin", fechaFin);
 			}
 		}
-		
+
 		Query q = pm.newQuery( SQL, "WITH CANTIDAD AS ( "
 				+ "SELECT ES.DESCRIPCION AS DESCRIPCION, COUNT(*) AS CANT "
 				+ "FROM " + pp.darTablaCiudadano() + " C," + pp.darTablaEps() + " E," + pp.darTablaEstado() + " ES,"
@@ -190,16 +190,16 @@ class SQLUtil
 				+ (fechaInicio != null ? qFecha: "")
 				+ "GROUP BY ES.DESCRIPCION) "
 				+ "SELECT CANT/(SELECT SUM(CANT) "
-								+ "FROM CANTIDAD) AS INDICE "
+				+ "FROM CANTIDAD) AS INDICE "
 				+ "FROM CANTIDAD "
 				+ "WHERE DESCRIPCION LIKE 'VACUNADO%'" );
-		
+
 		q.setNamedParameters( parametros );
-        q.setResultClass( Double.class );
-        Double resp = (Double) q.execute();
-        return resp;
+		q.setResultClass( Double.class );
+		Double resp = (Double) q.execute();
+		return resp;
 	}
-	
+
 	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos de los puntos de una region en un rango de fechas
 	 * @param region - region a la que pertenecen los puntos
@@ -218,7 +218,7 @@ class SQLUtil
 		q.setResultClass( String.class );
 		return (List<String>) q.executeList();
 	}
-	
+
 	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos de los puntos de una region en un rango de horas
 	 * @param region - region a la que pertenecen los puntos
@@ -259,7 +259,7 @@ class SQLUtil
 		q.setResultClass( String.class );
 		return (List<String>) q.executeList();
 	}
-	
+
 	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos en un punto en un rango de horas
 	 * @param id - id del punto de vacunacion
@@ -280,5 +280,69 @@ class SQLUtil
 		q.setParameters(hora1, hora2, min1, min2, id);
 		q.setResultClass( String.class );
 		return (List<String>) q.executeList();
+	}
+
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los 20 puntos de vacunación más efectivos en un rango de fechas
+	 * @param fecha 1 - fecha inicial
+	 * @param fecha 2 - fecha final
+	 * @return lista de id de los 20 puntos más efectivos
+	 */
+	public List<String> darPuntosEfectivosFechas( PersistenceManager pm, String fecha1, String fecha2)
+	{
+		Query q= pm.newQuery( SQL, "CREATE TABLE INFO (ID, DESCRIP, APLIC) AS "
+				+ "("
+				+ "SELECT PUNTO.ID, ESTADO.DESCRIPCION, COUNT(*) AS APLICADAS "
+				+ "FROM ((PUNTO JOIN CITA ON PUNTO.ID = CITA.ID_PUNTO) "
+				+ "JOIN CIUDADANO ON CIUDADANO.DOCUMENTO = CITA.DOCUMENTO_CIUDADANO) "
+				+ "JOIN ESTADO ON CIUDADANO.ID_ESTADO = ESTADO.ID "
+				+ "WHERE CITA.FECHAHORA BETWEEN TO_DATE( '"+fecha1+"' , 'DD-MM-YYYY HH24:MI') AND TO_DATE( '"+fecha2+"' , 'DD-MM-YYYY HH24:MI') "
+				+ "GROUP BY ESTADO.DESCRIPCION, PUNTO.ID HAVING ESTADO.DESCRIPCION LIKE '%VACUNA%') "
+				+ "ORDER BY APLICADAS DESC");
+		q.execute();
+
+		Query q1 = pm.newQuery(SQL, "SELECT INFO.ID "
+				+ "FROM INFO "
+				+ "FETCH FIRST 20 ROWS ONLY");
+		q.setResultClass( String.class );
+		List<String> lista = (List<String>) q1.executeList();
+
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+
+		return lista;
+	}
+
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los 20 puntos de vacunación más efectivos en un rango de horas
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto inicial
+	 * @param min2 - minuto finak¿l
+	 * @return lista de id de los 20 puntos más efectivos
+	 */
+	public List<String> darPuntosEfectivosHoras( PersistenceManager pm, Long hora1, Long hora2, Long min1, Long min2)
+	{
+		Query q= pm.newQuery( SQL, "CREATE TABLE INFO (ID, DESCRIP, APLIC) AS ( "
+				+ "SELECT PUNTO.ID, ESTADO.DESCRIPCION, COUNT(*) AS APLICADAS "
+				+ "FROM ((PUNTO JOIN CITA ON PUNTO.ID = CITA.ID_PUNTO) "
+				+ "JOIN CIUDADANO ON CIUDADANO.DOCUMENTO = CITA.DOCUMENTO_CIUDADANO) "
+				+ "JOIN ESTADO ON CIUDADANO.ID_ESTADO = ESTADO.ID "
+				+ "WHERE (EXTRACT(HOUR FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN "+hora1+" AND "+hora2+") "
+				+ "AND EXTRACT(MINUTE FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN "+min1+" AND "+min2+" "
+				+ "GROUP BY ESTADO.DESCRIPCION, PUNTO.ID HAVING ESTADO.DESCRIPCION LIKE '%VACUNA%') "
+				+ "ORDER BY APLICADAS DESC");
+		q.execute();
+		
+		Query q1 = pm.newQuery(SQL, "SELECT INFO.ID "
+				+ "FROM INFO "
+				+ "FETCH FIRST 20 ROWS ONLY");
+		q.setResultClass( String.class );
+		List<String> lista = (List<String>) q1.execute();
+
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+
+		return lista;
 	}
 }
