@@ -443,7 +443,7 @@ public class PersistenciaVacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
+	public Cita adicionarCita( String fechaHora, String finalizada, String ciudadano, String punto )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -455,7 +455,7 @@ public class PersistenciaVacuAndes
             
             log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new Cita( fechaHora, finalizada, ciudadano );
+            return new Cita( fechaHora, finalizada, ciudadano, punto );
         }
         catch( Exception e )
         {
@@ -1023,6 +1023,16 @@ public class PersistenciaVacuAndes
 		return sqlCiudadano.darCiudadano( pmf.getPersistenceManager(), documento);
 	}
 	
+	/** 
+	 * Método que consulta la ETAPA a la que pertenece un ciudadano dado su ID 
+	 * @param id - el id del ciudadano a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla CIUDADANO 
+	 */ 
+	public Long darEtapaCiudadano( String documento ) 
+	{ 
+		return sqlCiudadano.darEtapaCiudadano( pmf.getPersistenceManager(), documento ); 
+	} 
+	
 	/**
 	 * Método que consulta todas las tuplas en la tabla CIUDADANO
 	 * @return La lista de objetos Ciudadano, construidos con base en las tuplas de la tabla CIUDADANO
@@ -1346,6 +1356,27 @@ public class PersistenciaVacuAndes
 	{
 		return sqlPunto.darPuntos( pmf.getPersistenceManager() );
 	}
+	
+	/** 
+	 * Método que consulta la capacidad de un PUNTO dado su id 
+	 * @param id - el id del punto a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla PUNTO 
+	 */ 
+	public Long darCapacidadPunto( String id ) 
+	{ 
+		return sqlPunto.darCapacidadPunto( pmf.getPersistenceManager(), id ); 
+	} 
+	 
+	/** 
+	 * Método que consulta la cantidad de citas activas de un PUNTO dado su id 
+	 * @param id - el id del punto a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla PUNTO 
+	 */ 
+	public Long darCitasActivasPunto( String id ) 
+	{ 
+		return sqlPunto.darCitasActivasPunto( pmf.getPersistenceManager(), id ); 
+	} 
+
 	
 	/* ****************************************************************
 	 * 			Métodos para manejar las VACUNAS 

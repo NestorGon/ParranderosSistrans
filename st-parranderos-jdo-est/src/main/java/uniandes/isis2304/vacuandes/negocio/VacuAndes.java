@@ -85,7 +85,7 @@ public class VacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
+	public Cita adicionarCita( String fechaHora, String finalizada, String ciudadano, String punto )
 	{
        log.info( "Adicionando Cita: " + fechaHora + " - " + ciudadano );
        Cita cita = pp.adicionarCita( fechaHora, finalizada, ciudadano, punto );		
@@ -550,6 +550,17 @@ public class VacuAndes
 		return ciudadano;
 	}
 	
+	/** 
+	 * Retorna la etapa de un ciudadano dado su id 
+	 */ 
+	public Long darEtapaCiudadano(String documento) 
+	{ 
+		log.info("Buscando etapa Ciudadano id: "+documento); 
+		Long etapa = pp.darEtapaCiudadano(documento); 
+		log.info("Etapa del ciudadano encontrada: "+etapa); 
+		return etapa; 
+	} 
+	
 	/* ****************************************************************
 	 * 			Métodos para manejar los USUARIOS
 	 *****************************************************************/
@@ -779,6 +790,29 @@ public class VacuAndes
 		log.info ("Punto encontrado: " + id );
 		return punto;
 	}
+	
+	/** 
+	 * Retorna la capacidad de un punto de vacunacion dado su id 
+	 */ 
+	public Long darCapacidad (String id) 
+	{ 
+		log.info("Buscando capacidad Punto id: "+id); 
+		Long capacidad = pp.darCapacidadPunto(id); 
+		log.info("Capacidad del punto encontrada: "+capacidad); 
+		return capacidad; 
+	} 
+	 
+	/** 
+	 * Retorna la cantidad de citas activas de un punto de vacunacion dado su id 
+	 */ 
+	public Long darCitasActivasPunto(String id) 
+	{ 
+		log.info("Buscando cantidad de citas activas de un Punto id: "+id); 
+		Long activas = pp.darCitasActivasPunto(id); 
+		log.info("Citas activas del punto encontrada: "+activas); 
+		return activas; 
+	} 
+
 	
 	/* ****************************************************************
 	 * 			Métodos para manejar la VACUNA

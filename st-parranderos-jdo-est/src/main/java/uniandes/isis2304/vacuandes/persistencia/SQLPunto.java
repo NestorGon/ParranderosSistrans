@@ -1,5 +1,6 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -101,6 +102,40 @@ public class SQLPunto {
 		q.setParameters( id );
 		return (Punto) q.executeUnique();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la capacidad de un PUNTO de la 
+	 * base de datos de VacuAndes por su id
+	 * @param pm - El manejador de persistencia
+	 * @param id - Id del punto de vacunacion
+	 * @return El objeto Long de la capacidad del punto
+	 */
+	public Long darCapacidadPunto( PersistenceManager pm, String id ) 
+	{
+		Query q = pm.newQuery( SQL, "SELECT CAPACIDAD FROM " + pp.darTablaPunto() + " WHERE ID = ?" );
+		q.setParameters( id );
+		BigDecimal resp= (BigDecimal) q.executeUnique();
+		return resp.longValue();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar las citas activas de un PUNTO de la 
+	 * base de datos de VacuAndes por su id
+	 * @param pm - El manejador de persistencia
+	 * @param id - Id del punto de vacunacion
+	 * @return El objeto Long de las citas activas del punto
+	 */
+	public Long darCitasActivasPunto( PersistenceManager pm, String id ) 
+	{
+		Query q = pm.newQuery( SQL, "SELECT COUNT(*)CANTIDAD FROM " + pp.darTablaCita() + " WHERE ID_PUNTO = ? AND FINALIZADA = 'T' GROUP BY ID_PUNTO" );
+		q.setParameters( id );
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		if(resp == null)
+			return 0L;
+		return resp.longValue();
+	}
+
+
 
 	/**
 	 * Crea y ejecuta la sentencia SQL para encontrar la información de los PUNTOS de la 

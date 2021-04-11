@@ -47,9 +47,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
+import uniandes.isis2304.vacuandes.negocio.Cita;
 import uniandes.isis2304.vacuandes.negocio.CondicionPriorizacion;
 import uniandes.isis2304.vacuandes.negocio.EPS;
 import uniandes.isis2304.vacuandes.negocio.Estado;
+import uniandes.isis2304.vacuandes.negocio.Punto;
 import uniandes.isis2304.vacuandes.negocio.VOCiudadano;
 import uniandes.isis2304.vacuandes.negocio.VOInfoUsuario;
 import uniandes.isis2304.vacuandes.negocio.VOVacunacion;
@@ -345,6 +347,77 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
     }
+    
+    /** 
+	 * Asigna una cita de vacunacion a un ciudadano 
+	 */ 
+	public void asignarCita() 
+	{ 
+		try 
+		{ 
+			VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(3L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+			String documento = JOptionPane.showInputDialog(this, "Ingrese el documento del ciudadano", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE); 
+			String idPunto = JOptionPane.showInputDialog(this, "Ingrese el id del Punto de Vacunación", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE);
+			if ( documento != null && !documento.trim().equals("") && idPunto != null && !idPunto.trim().equals("") ) 
+			{ 
+				VOCiudadano ciudadano = vacuAndes.darCiudadano(documento); 
+				if(ciudadano!=null) { 
+					Long etapa = vacuAndes.darEtapaCiudadano(documento);
+					Punto punto = vacuAndes.darPunto(idPunto); 
+					if(punto != null) { 
+						Long capacidad = vacuAndes.darCapacidad(idPunto); 
+						Long activas = vacuAndes.darCitasActivasPunto( idPunto ); 
+						
+						if(capacidad>=activas){ 
+							
+							try
+							{
+							String fechaHora = JOptionPane.showInputDialog(this, "El ciudadano pertenece a la etapa: "+etapa+"\nIngrese la fecha y hora en la cuál asignará la cita\nFormato DD-MM-YYYY HH:MI", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE);
+							Cita cita = vacuAndes.adicionarCita(fechaHora, "F", documento, idPunto); 
+							
+							if(cita == null) {
+								throw new Exception("La cita no se pudo asignar. Existen errores de restricción");
+							}
+							 
+							String resultado = "En asignarCita\n\n"; 
+							resultado += "Cita asignada correctamente: " + cita.toString(); 
+							resultado += "\n Operación terminada"; 
+							panelDatos.actualizarInterfaz(resultado); 
+							}
+							catch(Exception e){
+								throw new Exception("Existen errores en el formato de fecha y hora");
+							}
+						} 
+						else { 
+							throw new Exception("No se puede hacer la cita porque se excede la capacidad del punto");  
+						} 
+					} 
+					else { 
+						throw new Exception("El punto con los datos ingresados no existe en la base de datos"); 
+					} 
+ 
+				} 
+				else { 
+					throw new Exception( "El ciudadano con los datos ingresados no existe en la base de datos" ); 
+				} 
+ 
+			} 
+		}  
+		catch (Exception e)  
+		{ 
+			//		e.printStackTrace(); 
+			String resultado = generarMensajeError(e); 
+			panelDatos.actualizarInterfaz(resultado); 
+		} 
+	} 
     
     /* ****************************************************************
 	 * 			Requerimientos Funcionales de Consulta

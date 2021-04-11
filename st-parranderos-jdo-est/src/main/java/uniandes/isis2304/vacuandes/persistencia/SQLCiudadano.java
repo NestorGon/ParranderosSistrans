@@ -14,6 +14,7 @@
 
 package uniandes.isis2304.vacuandes.persistencia;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -122,6 +123,21 @@ public class SQLCiudadano {
 		q.setParameters(documento);
 		List<Ciudadano> resultado = (List<Ciudadano>) q.executeList();
 		return resultado != null && !resultado.isEmpty() ? resultado.get(0):null;
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar el número de etapa de un CIUDADANO de la
+	 * base de datos de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @param documento - Documento del ciudadano
+	 * @return El objeto Long
+	 */
+	public Long darEtapaCiudadano( PersistenceManager pm, String documento ) 
+	{
+		Query q = pm.newQuery( SQL, "SELECT NUMERO_ETAPA FROM " + pp.darTablaCiudadano() + " WHERE DOCUMENTO = ?" );
+		q.setParameters( documento );
+		BigDecimal resp= (BigDecimal) q.executeUnique();
+		return resp.longValue();
 	}
 
 	/**
