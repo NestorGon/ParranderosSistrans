@@ -65,10 +65,10 @@ public class SQLInfoUsuario {
 	 * @param punto - El punto de vacunación al que se encuentra asociado
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarInfoUsuario( PersistenceManager pm, String login, String trabajo, Long roles, String punto ) 
+	public Long adicionarInfoUsuario( PersistenceManager pm, String login, String clave, String trabajo, Long roles, String punto ) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaInfoUsuario() + "(LOGIN, TRABAJO, ID_ROLES, ID_PUNTO) values (?, ?, ?, ?)");
-        q.setParameters(login, trabajo, roles, punto);
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaInfoUsuario() + "(LOGIN, CLAVE, TRABAJO, ID_ROLES, ID_PUNTO) values (?, ?, ?, ?, ?)");
+        q.setParameters(login, clave, trabajo, roles, punto);
         return (Long) q.executeUnique();
 	}
 	
@@ -94,7 +94,7 @@ public class SQLInfoUsuario {
 	 */
 	public InfoUsuario darInfoUsuario( PersistenceManager pm, String login ) 
 	{
-		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaInfoUsuario() + " WHERE DOCUMENTO = ?" );
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaInfoUsuario() + " WHERE LOGIN = ?" );
 		q.setResultClass( InfoUsuario.class );
 		q.setParameters(login);
 		return (InfoUsuario) q.executeUnique();

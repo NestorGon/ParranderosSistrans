@@ -14,6 +14,7 @@
 
 package uniandes.isis2304.vacuandes.persistencia;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -67,8 +68,10 @@ public class SQLCita {
 	 */
 	public Long adicionarCita( PersistenceManager pm, Date fechaHora, String finalizada, String ciudadano ) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCita() + "(FECHAHORA, FINALIZADA, DOCUMENTO_CIUDADANO) values (?, ?, ?)");
-        q.setParameters( fechaHora, finalizada, ciudadano );
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		String dateString = format.format( fechaHora );
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCita() + "(FECHAHORA, FINALIZADA, DOCUMENTO_CIUDADANO) values (TO_DATE(?, 'DD-MM-YYYY HH24:MI'), ?, ?)");
+        q.setParameters( dateString, finalizada, ciudadano );
         return (Long) q.executeUnique();
 	}
 	
@@ -82,8 +85,10 @@ public class SQLCita {
 	 */
 	public Long eliminarCita( PersistenceManager pm, Date fechaHora, String documento )
 	{
-        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCita() + " WHERE FECHAHORA = ? AND DOCUMENTO_CIUDADANO = ?");
-        q.setParameters( fechaHora, documento );
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		String dateString = format.format( fechaHora );
+        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCita() + " WHERE FECHAHORA = TO_DATE(?, 'DD-MM-YYYY HH24:MI') AND DOCUMENTO_CIUDADANO = ?");
+        q.setParameters( dateString, documento );
         return (Long) q.executeUnique();
 	}
 
@@ -97,9 +102,11 @@ public class SQLCita {
 	 */
 	public Cita darCita( PersistenceManager pm, Date fechaHora, String documento ) 
 	{
-		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCita() + " WHERE FECHAHORA = ? AND DOCUMENTO_CIUDADANO = ?" );
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		String dateString = format.format( fechaHora );
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCita() + " WHERE FECHAHORA = TO_DATE(?, 'DD-MM-YYYY HH24:MI') AND DOCUMENTO_CIUDADANO = ?" );
 		q.setResultClass( Cita.class );
-		q.setParameters( fechaHora, documento );
+		q.setParameters( dateString, documento );
 		return (Cita) q.executeUnique();
 	}
 

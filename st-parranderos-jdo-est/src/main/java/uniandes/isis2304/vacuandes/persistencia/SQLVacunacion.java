@@ -78,7 +78,7 @@ public class SQLVacunacion {
 	{
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaVacunacion () + " WHERE DOCUMENTO_CIUDADANO = ? AND ID_EPS = ?" );
 		q.setResultClass( Vacunacion.class );
-		q.setParameters(documento);
+		q.setParameters(documento,eps);
 		return (Vacunacion) q.executeUnique();
 	}
 

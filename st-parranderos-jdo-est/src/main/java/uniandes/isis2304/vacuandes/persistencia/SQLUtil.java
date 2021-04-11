@@ -14,6 +14,10 @@
 
 package uniandes.isis2304.vacuandes.persistencia;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
@@ -109,25 +113,88 @@ class SQLUtil
         		usuarioEliminados, citaEliminados};
 	}
 	
-	//TODO Condicionales de acuerdo a los parámetros
-	//TODO Parametros
-	public Long darIndiceVacunacion( PersistenceManager pm ) {
-		Query q = pm.newQuery( SQL, "SELECT COUNT(*) "
+	/**
+	 * Crea y ejecuta una sentencia SQL variable para encontrar el índice de vacunación de un grupo poblacional
+	 * @param pm - El manejador de persistencia
+	 * @param eps - Lista con los id de las eps de interés
+	 * @param estado - Id del estado de interés
+	 * @param priorizacion - Descripción de la condición de priorización de interés
+	 * @param regiones - Lista con los nombres de las regiones de interés
+	 * @param fechaInicio - Fecha y hora de inicio de interés
+	 * @param fechaFin - Fecha y hora de fin de interés
+	 * @return El índice de vacunación para el grupo poblacional filtrado con los parámetros
+	 */
+	public Double darIndiceVacunacion( PersistenceManager pm, List<String> eps, Long estado, String priorizacion, List<String> regiones, String fechaInicio, String fechaFin ) {
+		Map parametros = new HashMap<>();
+		String qEps = "AND E.ID IN ";
+		String qEstado = "AND ES.ID = :estado ";
+		String qPrior = "AND P.DESCRIPCION_CONDPRIOR = :prior ";
+		String qRegion = "AND E.REGION IN ";
+		String qFecha = "AND (CI.FECHAHORA BETWEEN TO_DATE(:inicio, 'DD-MM-YYYY HH24:MI') AND TO_DATE(:fin, 'DD-MM-YYYY HH24:MI'))";
+		
+		if ( eps != null ) {
+			String strOut = "";
+			for(int i=0; i< eps.size(); i++){
+			    strOut += "'"+eps.get(i)+"'";
+			    if ( i < eps.size()-1) {
+			    	strOut += ",";
+			    }
+			}
+			qEps += "(" + strOut + ") ";
+		}
+		
+		if ( regiones != null ) {
+			String strOut = "";
+			for(int i=0; i< regiones.size(); i++){
+			    strOut += "'"+regiones.get(i)+"'";
+			    if ( i < regiones.size()-1) {
+			    	strOut += ",";
+			    }
+			}
+			qRegion += "(" + strOut + ") ";
+		}
+		
+		if ( estado != null ) {
+			parametros.put("estado", estado);
+		}
+		if ( priorizacion != null ) {
+			parametros.put("prior", priorizacion);
+		}
+		if ( fechaInicio != null ) {
+			fechaInicio += " 00:00";
+			parametros.put("inicio", fechaInicio);
+			if ( fechaFin != null) {
+				fechaFin += " 23:59";
+				parametros.put("fin", fechaFin);
+			} else {
+				fechaFin = fechaInicio.split(" ")[0] + " 23:59";
+				parametros.put("fin", fechaFin);
+			}
+		}
+		
+		Query q = pm.newQuery( SQL, "WITH CANTIDAD AS ( "
+				+ "SELECT ES.DESCRIPCION AS DESCRIPCION, COUNT(*) AS CANT "
 				+ "FROM " + pp.darTablaCiudadano() + " C," + pp.darTablaEps() + " E," + pp.darTablaEstado() + " ES,"
 				+ pp.darTablaPriorizacion() + " P," + pp.darTablaCita() + " CI "
-				+ "WHERE E.ID = C.IS_EPS AND "
+				+ "WHERE E.ID = C.ID_EPS AND "
 				+ "ES.ID = C.ID_ESTADO AND "
 				+ "C.DOCUMENTO = P.DOCUMENTO_CIUDADANO AND "
 				+ "CI.DOCUMENTO_CIUDADANO = C.DOCUMENTO AND "
-				+ "E.ID IN (?) AND "
-				+ "ES.ID IN (?) AND "
-				+ "P.DESCRIPCION_CONDPRIOR = ? AND"
-				+ "E.REGION IN (?) AND\r\n"
-				+ "(CI.FECHAHORA BETWEEN ? AND ? OR "
-				+ "CI.FECHAHORA = ?);" );
-        q.setResultClass( Long.class );
-        Long resp = (Long) q.executeUnique();
+				+ "C.HABILITADO = 'T' "
+				+ (eps != null ? qEps: "")
+				+ (estado != null ? qEstado: "")
+				+ (priorizacion != null ? qPrior: "")
+				+ (regiones != null ? qRegion: "")
+				+ (fechaInicio != null ? qFecha: "")
+				+ "GROUP BY ES.DESCRIPCION) "
+				+ "SELECT CANT/(SELECT SUM(CANT) "
+								+ "FROM CANTIDAD) AS INDICE "
+				+ "FROM CANTIDAD "
+				+ "WHERE DESCRIPCION LIKE 'VACUNADO%'" );
+		
+		q.setNamedParameters( parametros );
+        q.setResultClass( Double.class );
+        Double resp = (Double) q.execute();
         return resp;
 	}
-
 }

@@ -120,7 +120,8 @@ public class SQLCiudadano {
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCiudadano () + " WHERE DOCUMENTO = ?" );
 		q.setResultClass( Ciudadano.class );
 		q.setParameters(documento);
-		return (Ciudadano) q.executeUnique();
+		List<Ciudadano> resultado = (List<Ciudadano>) q.executeList();
+		return resultado != null && !resultado.isEmpty() ? resultado.get(0):null;
 	}
 
 	/**
