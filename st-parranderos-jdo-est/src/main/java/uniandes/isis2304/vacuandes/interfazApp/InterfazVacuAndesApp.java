@@ -72,91 +72,91 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 * Logger para escribir la traza de la ejecución
 	 */
 	private static Logger log = Logger.getLogger( InterfazVacuAndesApp.class.getName() );
-	
+
 	/**
 	 * Ruta al archivo de configuración de la interfaz
 	 */
 	private static final String CONFIG_INTERFAZ = "./src/main/resources/config/interfaceConfigApp.json"; 
-	
+
 	/**
 	 * Ruta al archivo de configuración de los nombres de tablas de la base de datos
 	 */
 	private static final String CONFIG_TABLAS = "./src/main/resources/config/TablasBD.json"; 
-	
+
 	/* ****************************************************************
 	 * 			Atributos
 	 *****************************************************************/
-    /**
-     * Objeto JSON con los nombres de las tablas de la base de datos que se quieren utilizar
-     */
-    private JsonObject tableConfig;
-    
-    /**
-     * Asociación a la clase principal del negocio.
-     */
-    private VacuAndes vacuAndes;
-    
+	/**
+	 * Objeto JSON con los nombres de las tablas de la base de datos que se quieren utilizar
+	 */
+	private JsonObject tableConfig;
+
+	/**
+	 * Asociación a la clase principal del negocio.
+	 */
+	private VacuAndes vacuAndes;
+
 	/* ****************************************************************
 	 * 			Atributos de interfaz
 	 *****************************************************************/
-    /**
-     * Objeto JSON con la configuración de interfaz de la app.
-     */
-    private JsonObject guiConfig;
-    
-    /**
-     * Panel de despliegue de interacción para los requerimientos
-     */
-    private PanelDatos panelDatos;
-    
-    /**
-     * Menú de la aplicación
-     */
-    private JMenuBar menuBar;
+	/**
+	 * Objeto JSON con la configuración de interfaz de la app.
+	 */
+	private JsonObject guiConfig;
+
+	/**
+	 * Panel de despliegue de interacción para los requerimientos
+	 */
+	private PanelDatos panelDatos;
+
+	/**
+	 * Menú de la aplicación
+	 */
+	private JMenuBar menuBar;
 
 	/* ****************************************************************
 	 * 			Métodos
 	 *****************************************************************/
-    /**
-     * Construye la ventana principal de la aplicación. <br>
-     * <b>post:</b> Todos los componentes de la interfaz fueron inicializados.
-     */
-    public InterfazVacuAndesApp( )
-    {
-        // Carga la configuración de la interfaz desde un archivo JSON
-        guiConfig = openConfig ("Interfaz", CONFIG_INTERFAZ);
-        
-        // Configura la apariencia del frame que contiene la interfaz gráfica
-        configurarFrame ( );
-        if (guiConfig != null) 	   
-        {
-     	   crearMenu( guiConfig.getAsJsonArray("menuBar") );
-        }
-        
-        tableConfig = openConfig ("Tablas BD", CONFIG_TABLAS);
-        vacuAndes = new VacuAndes (tableConfig);
-        
-    	String path = guiConfig.get("bannerPath").getAsString();
-        panelDatos = new PanelDatos ( );
+	/**
+	 * Construye la ventana principal de la aplicación. <br>
+	 * <b>post:</b> Todos los componentes de la interfaz fueron inicializados.
+	 */
+	public InterfazVacuAndesApp( )
+	{
+		// Carga la configuración de la interfaz desde un archivo JSON
+		guiConfig = openConfig ("Interfaz", CONFIG_INTERFAZ);
 
-        setLayout (new BorderLayout());
-        add (new JLabel (new ImageIcon (path)), BorderLayout.NORTH );          
-        add( panelDatos, BorderLayout.CENTER );        
-    }
-    
+		// Configura la apariencia del frame que contiene la interfaz gráfica
+		configurarFrame ( );
+		if (guiConfig != null) 	   
+		{
+			crearMenu( guiConfig.getAsJsonArray("menuBar") );
+		}
+
+		tableConfig = openConfig ("Tablas BD", CONFIG_TABLAS);
+		vacuAndes = new VacuAndes (tableConfig);
+
+		String path = guiConfig.get("bannerPath").getAsString();
+		panelDatos = new PanelDatos ( );
+
+		setLayout (new BorderLayout());
+		add (new JLabel (new ImageIcon (path)), BorderLayout.NORTH );          
+		add( panelDatos, BorderLayout.CENTER );        
+	}
+
 	/* ****************************************************************
 	 * 			Métodos de configuración de la interfaz
 	 *****************************************************************/
-    /**
-     * Lee datos de configuración para la aplicación, a partir de un archivo JSON o con valores por defecto si hay errores.
-     * @param tipo - El tipo de configuración deseada
-     * @param archConfig - Archivo Json que contiene la configuración
-     * @return Un objeto JSON con la configuración del tipo especificado
-     * 			NULL si hay un error en el archivo.
-     */
-    private JsonObject openConfig (String tipo, String archConfig)
-    {
-    	JsonObject config = null;
+	/**
+	 * Lee datos de configuración para la aplicación, a partir de un archivo JSON o con valores por defecto si hay errores.
+	 * @param tipo - El tipo de configuración deseada
+	 * @param archConfig - Archivo Json que contiene la configuración
+	 * @return Un objeto JSON con la configuración del tipo especificado
+	 * 			NULL si hay un error en el archivo.
+	 */
+	private JsonObject openConfig (String tipo, String archConfig)
+	{
+		JsonObject config = null;
 		try {
 			Gson gson = new Gson( );
 			FileReader file = new FileReader (archConfig);
@@ -165,190 +165,190 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			log.info ("Se encontró un archivo de configuración válido: " + tipo);
 		} 
 		catch (Exception e) {
-//			e.printStackTrace ();
+			//			e.printStackTrace ();
 			log.info ("NO se encontró un archivo de configuración válido");			
 			JOptionPane.showMessageDialog(null, "No se encontró un archivo de configuración de interfaz válido: " + tipo, "Parranderos App", JOptionPane.ERROR_MESSAGE);
 		}	
-        return config;
-    }
-    
-    /**
-     * Método para configurar el frame principal de la aplicación
-     */
-    private void configurarFrame( )
-    {
-    	int alto = 0;
-    	int ancho = 0;
-    	String titulo = "";	
-    	
-    	if ( guiConfig == null ) {
-    		log.info ( "Se aplica configuración por defecto" );			
+		return config;
+	}
+
+	/**
+	 * Método para configurar el frame principal de la aplicación
+	 */
+	private void configurarFrame( )
+	{
+		int alto = 0;
+		int ancho = 0;
+		String titulo = "";	
+
+		if ( guiConfig == null ) {
+			log.info ( "Se aplica configuración por defecto" );			
 			titulo = "VacuAndes APP Default";
 			alto = 300;
 			ancho = 500;
-    	}
-    	else {
+		}
+		else {
 			log.info ( "Se aplica configuración indicada en el archivo de configuración" );
-    		titulo = guiConfig.get( "title" ).getAsString();
+			titulo = guiConfig.get( "title" ).getAsString();
 			alto = guiConfig.get( "frameH" ).getAsInt();
 			ancho = guiConfig.get( "frameW" ).getAsInt();
-    	}
-    	
-        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        setLocation (50,50);
-        setResizable( true );
-        setBackground( Color.WHITE );
+		}
 
-        setTitle( titulo );
+		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		setLocation (50,50);
+		setResizable( true );
+		setBackground( Color.WHITE );
+
+		setTitle( titulo );
 		setSize ( ancho, alto);        
-    }
+	}
 
-    /**
-     * Método para crear el menú de la aplicación con base em el objeto JSON leído
-     * Genera una barra de menú y los menús con sus respectivas opciones
-     * @param jsonMenu - Arreglo Json con los menùs deseados
-     */
-    private void crearMenu(  JsonArray jsonMenu )
-    {    	
-    	// Creación de la barra de menús
-        menuBar = new JMenuBar();       
-        for (JsonElement men : jsonMenu)
-        {
-        	// Creación de cada uno de los menús
-        	JsonObject jom = men.getAsJsonObject(); 
+	/**
+	 * Método para crear el menú de la aplicación con base em el objeto JSON leído
+	 * Genera una barra de menú y los menús con sus respectivas opciones
+	 * @param jsonMenu - Arreglo Json con los menùs deseados
+	 */
+	private void crearMenu(  JsonArray jsonMenu )
+	{    	
+		// Creación de la barra de menús
+		menuBar = new JMenuBar();       
+		for (JsonElement men : jsonMenu)
+		{
+			// Creación de cada uno de los menús
+			JsonObject jom = men.getAsJsonObject(); 
 
-        	String menuTitle = jom.get( "menuTitle" ).getAsString();        	
-        	JsonArray opciones = jom.getAsJsonArray( "options" );
-        	
-        	JMenu menu = new JMenu( menuTitle);
-        	
-        	for (JsonElement op : opciones)
-        	{       	
-        		// Creación de cada una de las opciones del menú
-        		JsonObject jo = op.getAsJsonObject(); 
-        		String lb =   jo.get( "label" ).getAsString();
-        		String event = jo.get( "event" ).getAsString();
-        		
-        		JMenuItem mItem = new JMenuItem( lb );
-        		mItem.addActionListener( this );
-        		mItem.setActionCommand(event);
-        		
-        		menu.add(mItem);
-        	}       
-        	menuBar.add( menu );
-        }        
-        setJMenuBar ( menuBar );	
-    }
-    
+			String menuTitle = jom.get( "menuTitle" ).getAsString();        	
+			JsonArray opciones = jom.getAsJsonArray( "options" );
+
+			JMenu menu = new JMenu( menuTitle);
+
+			for (JsonElement op : opciones)
+			{       	
+				// Creación de cada una de las opciones del menú
+				JsonObject jo = op.getAsJsonObject(); 
+				String lb =   jo.get( "label" ).getAsString();
+				String event = jo.get( "event" ).getAsString();
+
+				JMenuItem mItem = new JMenuItem( lb );
+				mItem.addActionListener( this );
+				mItem.setActionCommand(event);
+
+				menu.add(mItem);
+			}       
+			menuBar.add( menu );
+		}        
+		setJMenuBar ( menuBar );	
+	}
+
 	/* ****************************************************************
 	 * 			Requerimientos Funcionales de Modificación
 	 *****************************************************************/
-    
-    /**
-     * Asigna un ciudadano a un único punto de vacunación
-     * Se crea una nueva tupla de VACUNACION en la base de datos
-     */
-    public void adicionarVacunacion( )
-    {
-    	try 
-    	{
-    		VOInfoUsuario usuario = panelValidacionUsuario();
-    		if ( usuario != null ) {
-    			if ( !usuario.getId_roles().equals(2L) ) {
-    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-    			}
-    		}
-    		else {
-    			return;
-    		}
-    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
-    		String puntoVac = JOptionPane.showInputDialog (this, "Ingrese el identificador del punto de vacunación", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
-    		if ( documento != null && !documento.trim().equals("") && puntoVac != null && !puntoVac.trim().equals("") )
-    		{
-    			documento = documento.trim();
-    			puntoVac = puntoVac.trim();
-    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-    			//TODO Asegurar que el punto de vacunación existe
-    			VOVacunacion vac = vacuAndes.darVacunacion( documento, puntoVac );
-    			if ( vac != null ) {
-    				throw new Exception ("El ciudadano con documento " + documento + " ya se encuentra asignado al punto de vacunación con id " + puntoVac );
-    			}
-    			if ( ciudadano != null ) {
-    				vac = vacuAndes.adicionarVacunacion( documento, ciudadano.getId_eps(), puntoVac );
-    			}
-        		if (vac == null)
-        		{
-        			throw new Exception ("No se pudo asignar al ciudadano " + documento + " al punto de vacunación " + puntoVac);
-        		}
-        		String resultado = "En adicionarVacunacion\n\n";
-        		resultado += "Ciudadano asignado correctamente al punto de vacunación: " + vac;
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    		}
-    		else
-    		{
-    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-    		}
+
+	/**
+	 * Asigna un ciudadano a un único punto de vacunación
+	 * Se crea una nueva tupla de VACUNACION en la base de datos
+	 */
+	public void adicionarVacunacion( )
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(2L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+			String puntoVac = JOptionPane.showInputDialog (this, "Ingrese el identificador del punto de vacunación", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+			if ( documento != null && !documento.trim().equals("") && puntoVac != null && !puntoVac.trim().equals("") )
+			{
+				documento = documento.trim();
+				puntoVac = puntoVac.trim();
+				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+				//TODO Asegurar que el punto de vacunación existe
+				VOVacunacion vac = vacuAndes.darVacunacion( documento, puntoVac );
+				if ( vac != null ) {
+					throw new Exception ("El ciudadano con documento " + documento + " ya se encuentra asignado al punto de vacunación con id " + puntoVac );
+				}
+				if ( ciudadano != null ) {
+					vac = vacuAndes.adicionarVacunacion( documento, ciudadano.getId_eps(), puntoVac );
+				}
+				if (vac == null)
+				{
+					throw new Exception ("No se pudo asignar al ciudadano " + documento + " al punto de vacunación " + puntoVac);
+				}
+				String resultado = "En adicionarVacunacion\n\n";
+				resultado += "Ciudadano asignado correctamente al punto de vacunación: " + vac;
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
 		} 
-    	catch (Exception e) 
-    	{
-//			e.printStackTrace();
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-    }
-    
-    /**
-     * Asigna un ciudadano a un único punto de vacunación
-     * Se crea una nueva tupla de VACUNACION en la base de datos
-     */
-    public void registrarAvanceVacunacion( )
-    {
-    	try 
-    	{
-    		VOInfoUsuario usuario = panelValidacionUsuario();
-    		if ( usuario != null ) {
-    			if ( !usuario.getId_roles().equals(4L) ) {
-    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-    			}
-    		} 
-    		else {
-    			return;
-    		}
-    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
-    		{
-    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-    			if ( ciudadano != null ) {
-    				if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
-    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
-    				}
-    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
-    			}
-        		if (ciudadano == null)
-        		{
-        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
-        		}
-        		String resultado = "En registrarAvanceVacunacion\n\n";
-        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    		}
-    		else
-    		{
-    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-    		}
+	}
+
+	/**
+	 * Asigna un ciudadano a un único punto de vacunación
+	 * Se crea una nueva tupla de VACUNACION en la base de datos
+	 */
+	public void registrarAvanceVacunacion( )
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(4L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			} 
+			else {
+				return;
+			}
+			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+			String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+			if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
+			{
+				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+				if ( ciudadano != null ) {
+					if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
+						throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+					}
+					ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
+				}
+				if (ciudadano == null)
+				{
+					throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+				}
+				String resultado = "En registrarAvanceVacunacion\n\n";
+				resultado += "Ciudadano actualizado correctamente: " + ciudadano;
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
 		} 
-    	catch (Exception e) 
-    	{
-//			e.printStackTrace();
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-    }
-    
-    /** 
+	}
+
+	/** 
 	 * Asigna una cita de vacunacion a un ciudadano 
 	 */ 
 	public void asignarCita() 
@@ -356,14 +356,14 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		try 
 		{ 
 			VOInfoUsuario usuario = panelValidacionUsuario();
-    		if ( usuario != null ) {
-    			if ( !usuario.getId_roles().equals(3L) ) {
-    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-    			}
-    		} 
-    		else {
-    			return;
-    		}
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(3L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			} 
+			else {
+				return;
+			}
 			String documento = JOptionPane.showInputDialog(this, "Ingrese el documento del ciudadano", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE); 
 			String idPunto = JOptionPane.showInputDialog(this, "Ingrese el id del Punto de Vacunación", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE);
 			if ( documento != null && !documento.trim().equals("") && idPunto != null && !idPunto.trim().equals("") ) 
@@ -375,22 +375,22 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 					if(punto != null) { 
 						Long capacidad = vacuAndes.darCapacidad(idPunto); 
 						Long activas = vacuAndes.darCitasActivasPunto( idPunto ); 
-						
+
 						if(capacidad>=activas){ 
-							
+
 							try
 							{
-							String fechaHora = JOptionPane.showInputDialog(this, "El ciudadano pertenece a la etapa: "+etapa+"\nIngrese la fecha y hora en la cuál asignará la cita\nFormato DD-MM-YYYY HH:MI", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE);
-							Cita cita = vacuAndes.adicionarCita(fechaHora, "F", documento, idPunto); 
-							
-							if(cita == null) {
-								throw new Exception("La cita no se pudo asignar. Existen errores de restricción");
-							}
-							 
-							String resultado = "En asignarCita\n\n"; 
-							resultado += "Cita asignada correctamente: " + cita.toString(); 
-							resultado += "\n Operación terminada"; 
-							panelDatos.actualizarInterfaz(resultado); 
+								String fechaHora = JOptionPane.showInputDialog(this, "El ciudadano pertenece a la etapa: "+etapa+"\nIngrese la fecha y hora en la cuál asignará la cita\nFormato DD-MM-YYYY HH:MI", "Asignar cita de vacunación", JOptionPane.QUESTION_MESSAGE);
+								Cita cita = vacuAndes.adicionarCita(fechaHora, "F", documento, idPunto); 
+
+								if(cita == null) {
+									throw new Exception("La cita no se pudo asignar. Existen errores de restricción");
+								}
+
+								String resultado = "En asignarCita\n\n"; 
+								resultado += "Cita asignada correctamente: " + cita.toString(); 
+								resultado += "\n Operación terminada"; 
+								panelDatos.actualizarInterfaz(resultado); 
 							}
 							catch(Exception e){
 								throw new Exception("Existen errores en el formato de fecha y hora");
@@ -403,12 +403,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 					else { 
 						throw new Exception("El punto con los datos ingresados no existe en la base de datos"); 
 					} 
- 
+
 				} 
 				else { 
 					throw new Exception( "El ciudadano con los datos ingresados no existe en la base de datos" ); 
 				} 
- 
+
 			} 
 		}  
 		catch (Exception e)  
@@ -418,83 +418,283 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado); 
 		} 
 	} 
-    
-    /* ****************************************************************
+
+	/* ****************************************************************
 	 * 			Requerimientos Funcionales de Consulta
 	 *****************************************************************/
-    
-    /**
-     * Consulta la base de datos para hallar el índice de vacunación para un grupo poblacional
-     */
-    public void mostrarIndiceGrupoPoblacional() 
-    {
-    	try 
-    	{
-    		VOInfoUsuario usuario = panelValidacionUsuario();
-    		if ( usuario != null ) {
-    			if ( !usuario.getId_roles().equals(1L) || !usuario.getId_roles().equals(2L)) {
-    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-    			}
-    		}
-    		else {
-    			return;
-    		}
-	    	Boolean region, eps, estado, grupo;
-	    	List<String> selecRegion = null, selecEps = null;
-	    	String selecEstado = null, selecGrupo = null;
-	    	JList<String> list = new JList<>( new String[]{"Región","Eps","Estado","Grupo de priorización"} );
-	    	JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-	    	List<String> seleccionados = list.getSelectedValuesList();
-	    	region = seleccionados.contains("Región") ? true: false;
-	    	eps = seleccionados.contains("Eps") ? true: false;
-	    	estado = seleccionados.contains("Estado") ? true: false;
-	    	grupo = seleccionados.contains("Grupo de priorización") ? true: false;
-	    	
-	    	if ( region ) {
-	    		list = new JList<>( darRegiones() );
-	            JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-	            selecRegion = list.getSelectedValuesList();
-	    	}
-	    	if ( eps ) {
-	    		list = new JList<>( darTodasEps() );
-	            JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-	            selecEps = list.getSelectedValuesList();
-	    	}
-	    	if ( estado ) {
-	    		list = new JList<>( darEstados() );
-	            JOptionPane.showMessageDialog(null, list, "Selecccione el estado (uno solo)", JOptionPane.PLAIN_MESSAGE);
-	            selecEstado = list.getSelectedValue().split(":")[0];
-	    	}
-	    	if ( grupo ) {
-	    		list = new JList<>( darGruposDePriorizacion() );
-	            JOptionPane.showMessageDialog(null, list, "Selecccione el grupo (uno solo)", JOptionPane.PLAIN_MESSAGE);
-	            selecGrupo = list.getSelectedValue();
-	    	}
-	    	int answ = JOptionPane.showConfirmDialog(null, "¿Desea filtrar por fecha?", "Fecha", JOptionPane.YES_NO_OPTION);
-	    	String fechaInicial = null, fechaFinal = null;
-	    	if ( answ == JOptionPane.YES_OPTION ) {
-	    		fechaInicial = JOptionPane.showInputDialog (this, "Ingrese la fecha inicial en formato DD-MM-YYYY", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
-	    		fechaFinal = JOptionPane.showInputDialog (this, "Ingrese la fecha final en formato DD-MM-YYYY. Si solo desea consultar 1 fecha solo oprima OK", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
-	    		if ( fechaFinal.equals("") ) {
-	    			fechaFinal = null;
-	    		}
-	    	}
-	    	Double respuesta = vacuAndes.darIndiceVacunacion(selecEps, selecEstado == null? null: Long.parseLong(selecEstado), selecGrupo, selecRegion, fechaInicial, fechaFinal);
-	    	if ( respuesta == null ) {
-	    		throw new Exception("No hay ningún ciudadano registrado en VacuAndes que pertenezca al grupo poblacional");
-	    	}
-	    	String resultado = "En Indice grupo poblacional\n\n";
-			resultado += "Indice encontrado: " + respuesta;
-			resultado += "\n Operación terminada";
-			panelDatos.actualizarInterfaz(resultado);
-    	}
+	/**
+	 * Consulta la base de datos para hallar los ciudadanos atentidos por un punto
+	 */
+	public void mostrarCiudadanosPunto()
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+				else if( usuario.getId_roles().equals(1L) || usuario.getId_roles().equals(2L)){
+					//Admin plan y de EPS
+					String region = JOptionPane.showInputDialog(this, "Ingrese la región", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE);
+					if (!vacuAndes.darRegiones().contains(region))
+						throw new Exception("La región ingresada no se encuentra en la base de datos");
+
+					JList<String> list = new JList<>( new String[]{"Una fecha","Rango de fechas","Rango de horas"} );
+					JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+					List<String> seleccionados = list.getSelectedValuesList();
+					boolean fecha = seleccionados.contains("Una fecha") ? true: false;
+					boolean fechas = seleccionados.contains("Rango de fechas") ? true: false;
+					boolean horas = seleccionados.contains("Rango de horas") ? true: false;
+
+					if(fecha == true){
+						String fechaResp = JOptionPane.showInputDialog(this, "Ingrese la fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE);
+						String fecha1 = fechaResp+" 00:00";
+						String fecha2 = fechaResp+ " 23:59";
+						try{
+
+							List<String> documentos = vacuAndes.darAtendidosRegionFechas(region, fecha1, fecha2);
+
+							String resultado = "En mostrarCiudadaqnosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada"; 
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado); 
+
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+					}
+					else if(fechas == true){
+						String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+						String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE)+ " 23:59";
+						try{
+							List<String> documentos = vacuAndes.darAtendidosRegionFechas(region, fecha1, fecha2);
+
+							String resultado = "En mostrarCiudadaqnosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada"; 
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado);
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+					}
+					else if(horas == true){
+						Long hora1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora de inicio en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long min1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de inicio en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long hora2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora final en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long min2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de fin en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						try{
+							List<String> documentos = vacuAndes.darAtendidosRegionHoras(region, hora1, hora2,min1, min2);
+
+							String resultado = "En mostrarCiudadaqnosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada"; 
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado);
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+
+					}
+
+				}
+				else if(usuario.getId_roles().equals(3L)){
+					//Admin punto 
+					String idPunto = JOptionPane.showInputDialog(this, "Ingrese el id del Punto de Vacunación", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE);
+					if (vacuAndes.darPunto(idPunto)== null)
+						throw new Exception("El punto ingresado no se encuentra en la base de datos");
+
+					JList<String> list = new JList<>( new String[]{"Una fecha","Rango de fechas","Rango de horas"} );
+					JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+					List<String> seleccionados = list.getSelectedValuesList();
+					boolean fecha = seleccionados.contains("Una fecha") ? true: false;
+					boolean fechas = seleccionados.contains("Rango de fechas") ? true: false;
+					boolean horas = seleccionados.contains("Rango de horas") ? true: false;
+
+					if(fecha == true){
+						String fechaResp = JOptionPane.showInputDialog(this, "Ingrese la fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE);
+						String fecha1 = fechaResp+" 00:00";
+						String fecha2 = fechaResp+ " 23:59";
+						try{
+							List<String> documentos = vacuAndes.darAtendidosPuntoFechas(idPunto, fecha1, fecha2);
+
+							String resultado = "En mostrarCiudadanosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada";
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado);
+
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+					}
+					else if(fechas == true){
+						String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+						String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE)+ " 23:59";
+						try{
+							List<String> documentos = vacuAndes.darAtendidosPuntoFechas(idPunto, fecha1, fecha2);
+
+							String resultado = "En mostrarCiudadaqnosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada"; 
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado);
+
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+					}
+					else if(horas == true){
+						Long hora1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora de inicio en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long min1 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de inicio en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long hora2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese la hora final en formato HH", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						Long min2 = Long.parseLong(JOptionPane.showInputDialog(this, "Ingrese el minuto de fin en formato MI", "Hallar ciudadanos atentidos", JOptionPane.QUESTION_MESSAGE));
+						try{
+							List<String> documentos = vacuAndes.darAtendidosPuntoHoras(idPunto, hora1, hora2,min1, min2);
+
+							String resultado = "En mostrarCiudadaqnosPuntos\n\n"; 
+							resultado += "Ciudadanos hallados correctamente: \n";
+
+							for(int i= 0; i<documentos.size(); i++){
+								resultado+=documentos.get(i)+"\n";
+							}
+							resultado += "\n Operación terminada"; 
+							
+							if(documentos.size()==0)
+								resultado = "No se hallaron ciudadanos atendidos con las especificaciones dadas";
+							
+							panelDatos.actualizarInterfaz(resultado);
+						}
+						catch(Exception e){
+							throw new Exception("Existen errores en el formato de fecha y hora");
+						}
+
+					}
+
+				}
+			}
+
+		}
 		catch (Exception e) {
-//			e.printStackTrace();
+			//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-    	
-    }
+	}
+	/**
+	 * Consulta la base de datos para hallar el índice de vacunación para un grupo poblacional
+	 */
+	public void mostrarIndiceGrupoPoblacional() 
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			Boolean region, eps, estado, grupo;
+			List<String> selecRegion = null, selecEps = null;
+			String selecEstado = null, selecGrupo = null;
+			JList<String> list = new JList<>( new String[]{"Región","Eps","Estado","Grupo de priorización"} );
+			JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el grupo poblacional (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			List<String> seleccionados = list.getSelectedValuesList();
+			region = seleccionados.contains("Región") ? true: false;
+			eps = seleccionados.contains("Eps") ? true: false;
+			estado = seleccionados.contains("Estado") ? true: false;
+			grupo = seleccionados.contains("Grupo de priorización") ? true: false;
+
+			if ( region ) {
+				list = new JList<>( darRegiones() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecRegion = list.getSelectedValuesList();
+			}
+			if ( eps ) {
+				list = new JList<>( darTodasEps() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecEps = list.getSelectedValuesList();
+			}
+			if ( estado ) {
+				list = new JList<>( darEstados() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione el estado (uno solo)", JOptionPane.PLAIN_MESSAGE);
+				selecEstado = list.getSelectedValue().split(":")[0];
+			}
+			if ( grupo ) {
+				list = new JList<>( darGruposDePriorizacion() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione el grupo (uno solo)", JOptionPane.PLAIN_MESSAGE);
+				selecGrupo = list.getSelectedValue();
+			}
+			int answ = JOptionPane.showConfirmDialog(null, "¿Desea filtrar por fecha?", "Fecha", JOptionPane.YES_NO_OPTION);
+			String fechaInicial = null, fechaFinal = null;
+			if ( answ == JOptionPane.YES_OPTION ) {
+				fechaInicial = JOptionPane.showInputDialog (this, "Ingrese la fecha inicial en formato DD-MM-YYYY", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+				fechaFinal = JOptionPane.showInputDialog (this, "Ingrese la fecha final en formato DD-MM-YYYY. Si solo desea consultar 1 fecha solo oprima OK", "Adicionar vacunación", JOptionPane.QUESTION_MESSAGE);
+				if ( fechaFinal.equals("") ) {
+					fechaFinal = null;
+				}
+			}
+			Double respuesta = vacuAndes.darIndiceVacunacion(selecEps, selecEstado == null? null: Long.parseLong(selecEstado), selecGrupo, selecRegion, fechaInicial, fechaFinal);
+			if ( respuesta == null ) {
+				throw new Exception("No hay ningún ciudadano registrado en VacuAndes que pertenezca al grupo poblacional");
+			}
+			String resultado = "En Indice grupo poblacional\n\n";
+			resultado += "Indice encontrado: " + respuesta;
+			resultado += "\n Operación terminada";
+			panelDatos.actualizarInterfaz(resultado);
+		}
+		catch (Exception e) {
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+
+	}
 
 	/* ****************************************************************
 	 * 			Métodos administrativos
@@ -506,7 +706,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo( "vacuandes.log" );
 	}
-	
+
 	/**
 	 * Muestra el log de datanucleus
 	 */
@@ -514,7 +714,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo( "datanucleus.log" );
 	}
-	
+
 	/**
 	 * Limpia el contenido del log de vacuandes
 	 * Muestra en el panel de datos la traza de la ejecución
@@ -531,7 +731,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 
 		panelDatos.actualizarInterfaz(resultado);
 	}
-	
+
 	/**
 	 * Limpia el contenido del log de datanucleus
 	 * Muestra en el panel de datos la traza de la ejecución
@@ -548,7 +748,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 
 		panelDatos.actualizarInterfaz(resultado);
 	}
-	
+
 	/**
 	 * Limpia todas las tuplas de todas las tablas de la base de datos de parranderos
 	 * Muestra en el panel de datos el número de tuplas eliminadas de cada tabla
@@ -557,9 +757,9 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		try 
 		{
-    		// Ejecución de la demo y recolección de los resultados
+			// Ejecución de la demo y recolección de los resultados
 			Long eliminados [] = vacuAndes.limpiarVacuAndes();
-			
+
 			// Generación de la cadena de caracteres con la traza de la ejecución de la demo
 			String resultado = "\n\n************ Limpiando la base de datos ************ \n";
 			resultado += eliminados [0] + " EPS eliminados\n";
@@ -577,17 +777,17 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			resultado += eliminados [12] + " USUARIOS eliminados\n";
 			resultado += eliminados [13] + " CITAS eliminadas\n";
 			resultado += "\nLimpieza terminada";
-   
+
 			panelDatos.actualizarInterfaz(resultado);
 		} 
 		catch (Exception e) 
 		{
-//			e.printStackTrace();
+			//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
-	
+
 	/**
 	 * Muestra la presentación general del proyecto
 	 */
@@ -595,7 +795,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("data/00-ST-ParranderosJDO.pdf");
 	}
-	
+
 	/**
 	 * Muestra el modelo conceptual de Parranderos
 	 */
@@ -603,7 +803,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("data/Modelo Conceptual Parranderos.pdf");
 	}
-	
+
 	/**
 	 * Muestra el esquema de la base de datos de Parranderos
 	 */
@@ -611,7 +811,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("data/Esquema BD Parranderos.pdf");
 	}
-	
+
 	/**
 	 * Muestra el script de creación de la base de datos
 	 */
@@ -619,7 +819,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("data/EsquemaParranderos.sql");
 	}
-	
+
 	/**
 	 * Muestra la arquitectura de referencia para Parranderos
 	 */
@@ -627,7 +827,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("data/ArquitecturaReferencia.pdf");
 	}
-	
+
 	/**
 	 * Muestra la documentación Javadoc del proyectp
 	 */
@@ -635,12 +835,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	{
 		mostrarArchivo ("doc/index.html");
 	}
-	
+
 	/**
-     * Muestra la información acerca del desarrollo de esta apicación
-     */
-    public void acercaDe ()
-    {
+	 * Muestra la información acerca del desarrollo de esta apicación
+	 */
+	public void acercaDe ()
+	{
 		String resultado = "\n\n ************************************\n\n";
 		resultado += " * Universidad	de	los	Andes	(Bogotá	- Colombia)\n";
 		resultado += " * Departamento	de	Ingeniería	de	Sistemas	y	Computación\n";
@@ -656,82 +856,82 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		resultado += "\n ************************************\n\n";
 
 		panelDatos.actualizarInterfaz(resultado);		
-    }
-    
+	}
+
 
 	/* ****************************************************************
 	 * 			Métodos privados para la presentación de resultados y otras operaciones
 	 *****************************************************************/
 
-    private VOInfoUsuario panelValidacionUsuario() {
-    	try {
-	    	String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
-	    	String clave = JOptionPane.showInputDialog (this, "Ingrese la constraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
-	    	
-	    	if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
-	    		VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
-	    		if ( usuario == null ) {
-	    			throw new Exception( "El usuarion con el login " + login + " no está registrado" );
-	    		}
-	    		if ( !usuario.getClave().equals(clave.trim()) ) {
-	    			throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
-	    		}
-	    		String resultado = "En validar usuario\n\n";
-        		resultado += "Usuario validado correctamente";
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    			return usuario;
-	    	}
-    	} catch (Exception e) {
-//			e.printStackTrace();
+	private VOInfoUsuario panelValidacionUsuario() {
+		try {
+			String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+			String clave = JOptionPane.showInputDialog (this, "Ingrese la constraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+
+			if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
+				VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
+				if ( usuario == null ) {
+					throw new Exception( "El usuarion con el login " + login + " no está registrado" );
+				}
+				if ( !usuario.getClave().equals(clave.trim()) ) {
+					throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
+				}
+				String resultado = "En validar usuario\n\n";
+				resultado += "Usuario validado correctamente";
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+				return usuario;
+			}
+		} catch (Exception e) {
+			//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-    	return null;
-    }
-    
-    private String[] darRegiones() {
-    	List<String> regiones = vacuAndes.darRegiones();
-    	String[] retorno = new String[regiones.size()];
-    	regiones.toArray(retorno);
-    	return retorno;
-    }
-    
-    private String[] darEstados() {
-    	List<String> estados = new LinkedList<>();
-    	for ( Estado actual: vacuAndes.darEstados()) {
-    		estados.add( actual.getId() + ": " + actual.getDescripcion() );
-    	}
-    	String[] retorno = new String[estados.size()];
-    	estados.toArray(retorno);
-    	return retorno; 
-    }
-    
-    private String[] darTodasEps() {
-    	List<String> eps = new LinkedList<>();
-    	for ( EPS actual: vacuAndes.darEPSs()) {
-    		eps.add( actual.getId() );
-    	}
-    	String[] retorno = new String[eps.size()];
-    	eps.toArray(retorno);
-    	return retorno;
-    }
-    
-    private String[] darGruposDePriorizacion() {
-    	List<String> grupos = new LinkedList<>();
-    	for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
-    		grupos.add( actual.getDescripcion() );
-    	}
-    	String[] retorno = new String[grupos.size()];
-    	grupos.toArray(retorno);
-    	return retorno;
-    }
-    
-    /**
-     * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
-     * @param e - La excepción recibida
-     * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
-     */
+		return null;
+	}
+
+	private String[] darRegiones() {
+		List<String> regiones = vacuAndes.darRegiones();
+		String[] retorno = new String[regiones.size()];
+		regiones.toArray(retorno);
+		return retorno;
+	}
+
+	private String[] darEstados() {
+		List<String> estados = new LinkedList<>();
+		for ( Estado actual: vacuAndes.darEstados()) {
+			estados.add( actual.getId() + ": " + actual.getDescripcion() );
+		}
+		String[] retorno = new String[estados.size()];
+		estados.toArray(retorno);
+		return retorno; 
+	}
+
+	private String[] darTodasEps() {
+		List<String> eps = new LinkedList<>();
+		for ( EPS actual: vacuAndes.darEPSs()) {
+			eps.add( actual.getId() );
+		}
+		String[] retorno = new String[eps.size()];
+		eps.toArray(retorno);
+		return retorno;
+	}
+
+	private String[] darGruposDePriorizacion() {
+		List<String> grupos = new LinkedList<>();
+		for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
+			grupos.add( actual.getDescripcion() );
+		}
+		String[] retorno = new String[grupos.size()];
+		grupos.toArray(retorno);
+		return retorno;
+	}
+
+	/**
+	 * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
+	 * @param e - La excepción recibida
+	 * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
+	 */
 	private String darDetalleException(Exception e) 
 	{
 		String resp = "";
@@ -773,7 +973,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		} 
 		catch (IOException e) 
 		{
-//			e.printStackTrace();
+			//			e.printStackTrace();
 			return false;
 		}
 	}
@@ -798,46 +998,46 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	/* ****************************************************************
 	 * 			Métodos de la Interacción
 	 *****************************************************************/
-    /**
-     * Método para la ejecución de los eventos que enlazan el menú con los métodos de negocio
-     * Invoca al método correspondiente según el evento recibido
-     * @param pEvento - El evento del usuario
-     */
-    @Override
+	/**
+	 * Método para la ejecución de los eventos que enlazan el menú con los métodos de negocio
+	 * Invoca al método correspondiente según el evento recibido
+	 * @param pEvento - El evento del usuario
+	 */
+	@Override
 	public void actionPerformed(ActionEvent pEvento)
 	{
 		String evento = pEvento.getActionCommand( );		
-        try 
-        {
+		try 
+		{
 			Method req = InterfazVacuAndesApp.class.getMethod ( evento );			
 			req.invoke ( this );
 		} 
-        catch (Exception e) 
-        {
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		} 
 	}
-    
+
 	/* ****************************************************************
 	 * 			Programa principal
 	 *****************************************************************/
-    /**
-     * Este método ejecuta la aplicación, creando una nueva interfaz
-     * @param args Arreglo de argumentos que se recibe por línea de comandos
-     */
-    public static void main( String[] args )
-    {
-        try
-        {
-        	
-            // Unifica la interfaz para Mac y para Windows.
-            UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName( ) );
-            InterfazVacuAndesApp interfaz = new InterfazVacuAndesApp( );
-            interfaz.setVisible( true );
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace( );
-        }
-    }
+	/**
+	 * Este método ejecuta la aplicación, creando una nueva interfaz
+	 * @param args Arreglo de argumentos que se recibe por línea de comandos
+	 */
+	public static void main( String[] args )
+	{
+		try
+		{
+
+			// Unifica la interfaz para Mac y para Windows.
+			UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName( ) );
+			InterfazVacuAndesApp interfaz = new InterfazVacuAndesApp( );
+			interfaz.setVisible( true );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace( );
+		}
+	}
 }

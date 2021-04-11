@@ -1209,6 +1209,10 @@ public class VacuAndes
 		return asignada;
 	}
 
+	/* ****************************************************************
+	 * 			Métodos para consultas
+	 *****************************************************************/ 
+	
 	/**
 	 * Consulta el índice de vacunación de un grupo poblacional
 	 * @param pm - El manejador de persistencia
@@ -1225,6 +1229,66 @@ public class VacuAndes
 		log.info("Buscando índice de vacunación");
 		Double resultado = pp.darIndiceVacunacion( eps, estado, priorizacion, regiones, fechaInicio, fechaFin);
 		log.info("Indice de vacunación encontrado");
+		return resultado;
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de fechas
+	 * @param region - region de los puntos
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosRegionFechas( String region, String fecha1, String fecha2 ){
+		log.info("Buscando atentidos por regiones fechas");
+		List<String> resultado = pp.darAtendidosRegionFechas( region, fecha1, fecha2);
+		log.info("Atendidos por region fechas encontrados");
+		return resultado;
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de horas
+	 * @param region - region de los puntos
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final 
+	 * @param min1 - min inicial
+	 * @param min2 - min final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosRegionHoras( String region, Long hora1, Long hora2, Long min1, Long min2 ){
+		log.info("Buscando atentidos por regiones horas");
+		List<String> resultado = pp.darAtendidosRegionHoras( region, hora1, hora2, min1, min2);
+		log.info("Atendidos por region horas encontrados");
+		return resultado;
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de un punto en rangos de fechas
+	 * @param id - id del punto
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosPuntoFechas( String id, String fecha1, String fecha2 ){
+		log.info("Buscando atentidos por punto fechas");
+		List<String> resultado = pp.darAtendidosPuntoFechas( id, fecha1, fecha2);
+		log.info("Atendidos por punto fechas encontrados");
+		return resultado;
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de un punto en rangos de horas
+	 * @param id - id del punto
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final 
+	 * @param min1 - min inicial
+	 * @param min2 - min final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosPuntoHoras( String id, Long hora1, Long hora2, Long min1, Long min2 ){
+		log.info("Buscando atentidos por punto horas");
+		List<String> resultado = pp.darAtendidosPuntoHoras( id, hora1, hora2, min1, min2);
+		log.info("Atendidos por punto horas encontrados");
 		return resultado;
 	}
 
