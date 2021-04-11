@@ -6,7 +6,6 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import uniandes.isis2304.vacuandes.negocio.EPS;
-import uniandes.isis2304.vacuandes.negocio.Etapa;
 
 /**
  * Clase que encapsula los métodos que acceden a la base de datos para el concepto EPS de VacuAndes
@@ -121,7 +120,7 @@ public class SQLEPS {
 	 */
 	public List<String> darRegiones( PersistenceManager pm )
 	{
-		Query q = pm.newQuery( SQL, "SELECT REGION FROM " + pp.darTablaEps() + "GROUP BY REGION" );
+		Query q = pm.newQuery( SQL, "SELECT REGION FROM " + pp.darTablaEps() + " GROUP BY REGION" );
 		q.setResultClass( String.class );
 		return (List<String>) q.executeList();
 	}

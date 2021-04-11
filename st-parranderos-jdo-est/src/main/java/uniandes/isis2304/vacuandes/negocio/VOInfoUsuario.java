@@ -30,6 +30,11 @@ public interface VOInfoUsuario {
 	public String getLogin();
 	
 	/**
+	 * @return La clave del usuario
+	 */
+	public String getClave();
+	
+	/**
 	 * @return El trabajo del usuario
 	 */
 	public String getTrabajo();

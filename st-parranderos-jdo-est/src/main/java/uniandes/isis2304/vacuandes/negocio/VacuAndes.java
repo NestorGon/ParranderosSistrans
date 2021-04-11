@@ -85,10 +85,10 @@ public class VacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano )
+	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
 	{
        log.info( "Adicionando Cita: " + fechaHora + " - " + ciudadano );
-       Cita cita = pp.adicionarCita( fechaHora, finalizada, ciudadano );		
+       Cita cita = pp.adicionarCita( fechaHora, finalizada, ciudadano, punto );		
        log.info( "Cita adicionada: " + cita );
        return cita;
 	}
@@ -314,10 +314,10 @@ public class VacuAndes
 	 * @param punto - El punto de vacunación al que se encuentra asociado
 	 * @return El objeto InfoUsuario adicionado. null si ocurre alguna Excepción
 	 */
-	public InfoUsuario adicionarInfoUsuario( String login, String trabajo, Long roles, String punto )
+	public InfoUsuario adicionarInfoUsuario( String login, String clave, String trabajo, Long roles, String punto )
 	{
        log.info( "Adicionando InfoUsuario: " + login + " - " + trabajo );
-       InfoUsuario info = pp.adicionarInfoUsuario( login, trabajo, roles, punto );		
+       InfoUsuario info = pp.adicionarInfoUsuario( login, clave, trabajo, roles, punto );		
        log.info( "InfoUsuario adicionada: " + info );
        return info;
 	}
@@ -1175,97 +1175,24 @@ public class VacuAndes
 		return asignada;
 	}
 
-	
-//Ejemplo de cómo hacerlo
-//	
-//	/* ****************************************************************
-//	 * 			Métodos para manejar los TIPOS DE BEBIDA
-//	 *****************************************************************/
-//	/**
-//	 * Adiciona de manera persistente un tipo de bebida 
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param nombre - El nombre del tipo de bebida
-//	 * @return El objeto TipoBebida adicionado. null si ocurre alguna Excepción
-//	 */
-//	public TipoBebida adicionarTipoBebida (String nombre)
-//	{
-//        log.info ("Adicionando Tipo de bebida: " + nombre);
-//        TipoBebida tipoBebida = pp.adicionarTipoBebida (nombre);		
-//        log.info ("Adicionando Tipo de bebida: " + tipoBebida);
-//        return tipoBebida;
-//	}
-//	
-//	/**
-//	 * Elimina un tipo de bebida por su nombre
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param nombre - El nombre del tipo de bebida a eliminar
-//	 * @return El número de tuplas eliminadas
-//	 */
-//	public long eliminarTipoBebidaPorNombre (String nombre)
-//	{
-//		log.info ("Eliminando Tipo de bebida por nombre: " + nombre);
-//        long resp = pp.eliminarTipoBebidaPorNombre (nombre);		
-//        log.info ("Eliminando Tipo de bebida por nombre: " + resp + " tuplas eliminadas");
-//        return resp;
-//	}
-//	
-//	/**
-//	 * Elimina un tipo de bebida por su identificador
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param idTipoBebida - El id del tipo de bebida a eliminar
-//	 * @return El número de tuplas eliminadas
-//	 */
-//	public long eliminarTipoBebidaPorId (long idTipoBebida)
-//	{
-//		log.info ("Eliminando Tipo de bebida por id: " + idTipoBebida);
-//        long resp = pp.eliminarTipoBebidaPorId (idTipoBebida);		
-//        log.info ("Eliminando Tipo de bebida por id: " + resp + " tuplas eliminadas");
-//        return resp;
-//	}
-//	
-//	/**
-//	 * Encuentra todos los tipos de bebida en Parranderos
-//	 * Adiciona entradas al log de la aplicación
-//	 * @return Una lista de objetos TipoBebida con todos los tipos de bebida que conoce la aplicación, llenos con su información básica
-//	 */
-//	public List<TipoBebida> darTiposBebida ()
-//	{
-//		log.info ("Consultando Tipos de bebida");
-//        List<TipoBebida> tiposBebida = pp.darTiposBebida ();	
-//        log.info ("Consultando Tipos de bebida: " + tiposBebida.size() + " existentes");
-//        return tiposBebida;
-//	}
-//
-//	/**
-//	 * Encuentra todos los tipos de bebida en Parranderos y los devuelve como una lista de VOTipoBebida
-//	 * Adiciona entradas al log de la aplicación
-//	 * @return Una lista de objetos VOTipoBebida con todos los tipos de bebida que conoce la aplicación, llenos con su información básica
-//	 */
-//	public List<VOTipoBebida> darVOTiposBebida ()
-//	{
-//		log.info ("Generando los VO de Tipos de bebida");        
-//        List<VOTipoBebida> voTipos = new LinkedList<VOTipoBebida> ();
-//        for (TipoBebida tb : pp.darTiposBebida ())
-//        {
-//        	voTipos.add (tb);
-//        }
-//        log.info ("Generando los VO de Tipos de bebida: " + voTipos.size() + " existentes");
-//        return voTipos;
-//	}
-//
-//	/**
-//	 * Encuentra el tipos de bebida en Parranderos con el nombre solicitado
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param nombre - El nombre de la bebida
-//	 * @return Un objeto TipoBebida con el tipos de bebida de ese nombre que conoce la aplicación, 
-//	 * lleno con su información básica
-//	 */
-//	public TipoBebida darTipoBebidaPorNombre (String nombre)
-//	{
-//		log.info ("Buscando Tipo de bebida por nombre: " + nombre);
-//		List<TipoBebida> tb = pp.darTipoBebidaPorNombre (nombre);
-//		return !tb.isEmpty () ? tb.get (0) : null;
-//	}
+	/**
+	 * Consulta el índice de vacunación de un grupo poblacional
+	 * @param pm - El manejador de persistencia
+	 * @param eps - Lista con los id de las eps de interés
+	 * @param estado - Id del estado de interés
+	 * @param priorizacion - Descripción de la condición de priorización de interés
+	 * @param regiones - Lista con los nombres de las regiones de interés
+	 * @param fechaInicio - Fecha y hora de inicio de interés
+	 * @param fechaFin - Fecha y hora de fin de interés
+	 * @return El índice de vacunación para el grupo poblacional filtrado con los parámetros
+	 */
+	public Double darIndiceVacunacion( List<String> eps, Long estado, String priorizacion, List<String> regiones, String fechaInicio, String fechaFin )
+	{
+		log.info("Buscando índice de vacunación");
+		Double resultado = pp.darIndiceVacunacion( eps, estado, priorizacion, regiones, fechaInicio, fechaFin);
+		log.info("Indice de vacunación encontrado");
+		return resultado;
+	}
 
 	/* ****************************************************************
 	 * 			Métodos para administración

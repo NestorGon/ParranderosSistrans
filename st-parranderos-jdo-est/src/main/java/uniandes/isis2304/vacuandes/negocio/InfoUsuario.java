@@ -29,6 +29,11 @@ public class InfoUsuario implements VOInfoUsuario {
 	private String login;
 	
 	/**
+	 * La clave del usuario
+	 */
+	private String clave;
+	
+	/**
 	 * El trabajo del usuario
 	 */
 	private String trabajo;
@@ -46,8 +51,9 @@ public class InfoUsuario implements VOInfoUsuario {
 	public InfoUsuario(){
 	}
 	
-	public InfoUsuario( String login, String trabajo, Long id_roles, String id_punto ) {
+	public InfoUsuario( String login, String clave, String trabajo, Long id_roles, String id_punto ) {
 		this.login = login;
+		this.clave = clave;
 		this.trabajo = trabajo;
 		this.id_roles = id_roles;
 		this.id_punto = id_punto;
@@ -59,6 +65,14 @@ public class InfoUsuario implements VOInfoUsuario {
 
 	public void setLogin(String login) {
 		this.login = login;
+	}
+	
+	public String getClave() {
+		return clave;
+	}
+
+	public void setClave(String clave) {
+		this.clave = clave;
 	}
 
 	public String getTrabajo() {
@@ -90,6 +104,6 @@ public class InfoUsuario implements VOInfoUsuario {
 	 * @return Una cadena de caracteres con todos los atributos del InfoUsuario
 	 */
 	public String toString(){
-		return "InfoUsuario [login=" + login + ", trabajo=" + trabajo + ", id_roles=" + id_roles + ", id_punto=" + id_punto + "]";
+		return "InfoUsuario [login=" + login + ", clave=" + clave + ", trabajo=" + trabajo + ", id_roles=" + id_roles + ", id_punto=" + id_punto + "]";
 	}
 }

@@ -275,6 +275,12 @@ public class PersistenciaVacuAndes
 		sqlVacunacion = new SQLVacunacion( this );
 		sqlUtil = new SQLUtil( this );
 		sqlCita = new SQLCita( this );
+		sqlPunto = new SQLPunto( this );
+		sqlVacuna = new SQLVacuna( this );
+		sqlEtapa = new SQLEtapa( this );
+		sqlCondicionPriorizacion = new SQLCondicionPriorizacion( this );
+		sqlEps = new SQLEPS( this );
+		sqlAsignada = new SQLAsignada( this );
 	}
 
 	/**
@@ -437,14 +443,14 @@ public class PersistenciaVacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano )
+	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long tuplasInsertadas = sqlCita.adicionarCita( pm, fechaHora, finalizada, ciudadano );
+            Long tuplasInsertadas = sqlCita.adicionarCita( pm, fechaHora, finalizada, ciudadano, punto );
             tx.commit();
             
             log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
@@ -718,19 +724,19 @@ public class PersistenciaVacuAndes
 	 * @param punto - El punto de vacunación al que se encuentra asociado
 	 * @return El objeto InfoUsuario adicionado. null si ocurre alguna Excepción
 	 */
-	public InfoUsuario adicionarInfoUsuario( String login, String trabajo, Long roles, String punto )
+	public InfoUsuario adicionarInfoUsuario( String login, String clave, String trabajo, Long roles, String punto )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long tuplasInsertadas = sqlInfoUsuario.adicionarInfoUsuario( pm, login, trabajo, roles, punto );
+            Long tuplasInsertadas = sqlInfoUsuario.adicionarInfoUsuario( pm, login, clave, trabajo, roles, punto );
             tx.commit();
             
             log.trace( "Inserción de la información de un usuario: " + login + " - " + trabajo + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new InfoUsuario( login, trabajo, roles, punto );
+            return new InfoUsuario( login, clave,trabajo, roles, punto );
         }
         catch( Exception e )
         {
@@ -1909,143 +1915,22 @@ public class PersistenciaVacuAndes
 		return sqlAsignada.darAsignadas( pmf.getPersistenceManager() );
 	}
 	
-//Ejemplo de cómo hacerlo
-
-//	/* ****************************************************************
-//	 * 			Métodos para manejar los TIPOS DE BEBIDA
-//	 *****************************************************************/
-//
-//	/**
-//	 * Método que inserta, de manera transaccional, una tupla en la tabla TipoBebida
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param nombre - El nombre del tipo de bebida
-//	 * @return El objeto TipoBebida adicionado. null si ocurre alguna Excepción
-//	 */
-//	public TipoBebida adicionarTipoBebida(String nombre)
-//	{
-//		PersistenceManager pm = pmf.getPersistenceManager();
-//        Transaction tx=pm.currentTransaction();
-//        try
-//        {
-//            tx.begin();
-//            long idTipoBebida = nextval ();
-//            long tuplasInsertadas = sqlTipoBebida.adicionarTipoBebida(pm, idTipoBebida, nombre);
-//            tx.commit();
-//            
-//            log.trace ("Inserción de tipo de bebida: " + nombre + ": " + tuplasInsertadas + " tuplas insertadas");
-//            
-//            return new TipoBebida (idTipoBebida, nombre);
-//        }
-//        catch (Exception e)
-//        {
-////        	e.printStackTrace();
-//        	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-//        	return null;
-//        }
-//        finally
-//        {
-//            if (tx.isActive())
-//            {
-//                tx.rollback();
-//            }
-//            pm.close();
-//        }
-//	}
-//
-//	/**
-//	 * Método que elimina, de manera transaccional, una tupla en la tabla TipoBebida, dado el nombre del tipo de bebida
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param nombre - El nombre del tipo de bebida
-//	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
-//	 */
-//	public long eliminarTipoBebidaPorNombre (String nombre) 
-//	{
-//		PersistenceManager pm = pmf.getPersistenceManager();
-//        Transaction tx=pm.currentTransaction();
-//        try
-//        {
-//            tx.begin();
-//            long resp = sqlTipoBebida.eliminarTipoBebidaPorNombre(pm, nombre);
-//            tx.commit();
-//            return resp;
-//        }
-//        catch (Exception e)
-//        {
-////        	e.printStackTrace();
-//        	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-//            return -1;
-//        }
-//        finally
-//        {
-//            if (tx.isActive())
-//            {
-//                tx.rollback();
-//            }
-//            pm.close();
-//        }
-//	}
-//
-//	/**
-//	 * Método que elimina, de manera transaccional, una tupla en la tabla TipoBebida, dado el identificador del tipo de bebida
-//	 * Adiciona entradas al log de la aplicación
-//	 * @param idTipoBebida - El identificador del tipo de bebida
-//	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
-//	 */
-//	public long eliminarTipoBebidaPorId (long idTipoBebida) 
-//	{
-//		PersistenceManager pm = pmf.getPersistenceManager();
-//        Transaction tx=pm.currentTransaction();
-//        try
-//        {
-//            tx.begin();
-//            long resp = sqlTipoBebida.eliminarTipoBebidaPorId(pm, idTipoBebida);
-//            tx.commit();
-//            return resp;
-//        }
-//        catch (Exception e)
-//        {
-////        	e.printStackTrace();
-//        	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-//            return -1;
-//        }
-//        finally
-//        {
-//            if (tx.isActive())
-//            {
-//                tx.rollback();
-//            }
-//            pm.close();
-//        }
-//	}
-//
-//	/**
-//	 * Método que consulta todas las tuplas en la tabla TipoBebida
-//	 * @return La lista de objetos TipoBebida, construidos con base en las tuplas de la tabla TIPOBEBIDA
-//	 */
-//	public List<TipoBebida> darTiposBebida ()
-//	{
-//		return sqlTipoBebida.darTiposBebida (pmf.getPersistenceManager());
-//	}
-// 
-//	/**
-//	 * Método que consulta todas las tuplas en la tabla TipoBebida que tienen el nombre dado
-//	 * @param nombre - El nombre del tipo de bebida
-//	 * @return La lista de objetos TipoBebida, construidos con base en las tuplas de la tabla TIPOBEBIDA
-//	 */
-//	public List<TipoBebida> darTipoBebidaPorNombre (String nombre)
-//	{
-//		return sqlTipoBebida.darTiposBebidaPorNombre (pmf.getPersistenceManager(), nombre);
-//	}
-// 
-//	/**
-//	 * Método que consulta todas las tuplas en la tabla TipoBebida con un identificador dado
-//	 * @param idTipoBebida - El identificador del tipo de bebida
-//	 * @return El objeto TipoBebida, construido con base en las tuplas de la tabla TIPOBEBIDA con el identificador dado
-//	 */
-//	public TipoBebida darTipoBebidaPorId (long idTipoBebida)
-//	{
-//		return sqlTipoBebida.darTipoBebidaPorId (pmf.getPersistenceManager(), idTipoBebida);
-//	}
+	/**
+	 * Método que consulta el índice de vacunación de un grupo poblacional
+	 * @param pm - El manejador de persistencia
+	 * @param eps - Lista con los id de las eps de interés
+	 * @param estado - Id del estado de interés
+	 * @param priorizacion - Descripción de la condición de priorización de interés
+	 * @param regiones - Lista con los nombres de las regiones de interés
+	 * @param fechaInicio - Fecha y hora de inicio de interés
+	 * @param fechaFin - Fecha y hora de fin de interés
+	 * @return El índice de vacunación para el grupo poblacional filtrado con los parámetros
+	 */
+	public Double darIndiceVacunacion( List<String> eps, Long estado, String priorizacion, List<String> regiones, String fechaInicio, String fechaFin )
+	{
+		Double resultado = sqlUtil.darIndiceVacunacion(pmf.getPersistenceManager(), eps, estado, priorizacion, regiones, fechaInicio, fechaFin);
+		return resultado == null ? 0: resultado;
+	}
 	
 	/* ****************************************************************
 	 * 			Métodos para administración
