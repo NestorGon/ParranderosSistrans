@@ -85,10 +85,10 @@ public class VacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano )
+	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
 	{
        log.info( "Adicionando Cita: " + fechaHora + " - " + ciudadano );
-       Cita cita = pp.adicionarCita( fechaHora, finalizada, ciudadano );		
+       Cita cita = pp.adicionarCita( fechaHora, finalizada, ciudadano, punto );		
        log.info( "Cita adicionada: " + cita );
        return cita;
 	}
