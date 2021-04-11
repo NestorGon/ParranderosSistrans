@@ -443,7 +443,7 @@ public class PersistenciaVacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El objeto Cita adicionado. null si ocurre alguna Excepción
 	 */
-	public Cita adicionarCita( Date fechaHora, String finalizada, String ciudadano, String punto )
+	public Cita adicionarCita( String fechaHora, String finalizada, String ciudadano, String punto )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -455,7 +455,7 @@ public class PersistenciaVacuAndes
             
             log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new Cita( fechaHora, finalizada, ciudadano );
+            return new Cita( fechaHora, finalizada, ciudadano, punto );
         }
         catch( Exception e )
         {
@@ -1023,6 +1023,16 @@ public class PersistenciaVacuAndes
 		return sqlCiudadano.darCiudadano( pmf.getPersistenceManager(), documento);
 	}
 	
+	/** 
+	 * Método que consulta la ETAPA a la que pertenece un ciudadano dado su ID 
+	 * @param id - el id del ciudadano a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla CIUDADANO 
+	 */ 
+	public Long darEtapaCiudadano( String documento ) 
+	{ 
+		return sqlCiudadano.darEtapaCiudadano( pmf.getPersistenceManager(), documento ); 
+	} 
+	
 	/**
 	 * Método que consulta todas las tuplas en la tabla CIUDADANO
 	 * @return La lista de objetos Ciudadano, construidos con base en las tuplas de la tabla CIUDADANO
@@ -1346,6 +1356,27 @@ public class PersistenciaVacuAndes
 	{
 		return sqlPunto.darPuntos( pmf.getPersistenceManager() );
 	}
+	
+	/** 
+	 * Método que consulta la capacidad de un PUNTO dado su id 
+	 * @param id - el id del punto a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla PUNTO 
+	 */ 
+	public Long darCapacidadPunto( String id ) 
+	{ 
+		return sqlPunto.darCapacidadPunto( pmf.getPersistenceManager(), id ); 
+	} 
+	 
+	/** 
+	 * Método que consulta la cantidad de citas activas de un PUNTO dado su id 
+	 * @param id - el id del punto a buscar 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla PUNTO 
+	 */ 
+	public Long darCitasActivasPunto( String id ) 
+	{ 
+		return sqlPunto.darCitasActivasPunto( pmf.getPersistenceManager(), id ); 
+	} 
+
 	
 	/* ****************************************************************
 	 * 			Métodos para manejar las VACUNAS 
@@ -1915,6 +1946,10 @@ public class PersistenciaVacuAndes
 		return sqlAsignada.darAsignadas( pmf.getPersistenceManager() );
 	}
 	
+	/* ****************************************************************
+	 * 			Métodos para consultas
+	 *****************************************************************/
+	
 	/**
 	 * Método que consulta el índice de vacunación de un grupo poblacional
 	 * @param pm - El manejador de persistencia
@@ -1931,6 +1966,59 @@ public class PersistenciaVacuAndes
 		Double resultado = sqlUtil.darIndiceVacunacion(pmf.getPersistenceManager(), eps, estado, priorizacion, regiones, fechaInicio, fechaFin);
 		return resultado == null ? 0: resultado;
 	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de horas
+	 * @param region - region de los puntos
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto incial
+	 * @param min2 - minuto final 
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosRegionHoras(  String region, Long hora1, Long hora2, Long min1, Long min2 )
+	{
+		return sqlUtil.darAtendidosRegionHoras(pmf.getPersistenceManager(), region, hora1, hora2, min1, min2);
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de fechas
+	 * @param region - region de los puntos
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosRegionFechas(  String region, String fecha1, String fecha2 )
+	{
+		return sqlUtil.darAtendidosRegionFechas(pmf.getPersistenceManager(), region, fecha1, fecha2);
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de un punto dado su id en un rango de horas
+	 * @param id - id del punto
+	 * @param hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto incial
+	 * @param min2 - minuto final 
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosPuntoHoras(  String id, Long hora1, Long hora2, Long min1, Long min2 )
+	{
+		return sqlUtil.darAtendidosPuntoHoras(pmf.getPersistenceManager(), id, hora1, hora2, min1, min2);
+	}
+	
+	/**
+	 * Metodo que consulta los ciudadanos atentidos de un punto dado su id en un rango de fechas
+	 * @param id - id del punto
+	 * @fecha1 - fecha inicial
+	 * @fecha2 - fecha final
+	 * @return - lista con documentos de ciudadanos
+	 */
+	public List<String> darAtendidosPuntoFechas(  String id, String fecha1, String fecha2 )
+	{
+		return sqlUtil.darAtendidosPuntoFechas(pmf.getPersistenceManager(), id, fecha1, fecha2);
+	}
+	
 	
 	/* ****************************************************************
 	 * 			Métodos para administración

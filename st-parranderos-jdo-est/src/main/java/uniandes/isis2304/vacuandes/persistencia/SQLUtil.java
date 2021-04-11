@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import uniandes.isis2304.vacuandes.negocio.Punto;
+
 /**
  * Clase que encapsula los métodos que hacen acceso a la base de datos para la secuencia y limpieza de VacuAndes
  * 
@@ -196,5 +198,87 @@ class SQLUtil
         q.setResultClass( Double.class );
         Double resp = (Double) q.execute();
         return resp;
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos de los puntos de una region en un rango de fechas
+	 * @param region - region a la que pertenecen los puntos
+	 * @patram fecha1 - fecha inicial
+	 * @param fecha 2 - fecha final
+	 * @return lista de documentos de los ciudadanos atentidos por el punto
+	 */
+	public List<String> darAtendidosRegionFechas( PersistenceManager pm, String region, String fecha1, String fecha2){
+		Query q= pm.newQuery( SQL, "SELECT CITA.DOCUMENTO_CIUDADANO "
+				+ "FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)"
+				+ "JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID "
+				+ "WHERE CITA.FECHAHORA BETWEEN TO_DATE( ?, 'DD-MM-YYYY HH24:MI') AND TO_DATE( ? , 'DD-MM-YYYY HH24:MI')"
+				+ "AND PUNTO.REGION = ? "
+				+ "AND CITA.FINALIZADA = 'T'");
+		q.setParameters(fecha1, fecha2, region);
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos de los puntos de una region en un rango de horas
+	 * @param region - region a la que pertenecen los puntos
+	 * @patram hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto inicial
+	 * @param min2 - minuto final
+	 * @return lista de documentos de los ciudadanos atentidos por el punto
+	 */
+	public List<String> darAtendidosRegionHoras( PersistenceManager pm, String region, Long hora1, Long hora2, Long min1, Long min2){
+		Query q= pm.newQuery( SQL, "SELECT CITA.DOCUMENTO_CIUDADANO "
+				+ "FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)"
+				+ "JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID "
+				+ "WHERE (EXTRACT(HOUR FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN ? AND ?)"
+				+ "AND (EXTRACT(MINUTE FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN ? AND ?)"
+				+ "AND PUNTO.REGION = ? "
+				+ "AND CITA.FINALIZADA = 'T'");
+		q.setParameters(hora1, hora2, min1, min2, region);
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
+	}
+
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos en un punto en un rango de fechas
+	 * @param id - id del punto de vacunacion
+	 * @patram fecha1 - fecha inicial
+	 * @param fecha 2 - fecha final
+	 * @return lista de documentos de los ciudadanos atentidos por el punto
+	 */
+	public List<String> darAtendidosPuntoFechas( PersistenceManager pm, String id, String fecha1, String fecha2){
+		Query q= pm.newQuery( SQL, "SELECT CITA.DOCUMENTO_CIUDADANO "
+				+ "FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)"
+				+ "JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID "
+				+ "WHERE CITA.FECHAHORA BETWEEN TO_DATE( ?, 'DD-MM-YYYY HH24:MI') AND TO_DATE( ? , 'DD-MM-YYYY HH24:MI')"
+				+ "AND PUNTO.ID = ? "
+				+ "AND CITA.FINALIZADA = 'T'");
+		q.setParameters(fecha1, fecha2, id);
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos atentidos en un punto en un rango de horas
+	 * @param id - id del punto de vacunacion
+	 * @patram hora1 - hora inicial
+	 * @param hora2 - hora final
+	 * @param min1 - minuto inicial
+	 * @param min2 - minuto final
+	 * @return lista de documentos de los ciudadanos atentidos por el punto
+	 */
+	public List<String> darAtendidosPuntoHoras( PersistenceManager pm, String id, Long hora1, Long hora2, Long min1, Long min2){
+		Query q= pm.newQuery( SQL, "SELECT CITA.DOCUMENTO_CIUDADANO "
+				+ "FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)"
+				+ "JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID "
+				+ "WHERE (EXTRACT(HOUR FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN ? AND ?)"
+				+ "AND (EXTRACT(MINUTE FROM CAST(CITA.FECHAHORA AS TIMESTAMP)) BETWEEN ? AND ?)"
+				+ "AND PUNTO.ID = ? "
+				+ "AND CITA.FINALIZADA = 'T'");
+		q.setParameters(hora1, hora2, min1, min2, id);
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
 	}
 }

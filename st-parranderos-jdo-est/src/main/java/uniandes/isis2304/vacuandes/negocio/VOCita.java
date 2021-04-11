@@ -29,7 +29,7 @@ public interface VOCita {
 	/**
 	 * @return La fecha y hora de la cita
 	 */
-	public Date getFechaHora();
+	public String getFechaHora();
 	
 	/**
 	 * @return Si la cita ya se finalizó o no

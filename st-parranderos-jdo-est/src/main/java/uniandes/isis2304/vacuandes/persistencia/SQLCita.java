@@ -66,12 +66,10 @@ public class SQLCita {
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarCita( PersistenceManager pm, Date fechaHora, String finalizada, String ciudadano, String punto ) 
+	public Long adicionarCita( PersistenceManager pm, String fechaHora, String finalizada, String ciudadano, String punto ) 
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		String dateString = format.format( fechaHora );
         Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCita() + "(FECHAHORA, FINALIZADA, DOCUMENTO_CIUDADANO, ID_PUNTO) values (TO_DATE(?, 'DD-MM-YYYY HH24:MI'), ?, ?, ?)");
-        q.setParameters( dateString, finalizada, ciudadano, punto );
+        q.setParameters( fechaHora, finalizada, ciudadano, punto );
         return (Long) q.executeUnique();
 	}
 	

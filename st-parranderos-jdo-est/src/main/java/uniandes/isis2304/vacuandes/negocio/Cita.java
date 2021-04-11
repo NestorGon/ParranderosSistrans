@@ -28,7 +28,7 @@ public class Cita implements VOCita {
 	/**
 	 * La fecha y hora de la cita
 	 */
-	private Date fechaHora;
+	private String fechaHora;
 	
 	/**
 	 * Si la cita ya se finalizó o no
@@ -40,6 +40,11 @@ public class Cita implements VOCita {
 	 */
 	private String documento_ciudadano;
 	
+	/**
+	 * El id del punto de vacunaciomn
+	 */
+	private String id_punto;
+	
 	/* ****************************************************************
 	 * 			Métodos
 	 *****************************************************************/
@@ -47,18 +52,27 @@ public class Cita implements VOCita {
 	public Cita() {
 	}
 
-	public Cita( Date fechaHora, String finalizada, String documento_ciudadano ) {
+	public Cita( String fechaHora, String finalizada, String documento_ciudadano, String punto ) {
 		super();
 		this.fechaHora = fechaHora;
 		this.finalizada = finalizada;
 		this.documento_ciudadano = documento_ciudadano;
+		this.id_punto = punto;
 	}
 
-	public Date getFechaHora() {
+	public String getId_punto() {
+		return id_punto;
+	}
+
+	public void setId_punto(String id_punto) {
+		this.id_punto = id_punto;
+	}
+
+	public String getFechaHora() {
 		return fechaHora;
 	}
 
-	public void setFechaHora( Date fechaHora ) {
+	public void setFechaHora( String fechaHora ) {
 		this.fechaHora = fechaHora;
 	}
 
@@ -84,6 +98,6 @@ public class Cita implements VOCita {
 	 */
 	public String toString() 
 	{
-		return "Cita [fechaHora=" + fechaHora + ", finzalidada=" + finalizada + ", documento_ciudadano=" + documento_ciudadano + "]";
+		return "Cita [fechaHora = " + fechaHora + ", finzalidada = " + finalizada + ", documento_ciudadano = " + documento_ciudadano + "]";
 	}
 }
