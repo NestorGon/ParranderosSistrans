@@ -1,0 +1,108 @@
+{
+	"title": "Aplicación transaccional de VacuAndes",
+	"frameH": 600,
+	"frameW": 900,
+	"bannerPath": "./src/main/resources/config/logo.png",
+	"menuBar":
+	[
+		{ "menuTitle": "Requerimientos Funcionales de Modificación",
+		  "options":
+			[
+				{
+					"label": "Asignar ciudadano a punto de vacunación",
+					"event": "adicionarVacunacion"
+				},
+				{
+					"label": "Asignar cita de vacunación a un ciudadano",
+					"event": "asignarCita"
+				},
+				{
+					"label": "Registrar avance de vacunación",
+					"event": "registrarAvanceVacunacion"
+				}
+			]
+		},
+		{ "menuTitle": "Requerimientos Funcionales de Consulta",
+		  "options":
+			[
+				{
+					"label": "Ciudadanos atendidos por punto de vacunación",
+					"event": "mostrarCiudadanosPunto"
+				},
+				{
+					"label": "20 puntos de vacunación más efectivos",
+					"event": "mostrarPuntosMasEfectivos"
+				},
+				{
+					"label": "Índice de vacunación",
+					"event": "mostrarIndiceGrupoPoblacional"
+				}
+			]
+		},
+		{ "menuTitle": "Mantenimiento",
+		  "options":
+			[
+				{
+					"label": "Mostrar log VacuAndes",
+					"event": "mostrarLogVacuAndes"
+				},
+				{
+					"label": "Mostrar log datanucleus",
+					"event": "mostrarLogDatanuecleus"
+				},
+				{
+					"label": "Limpiar log de VacuAndes",
+					"event": "limpiarLogVacuAndes"
+				},
+				{
+					"label": "Limpiar log de datanucleus",
+					"event": "limpiarLogDatanucleus"
+				},
+				{
+					"label": "Limpiar Base de Datos",
+					"event": "limpiarBD"
+				}
+			]
+		},		
+		{ "menuTitle": "Documentación",
+		  "options":
+			[
+				{
+					"label": "Presentación general",
+					"event": "mostrarPresentacionGeneral"
+				},
+				{
+					"label": "Modelo conceptual",
+					"event": "mostrarModeloConceptual"
+				},
+				{
+					"label": "Esquema de la BD",
+					"event": "mostrarEsquemaBD"
+				},
+				{
+					"label": "Script creación de la BD",
+					"event": "mostrarScriptBD"
+				},
+				{
+					"label": "Arquitectura de referencia",
+					"event": "mostrarArqRef"
+				},
+				{
+					"label": "Javadoc VacuAndes",
+					"event": "mostrarJavadoc"
+				}
+			]
+		},		
+		{ "menuTitle": "Acerca de ...",
+		  "options":
+			[
+				{
+					"label": "Acerca de ...",
+					"event": "acercaDe"
+				}
+			]
+		}		
+		
+	]
+}
+	
