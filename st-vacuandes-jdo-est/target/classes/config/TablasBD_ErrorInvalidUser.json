@@ -1,0 +1,22 @@
+{
+	"title": "Nombres de las tablas de VacuAndes para pruebas de la aplicación cuando la base de datos no existe o está caida",
+	"unidadPersistencia": "VacuAndesErrorUser",
+	"tablas":
+	[
+		"VACUANDES_SEQUENCE",
+		"XEPS",
+		"XROLES",
+		"XESTADO",
+		"XETAPA",
+		"XCONDICIONPRIORIZACION",
+		"XPUNTO",
+		"XVACUNA",
+		"XASIGNADA",
+		"XCIUDADANO",
+		"XVACUNACION",
+		"XPRIORIZACION",
+		"XINFOUSUARIO",
+		"XUSUARIO",
+		"XCITA"
+	]
+}

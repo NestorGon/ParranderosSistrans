@@ -1,0 +1,22 @@
+{
+	"title": "Nombres de las tablas de VacuAndes para la aplicación",
+	"unidadPersistencia": "VacuAndes",
+	"tablas":
+	[
+		"VACUANDES_SEQUENCE",
+		"EPS",
+		"ROLES",
+		"ESTADO",
+		"ETAPA",
+		"CONDICIONPRIORIZACION",
+		"PUNTO",
+		"VACUNA",
+		"ASIGNADA",
+		"CIUDADANO",
+		"VACUNACION",
+		"PRIORIZACION",
+		"INFOUSUARIO",
+		"USUARIO",
+		"CITA"
+	]
+}
