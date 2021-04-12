@@ -296,49 +296,49 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-	}
-
-	/**
-	 * Asigna un ciudadano a un único punto de vacunación
-	 * Se crea una nueva tupla de VACUNACION en la base de datos
-	 */
-	public void registrarAvanceVacunacion( )
-	{
-		try 
-		{
-			VOInfoUsuario usuario = panelValidacionUsuario();
-			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(4L) ) {
-					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-				}
-			} 
-			else {
-				return;
-			}
-			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
-			{
-				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-				if ( ciudadano != null ) {
-					if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
-						throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
-					}
-					ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
-				}
-				if (ciudadano == null)
-				{
-					throw new Exception ("No se pudo actualizar al ciudadano " + documento );
-				}
-				String resultado = "En registrarAvanceVacunacion\n\n";
-				resultado += "Ciudadano actualizado correctamente: " + ciudadano;
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-			}
-			else
-			{
-				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-			}
+    }
+    
+    /**
+     * Registra el avance en el proceso de vacunación de un ciudadano
+     * Para esto realiza una actualización en el registro del ciudadano
+     */
+    public void registrarAvanceVacunacion( )
+    {
+    	try 
+    	{
+    		VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(4L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
+    		{
+    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+    			if ( ciudadano != null ) {
+    				if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
+    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+    				}
+    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
+    			}
+        		if (ciudadano == null)
+        		{
+        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+        		}
+        		String resultado = "En registrarAvanceVacunacion\n\n";
+        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
 		} 
 		catch (Exception e) 
 		{
@@ -903,27 +903,19 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Muestra la presentación general del proyecto
-	 */
-	public void mostrarPresentacionGeneral ()
-	{
-		mostrarArchivo ("data/00-ST-ParranderosJDO.pdf");
-	}
-
-	/**
-	 * Muestra el modelo conceptual de Parranderos
+	 * Muestra el modelo conceptual de VacuAndes
 	 */
 	public void mostrarModeloConceptual ()
 	{
-		mostrarArchivo ("data/Modelo Conceptual Parranderos.pdf");
+		mostrarArchivo ("data/ModeloConceptualVacuAndes.pdf");
 	}
 
 	/**
-	 * Muestra el esquema de la base de datos de Parranderos
+	 * Muestra el esquema de la base de datos de VacuAndes
 	 */
 	public void mostrarEsquemaBD ()
 	{
-		mostrarArchivo ("data/Esquema BD Parranderos.pdf");
+		mostrarArchivo ("data/ModeloRelacionalVacuAndes.pdf");
 	}
 
 	/**
@@ -931,11 +923,11 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 */
 	public void mostrarScriptBD ()
 	{
-		mostrarArchivo ("data/EsquemaParranderos.sql");
+		mostrarArchivo ("data/CreacionEsquemaVacuAndes.sql");
 	}
 
 	/**
-	 * Muestra la arquitectura de referencia para Parranderos
+	 * Muestra la arquitectura de referencia para VacuAndes
 	 */
 	public void mostrarArqRef ()
 	{
@@ -977,75 +969,95 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 * 			Métodos privados para la presentación de resultados y otras operaciones
 	 *****************************************************************/
 
-	private VOInfoUsuario panelValidacionUsuario() {
-		try {
-			String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
-			String clave = JOptionPane.showInputDialog (this, "Ingrese la constraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
-
-			if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
-				VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
-				if ( usuario == null ) {
-					throw new Exception( "El usuarion con el login " + login + " no está registrado" );
-				}
-				if ( !usuario.getClave().equals(clave.trim()) ) {
-					throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
-				}
-				String resultado = "En validar usuario\n\n";
-				resultado += "Usuario validado correctamente";
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-				return usuario;
-			}
-		} catch (Exception e) {
-			//			e.printStackTrace();
+    /**
+     * Valida el login y clave de un usuario de VacuAndes para conocer su rol y acceso a los requerimientos
+     * @return Un objeto VOInfoUsuario con la información del usuario encontrado o null si no lo encuentra
+     */
+    private VOInfoUsuario panelValidacionUsuario() {
+    	try {
+	    	String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+	    	String clave = JOptionPane.showInputDialog (this, "Ingrese la contraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+	    	
+	    	if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
+	    		VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
+	    		if ( usuario == null ) {
+	    			throw new Exception( "El usuarion con el login " + login + " no está registrado" );
+	    		}
+	    		if ( !usuario.getClave().equals(clave.trim()) ) {
+	    			throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
+	    		}
+	    		String resultado = "En validar usuario\n\n";
+        		resultado += "Usuario validado correctamente";
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    			return usuario;
+	    	}
+    	} catch (Exception e) {
+//			e.printStackTrace();
 			String resultado = generarMensajeError(e);
 			panelDatos.actualizarInterfaz(resultado);
 		}
-		return null;
-	}
-
-	private String[] darRegiones() {
-		List<String> regiones = vacuAndes.darRegiones();
-		String[] retorno = new String[regiones.size()];
-		regiones.toArray(retorno);
-		return retorno;
-	}
-
-	private String[] darEstados() {
-		List<String> estados = new LinkedList<>();
-		for ( Estado actual: vacuAndes.darEstados()) {
-			estados.add( actual.getId() + ": " + actual.getDescripcion() );
-		}
-		String[] retorno = new String[estados.size()];
-		estados.toArray(retorno);
-		return retorno; 
-	}
-
-	private String[] darTodasEps() {
-		List<String> eps = new LinkedList<>();
-		for ( EPS actual: vacuAndes.darEPSs()) {
-			eps.add( actual.getId() );
-		}
-		String[] retorno = new String[eps.size()];
-		eps.toArray(retorno);
-		return retorno;
-	}
-
-	private String[] darGruposDePriorizacion() {
-		List<String> grupos = new LinkedList<>();
-		for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
-			grupos.add( actual.getDescripcion() );
-		}
-		String[] retorno = new String[grupos.size()];
-		grupos.toArray(retorno);
-		return retorno;
-	}
-
-	/**
-	 * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
-	 * @param e - La excepción recibida
-	 * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
-	 */
+    	return null;
+    }
+    
+    /**
+     * Obtiene las regiones registradas en vacuandes
+     * @return un arreglo de tamaño fijo de String con las regiones registradas
+     */
+    private String[] darRegiones() {
+    	List<String> regiones = vacuAndes.darRegiones();
+    	String[] retorno = new String[regiones.size()];
+    	regiones.toArray(retorno);
+    	return retorno;
+    }
+    
+    /**
+     * Obtiene los estados registrados en vacuandes
+     * @return un arreglo de tamaño fijo de String con los estados registradas
+     */
+    private String[] darEstados() {
+    	List<String> estados = new LinkedList<>();
+    	for ( Estado actual: vacuAndes.darEstados()) {
+    		estados.add( actual.getId() + ": " + actual.getDescripcion() );
+    	}
+    	String[] retorno = new String[estados.size()];
+    	estados.toArray(retorno);
+    	return retorno; 
+    }
+    
+    /**
+     * Obtiene las EPS registradas en vacuandes
+     * @return un arreglo de tamaño fijo de String con las EPS registradas
+     */
+    private String[] darTodasEps() {
+    	List<String> eps = new LinkedList<>();
+    	for ( EPS actual: vacuAndes.darEPSs()) {
+    		eps.add( actual.getId() );
+    	}
+    	String[] retorno = new String[eps.size()];
+    	eps.toArray(retorno);
+    	return retorno;
+    }
+    
+    /**
+     * Obtiene las condigicones de priorización registradas en vacuandes
+     * @return un arreglo de tamaño fijo de String con las condiciones de priorización registradas
+     */
+    private String[] darGruposDePriorizacion() {
+    	List<String> grupos = new LinkedList<>();
+    	for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
+    		grupos.add( actual.getDescripcion() );
+    	}
+    	String[] retorno = new String[grupos.size()];
+    	grupos.toArray(retorno);
+    	return retorno;
+    }
+    
+    /**
+     * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
+     * @param e - La excepción recibida
+     * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
+     */
 	private String darDetalleException(Exception e) 
 	{
 		String resp = "";

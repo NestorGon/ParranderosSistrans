@@ -60,7 +60,7 @@ public class SQLEtapa {
 	/**
 	 * Crea y ejecuta la sentencia SQL para eliminar una ETAPA de la base de datos de VacuAndes por su numero
 	 * @param pm - El manejador de persistencia
-	 * @param id - El identificador de la etapa
+	 * @param numero - El identificador de la etapa
 	 * @return EL número de tuplas eliminadas
 	 */
 	public Long eliminarEtapa( PersistenceManager pm, Long numero )

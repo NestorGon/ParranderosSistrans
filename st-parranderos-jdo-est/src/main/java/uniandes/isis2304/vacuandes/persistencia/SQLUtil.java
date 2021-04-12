@@ -21,8 +21,6 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
-import uniandes.isis2304.vacuandes.negocio.Punto;
-
 /**
  * Clase que encapsula los métodos que hacen acceso a la base de datos para la secuencia y limpieza de VacuAndes
  * 
@@ -129,10 +127,10 @@ class SQLUtil
 	public Double darIndiceVacunacion( PersistenceManager pm, List<String> eps, Long estado, String priorizacion, List<String> regiones, String fechaInicio, String fechaFin ) {
 		Map parametros = new HashMap<>();
 		String qEps = "AND E.ID IN ";
-		String qEstado = "AND ES.ID = :estado ";
-		String qPrior = "AND P.DESCRIPCION_CONDPRIOR = :prior ";
+		String qEstado = "AND ES.ID = ";
+		String qPrior = "AND P.DESCRIPCION_CONDPRIOR = ";
 		String qRegion = "AND E.REGION IN ";
-		String qFecha = "AND (CI.FECHAHORA BETWEEN TO_DATE(:inicio, 'DD-MM-YYYY HH24:MI') AND TO_DATE(:fin, 'DD-MM-YYYY HH24:MI'))";
+		String qFecha = "AND (CI.FECHAHORA BETWEEN ";
 
 		if ( eps != null ) {
 			String strOut = "";
@@ -157,24 +155,24 @@ class SQLUtil
 		}
 
 		if ( estado != null ) {
-			parametros.put("estado", estado);
+			qEstado += "'" + estado + "' ";
 		}
 		if ( priorizacion != null ) {
-			parametros.put("prior", priorizacion);
+			qPrior += "'" + priorizacion + "' ";
 		}
 		if ( fechaInicio != null ) {
 			fechaInicio += " 00:00";
-			parametros.put("inicio", fechaInicio);
+			qFecha += "TO_DATE('" + fechaInicio + "', 'DD-MM-YYYY HH24:MI')";
 			if ( fechaFin != null) {
 				fechaFin += " 23:59";
-				parametros.put("fin", fechaFin);
+				qFecha += " AND TO_DATE('" + fechaFin + "', 'DD-MM-YYYY HH24:MI'))";
 			} else {
 				fechaFin = fechaInicio.split(" ")[0] + " 23:59";
-				parametros.put("fin", fechaFin);
+				qFecha += " AND TO_DATE('" + fechaFin + "', 'DD-MM-YYYY HH24:MI'))";
 			}
 		}
-
-		Query q = pm.newQuery( SQL, "WITH CANTIDAD AS ( "
+		
+		Query q = pm.newQuery( SQL, "CREATE TABLE CANTIDAD AS ( "
 				+ "SELECT ES.DESCRIPCION AS DESCRIPCION, COUNT(*) AS CANT "
 				+ "FROM " + pp.darTablaCiudadano() + " C," + pp.darTablaEps() + " E," + pp.darTablaEstado() + " ES,"
 				+ pp.darTablaPriorizacion() + " P," + pp.darTablaCita() + " CI "
@@ -188,16 +186,21 @@ class SQLUtil
 				+ (priorizacion != null ? qPrior: "")
 				+ (regiones != null ? qRegion: "")
 				+ (fechaInicio != null ? qFecha: "")
-				+ "GROUP BY ES.DESCRIPCION) "
-				+ "SELECT CANT/(SELECT SUM(CANT) "
+				+ " GROUP BY ES.DESCRIPCION) ");
+		q.setNamedParameters( parametros );
+		q.execute();
+		
+		q = pm.newQuery( SQL,"SELECT CANT/(SELECT SUM(CANT) "
 				+ "FROM CANTIDAD) AS INDICE "
 				+ "FROM CANTIDAD "
-				+ "WHERE DESCRIPCION LIKE 'VACUNADO%'" );
-
-		q.setNamedParameters( parametros );
-		q.setResultClass( Double.class );
-		Double resp = (Double) q.execute();
-		return resp;
+				+ "WHERE DESCRIPCION LIKE 'VACUNADO%'");
+		
+        q.setResultClass( Double.class );
+        Double resp = (Double) q.executeUnique();
+        
+        q = pm.newQuery( SQL, "DROP TABLE \"CANTIDAD\"");
+        q.execute();
+        return resp;
 	}
 
 	/**

@@ -476,7 +476,7 @@ public class PersistenciaVacuAndes
 	 * Método que elimina, de manera transaccional, una tupla en la tabla CITA
 	 * Adiciona entradas al log de la aplicación
 	 * @param fechaHora - Fecha y hora de la cita
-	 * @param documento - El documento de identificación del ciudadano asociado a la cita
+	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
 	 */
 	public Long eliminarCita( Date fechaHora, String ciudadano ) 
@@ -509,7 +509,7 @@ public class PersistenciaVacuAndes
 	 * Método que consulta la tupla en la tabla CITA que tiene la fecha y hora y documento
 	 * de identificación del ciudadano asociado
 	 * @param fechaHora - Fecha y hora de la cita
-	 * @param documento - El documento de identificación del ciudadano
+	 * @param ciudadano - El documento de identificación del ciudadano
 	 * @return El objeto Cita, construidos con base en las tuplas de la tabla CITA
 	 */
 	public Cita darCita( Date fechaHora, String ciudadano )
@@ -626,7 +626,6 @@ public class PersistenciaVacuAndes
 	/**
 	 * Método que inserta, de manera transaccional, una tupla en la tabla ROLES
 	 * Adiciona entradas al log de la aplicación
-	 * @param id - El identificador del rol
 	 * @param rol - La cadena de texto con el rol
 	 * @return El objeto Rol adicionado. null si ocurre alguna Excepción
 	 */
@@ -1025,7 +1024,7 @@ public class PersistenciaVacuAndes
 	
 	/** 
 	 * Método que consulta la ETAPA a la que pertenece un ciudadano dado su ID 
-	 * @param id - el id del ciudadano a buscar 
+	 * @param documento - el id del ciudadano a buscar 
 	 * @return El objeto Long, construidos con base en las tuplas de la tabla CIUDADANO 
 	 */ 
 	public Long darEtapaCiudadano( String documento ) 
@@ -1235,7 +1234,6 @@ public class PersistenciaVacuAndes
 	/**
 	 * Método que inserta, de manera transaccional, una tupla en la tabla PUNTO
 	 * Adiciona entradas al log de la aplicación
-	 * @param pm - El manejador de persistencia
 	 * @param id - Id del punto de vacunacion
 	 * @param region - Region del punto de vacunacion
 	 * @param direccion - Direccion del putno de vacunacion
@@ -1546,7 +1544,7 @@ public class PersistenciaVacuAndes
 	/**
 	 * Método que elimina, de manera transaccional, una tupla en la tabla ETAPA
 	 * Adiciona entradas al log de la aplicación
-	 * @param numero - numero de la etapa a eliminar
+	 * @param etapa - numero de la etapa a eliminar
 	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
 	 */
 	public Long eliminarEtapa( Long etapa ) 
@@ -1952,7 +1950,6 @@ public class PersistenciaVacuAndes
 	
 	/**
 	 * Método que consulta el índice de vacunación de un grupo poblacional
-	 * @param pm - El manejador de persistencia
 	 * @param eps - Lista con los id de las eps de interés
 	 * @param estado - Id del estado de interés
 	 * @param priorizacion - Descripción de la condición de priorización de interés
@@ -1984,8 +1981,8 @@ public class PersistenciaVacuAndes
 	/**
 	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de fechas
 	 * @param region - region de los puntos
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darAtendidosRegionFechas(  String region, String fecha1, String fecha2 )
@@ -2010,8 +2007,8 @@ public class PersistenciaVacuAndes
 	/**
 	 * Metodo que consulta los ciudadanos atentidos de un punto dado su id en un rango de fechas
 	 * @param id - id del punto
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darAtendidosPuntoFechas(  String id, String fecha1, String fecha2 )
@@ -2021,8 +2018,8 @@ public class PersistenciaVacuAndes
 	
 	/**
 	 * Metodo que consulta los puntos efectivos en un rango de fechas
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darPuntosEfectivosFechas( String fecha1, String fecha2 )
@@ -2050,7 +2047,6 @@ public class PersistenciaVacuAndes
 
 	/**
 	 * Crea y ejecuta las sentencias SQL para cada tabla de la base de datos
-	 * @param pm - El manejador de persistencia
 	 * @return Un arreglo con 14 números que indican el número de tuplas borradas en las tablas EPS, ROLES, 
 	 * ESTADO, ETAPA, CONDICIONPRIORIZACION, PUNTO, VACUNA, ASIGNADA, CIUDADANO, VACUNACION,
 	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA

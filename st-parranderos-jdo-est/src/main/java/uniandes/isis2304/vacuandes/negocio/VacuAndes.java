@@ -97,7 +97,7 @@ public class VacuAndes
 	 * Elimina una cita por su fecha y hora y el documento del ciudadano
 	 * Adiciona entradas al log de la aplicación
 	 * @param fechaHora - Fecha y hora de la cita
-	 * @param documento - El documento de identificación del ciudadano asociado a la cita
+	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El número de tuplas eliminadas
 	 */
 	public Long eliminarCita( Date fechaHora, String ciudadano )
@@ -141,7 +141,7 @@ public class VacuAndes
 	 * Encuentra la cita en VacuAndes con la fecha y hora y ciudadano
 	 * Adiciona entradas al log de la aplicación
 	 * @param fechaHora - Fecha y hora de la cita
-	 * @param documento - El documento de identificación del ciudadano asociado a la cita
+	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return Un objeto Cita con la fecha y hora y ciudadano, lleno con su información básica
 	 */
 	public Cita darCita( Date fechaHora, String ciudadano )
@@ -234,7 +234,6 @@ public class VacuAndes
 	/**
 	 * Adiciona de manera persistente un rol
 	 * Adiciona entradas al log de la aplicación
-	 * @param id - El identificador del rol
 	 * @param rol - La cadena de texto con el rol
 	 * @return El objeto Rol adicionado. null si ocurre alguna Excepción
 	 */
@@ -1215,7 +1214,6 @@ public class VacuAndes
 	
 	/**
 	 * Consulta el índice de vacunación de un grupo poblacional
-	 * @param pm - El manejador de persistencia
 	 * @param eps - Lista con los id de las eps de interés
 	 * @param estado - Id del estado de interés
 	 * @param priorizacion - Descripción de la condición de priorización de interés
@@ -1235,8 +1233,8 @@ public class VacuAndes
 	/**
 	 * Metodo que consulta los ciudadanos atentidos de puntos de una region en rangos de fechas
 	 * @param region - region de los puntos
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darAtendidosRegionFechas( String region, String fecha1, String fecha2 ){
@@ -1265,8 +1263,8 @@ public class VacuAndes
 	/**
 	 * Metodo que consulta los ciudadanos atentidos de un punto en rangos de fechas
 	 * @param id - id del punto
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darAtendidosPuntoFechas( String id, String fecha1, String fecha2 ){
@@ -1294,8 +1292,8 @@ public class VacuAndes
 	
 	/**
 	 * Metodo que consulta los puntos efectivos en rangos de fechas
-	 * @fecha1 - fecha inicial
-	 * @fecha2 - fecha final
+	 * @param fecha1 - fecha inicial
+	 * @param fecha2 - fecha final
 	 * @return - lista con documentos de ciudadanos
 	 */
 	public List<String> darPuntosEfectivosFechas( String fecha1, String fecha2 ){
@@ -1326,7 +1324,6 @@ public class VacuAndes
 
 	/**
 	 * Elimina todas las tuplas en las tablas de VacuAndes
-	 * @param pm - El manejador de persistencia
 	 * @return Un arreglo con 14 números que indican el número de tuplas borradas en las tablas EPS, ROLES, 
 	 * ESTADO, ETAPA, CONDICIONPRIORIZACION, PUNTO, VACUNA, ASIGNADA, CIUDADANO, VACUNACION,
 	 * PRIORIZACION, INFOUSUARIO, USUARIO, CITA

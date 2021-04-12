@@ -60,7 +60,7 @@ public class SQLCondicionPriorizacion {
 	/**
 	 * Crea y ejecuta la sentencia SQL para eliminar una CONDICIONPRIORIZACION de la base de datos de VacuAndes por su id
 	 * @param pm - El manejador de persistencia
-	 * @param id - El identificador de la condicion de priorizacion
+	 * @param descripcion - La descripción de la condicion de priorizacion
 	 * @return EL número de tuplas eliminadas
 	 */
 	public Long eliminarCondicionPriorizacion( PersistenceManager pm, String descripcion )

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"uniandes.isis2304.vacuandes.interfazApp"},{"l":"uniandes.isis2304.vacuandes.negocio"},{"l":"uniandes.isis2304.vacuandes.persistencia"}];updateSearchResults();

@@ -61,7 +61,8 @@ public class SQLAsignada {
 	/**
 	 * Crea y ejecuta la sentencia SQL para eliminar una vacuna ASIGNADA de la base de datos de VacuAndes por su numero
 	 * @param pm - El manejador de persistencia
-	 * @param id - El identificador de la vacuna asignada y el punto de vacunacion
+	 * @param id_vacuna - El identificador de la vacuna asignada
+	 * @param id_punto - El identificador del punto de vacunacion
 	 * @return EL número de tuplas eliminadas
 	 */
 	public Long eliminarAsignada( PersistenceManager pm, String id_vacuna, String id_punto )

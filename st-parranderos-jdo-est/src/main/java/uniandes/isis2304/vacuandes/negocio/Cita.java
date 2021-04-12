@@ -14,8 +14,6 @@
 
 package uniandes.isis2304.vacuandes.negocio;
 
-import java.util.Date;
-
 /**
  * Clase para modelar el concepto CITA del negocio de VacuAndes
  *

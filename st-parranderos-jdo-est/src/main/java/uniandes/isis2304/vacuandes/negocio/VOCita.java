@@ -14,7 +14,6 @@
 
 package uniandes.isis2304.vacuandes.negocio;
 
-import java.util.Date;
 
 /**
  * Interfaz para los métodos get de CITA. 
