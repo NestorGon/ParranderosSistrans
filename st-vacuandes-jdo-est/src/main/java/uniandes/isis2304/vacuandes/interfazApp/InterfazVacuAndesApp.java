@@ -324,7 +324,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     				if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
     					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
     				}
-    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa() );
+    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
     			}
         		if (ciudadano == null)
         		{

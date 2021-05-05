@@ -36,6 +36,11 @@ public class Vacuna implements VOVacuna{
 	 */
 	private String tipo;
 	
+	/**
+	 * Fecha de llegada de la vacuna
+	 */
+	private String llegada;
+	
 	/* ****************************************************************
 	 * 			Métodos
 	 *****************************************************************/
@@ -44,12 +49,13 @@ public class Vacuna implements VOVacuna{
 		//Constructor vacío
 	}
 	
-	public Vacuna(String id, String preservacion, String aplicada, Long dosis, String tipo) {
+	public Vacuna(String id, String preservacion, String aplicada, Long dosis, String tipo, String llegada) {
 		this.id = id;
 		this.preservacion = preservacion;
 		this.aplicada = aplicada;
 		this.dosis = dosis;
 		this.tipo = tipo;
+		this.llegada = llegada;
 	}
 
 	public String getId() {
@@ -92,6 +98,14 @@ public class Vacuna implements VOVacuna{
 		this.tipo = tipo;
 	}
 	
+	public String getLlegada() {
+		return llegada;
+	}
+
+	public void setLlegada(String llegada) {
+		this.llegada = llegada;
+	}
+
 	@Override
 	/**
 	 * @return cadena de caracteres con todos los atributos de la vacuna

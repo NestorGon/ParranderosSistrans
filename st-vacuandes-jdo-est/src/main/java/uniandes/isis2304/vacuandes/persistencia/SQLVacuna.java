@@ -53,10 +53,10 @@ public class SQLVacuna {
 	 * @param tipo - Tipo de la vacuna
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarVacuna( PersistenceManager pm, String id, String preservacion, String aplicada, Long dosis, String tipo ) 
+	public Long adicionarVacuna( PersistenceManager pm, String id, String preservacion, String aplicada, Long dosis, String tipo, String llegada ) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaVacuna() + "(ID, PRESERVACION, APLICADA, DOSIS, TIPO) values (?, ?, ?, ?, ?)");
-        q.setParameters( id, preservacion, aplicada, dosis, tipo);
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaVacuna() + "(ID, PRESERVACION, APLICADA, DOSIS, TIPO, LLEGADA) values (?, ?, ?, ?, ?, TO_DATE(?, 'DD-MM-YYYY HH24:MI'))");
+        q.setParameters( id, preservacion, aplicada, dosis, tipo, llegada);
         return (Long) q.executeUnique();
 	}
 	

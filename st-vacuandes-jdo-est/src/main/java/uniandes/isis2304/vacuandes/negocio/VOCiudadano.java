@@ -61,6 +61,11 @@ public interface VOCiudadano {
 	 */
 	public Integer getNumero_etapa();
 	
+	/**
+	 * @return El sexo del ciudadano
+	 */
+	public String getSexo();
+	
 	@Override
 	/**
 	 * @return Una cadena de caracteres con todos los atributos del ciudadano

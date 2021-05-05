@@ -59,6 +59,11 @@ public class Ciudadano implements VOCiudadano {
 	 * El número de la etapa a la que el ciudadano pertenece
 	 */
 	private Integer numero_etapa;
+	
+	/**
+	 * El sexo del ciudadano
+	 */
+	private String sexo;
 
 	/* ****************************************************************
 	 * 			Métodos
@@ -67,7 +72,7 @@ public class Ciudadano implements VOCiudadano {
 	public Ciudadano() {
 	}
 
-	public Ciudadano( String documento, String nombre, Date nacimiento, String habilitado, Long id_estado, String id_eps, Integer numero_etapa ) {
+	public Ciudadano( String documento, String nombre, Date nacimiento, String habilitado, Long id_estado, String id_eps, Integer numero_etapa, String sexo ) {
 		this.documento = documento;
 		this.nombre = nombre;
 		this.nacimiento = nacimiento;
@@ -75,6 +80,7 @@ public class Ciudadano implements VOCiudadano {
 		this.id_estado = id_estado;
 		this.id_eps = id_eps;
 		this.numero_etapa = numero_etapa;
+		this.sexo = sexo;
 	}
 
 	public String getDocumento() {
@@ -133,6 +139,14 @@ public class Ciudadano implements VOCiudadano {
 		this.numero_etapa = numero_etapa;
 	}
 	
+	public String getSexo() {
+		return sexo;
+	}
+
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
+
 	@Override
 	/**
 	 * @return Una cadena de caracteres con todos los atributos del ciudadano
@@ -140,6 +154,6 @@ public class Ciudadano implements VOCiudadano {
 	public String toString() 
 	{
 		return "Ciudadano [documento=" + documento + ", nombre=" + nombre + ", nacimiento=" + nacimiento + ", habilitado=" + habilitado
-				+ ", id_estado=" + id_estado + ", id_eps=" + id_eps + ", numero_etapa=" + numero_etapa + "]";
+				+ ", id_estado=" + id_estado + ", id_eps=" + id_eps + ", numero_etapa=" + numero_etapa + ", sexo = "+sexo+"]";
 	}
 }
