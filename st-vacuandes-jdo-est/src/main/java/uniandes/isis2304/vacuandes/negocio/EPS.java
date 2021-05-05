@@ -26,6 +26,11 @@ public class EPS implements VOEPS{
 	 */
 	private Long vacunas;
 	
+	/**
+	 * Número de vacunas que puede almacenar la eps
+	 */
+	private Long capacidadVacunas;
+	
 	/* ****************************************************************
 	 * 			Métodos
 	 *****************************************************************/
@@ -34,10 +39,11 @@ public class EPS implements VOEPS{
 		//Constructor vacío
 	}
 	
-	public EPS( String id, String region, Long vacunas ) {
+	public EPS( String id, String region, Long vacunas, Long capacidadVacunas ) {
 		this.id = id; 
 		this.region = region; 
 		this.vacunas = vacunas;
+		this.capacidadVacunas = capacidadVacunas;
 	}
 
 	public String getId() {
@@ -63,12 +69,20 @@ public class EPS implements VOEPS{
 	public void setVacunas(Long vacunas) {
 		this.vacunas = vacunas;
 	}
+	
+	public Long getCapacidadVacunas() {
+		return capacidadVacunas;
+	}
+
+	public void setCapacidadVacunas(Long capacidadVacunas) {
+		this.capacidadVacunas = capacidadVacunas;
+	}
 
 	@Override
 	/**
 	 * @return cadena de caracteres con todos los atributos de la eps
 	 */
 	public String toString() {
-		return "EPS[id = "+ id+", region = "+ region+", vacunas = "+vacunas+"]";
+		return "EPS[id = "+ id+", region = "+ region+", vacunas = "+vacunas+", capacidad vacunas = "+capacidadVacunas+"]";
 	}
 }

@@ -41,6 +41,21 @@ public interface VOPunto {
 	 */
 	public String getId_eps();
 	
+	/**
+	 * @return cantidad de vacunas que pueden ser almacenadas en el Punto
+	 */
+	public Long getCapacidadVacunas();
+	
+	/**
+	 * @return cantidad de vacunas que tiene el Punto
+	 */
+	public Long getVacunas();
+	
+	/**
+	 * @return T o F si el punto está o no habilitado para prestar servicio
+	 */
+	public String getHabilitado();
+	
 	@Override
 	/**
 	 * @return Una cadena de caracteres con todos los atributos del punto

@@ -55,10 +55,10 @@ public class SQLPunto {
 	 * @param id_eps - Id de la eps a la que pertenece el punto de vacunacion
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarPunto( PersistenceManager pm, String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps ) 
+	public Long adicionarPunto( PersistenceManager pm, String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado ) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaPunto() + "(ID, REGION, DIRECCION, APLICADAS, CAPACIDAD, ID_EPS) values (?, ?, ?, ?, ?, ?)");
-        q.setParameters( id, region, direccion, aplicadas, capacidad, id_eps );
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaPunto() + "(ID, REGION, DIRECCION, APLICADAS, CAPACIDAD, ID_EPS, CAPACIDADVACUNAS, VACUNAS, HABILITADO) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        q.setParameters( id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado );
         return (Long) q.executeUnique();
 	}
 	

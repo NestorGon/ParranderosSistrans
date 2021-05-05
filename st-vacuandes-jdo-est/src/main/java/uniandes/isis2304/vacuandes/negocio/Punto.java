@@ -39,7 +39,22 @@ public class Punto implements VOPunto{
 	/**
 	 * Id único de la eps a la que pertenece el punto de vacunacion
 	 */
-	private String id_eps; 
+	private String id_eps;
+	
+	/**
+	 * La capacidad de almacenamiento de vacunas del punto
+	 */
+	private Long capacidadVacunas;
+	
+	/**
+	 * La cantidad de vacunas del punto	
+	 */
+	private Long vacunas;
+	
+	/**
+	 * Si el punto está habilitado o no para prestar servicio
+	 */
+	private String habilitado; 
 	
 	/* ****************************************************************
 	 * 			Métodos
@@ -49,13 +64,16 @@ public class Punto implements VOPunto{
 		//Constructor vacío
 	}
 	
-	public Punto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps) {
+	public Punto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado ) {
 		this.id = id;
 		this.region = region; 
 		this.direccion = direccion; 
 		this.aplicadas = aplicadas;
 		this.capacidad = capacidad;
 		this.id_eps = id_eps;
+		this.capacidadVacunas = capacidadVacunas;
+		this.vacunas = vacunas;
+		this.habilitado = habilitado;
 	}
 
 	public String getId() {
@@ -106,12 +124,37 @@ public class Punto implements VOPunto{
 		this.id_eps = id_eps;
 	}
 	
+	public Long getCapacidadVacunas() {
+		return capacidadVacunas;
+	}
+
+	public void setCapacidadVacunas(Long capacidadVacunas) {
+		this.capacidadVacunas = capacidadVacunas;
+	}
+
+	public Long getVacunas() {
+		return vacunas;
+	}
+
+	public void setVacunas(Long vacunas) {
+		this.vacunas = vacunas;
+	}
+
+	public String getHabilitado() {
+		return habilitado;
+	}
+
+	public void setHabilitado(String habilitado) {
+		this.habilitado = habilitado;
+	}
+
 	@Override
 	/**
 	 * @return cadena de caracteres con todos los atributos del punto
 	 */
 	public String toString() {
-		return "Punto[id = "+ id+", region = "+ region+", direccion = "+ direccion+", aplicadas = "+aplicadas+"capacidad = "+capacidad+", id_eps = "+ id_eps+"]";
+		return "Punto[id = "+ id+", region = "+ region+", direccion = "+ direccion+", aplicadas = "+aplicadas+"capacidad = "+capacidad+", id_eps = "+ id_eps+""
+				+ " capacidad vacunas = "+capacidadVacunas+", vacunas = "+vacunas+", habilitado = "+habilitado+"]";
 	}
 
 }

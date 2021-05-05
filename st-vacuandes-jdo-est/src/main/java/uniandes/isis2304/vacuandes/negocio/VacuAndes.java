@@ -465,10 +465,10 @@ public class VacuAndes
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El objeto Ciudadano adicionado. null si ocurre alguna Excepción
 	 */
-	public Ciudadano adicionarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	public Ciudadano adicionarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo )
 	{
        log.info( "Adicionando Ciudadano: " + documento + " - " + nombre );
-       Ciudadano ciudadano = pp.adicionarCiudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );		
+       Ciudadano ciudadano = pp.adicionarCiudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );		
        log.info( "Ciudadano adicionado: " + ciudadano );
        return ciudadano;
 	}
@@ -485,10 +485,10 @@ public class VacuAndes
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El objeto Ciudadano actualizado. null si ocurre alguna Excepción
 	 */
-	public Ciudadano actualizarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	public Ciudadano actualizarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo )
 	{
        log.info( "Actualizando Ciudadano: " + documento + " - " + nombre );
-       Ciudadano ciudadano = pp.actualizarCiudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );		
+       Ciudadano ciudadano = pp.actualizarCiudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
        log.info( "Ciudadano actualizado: " + ciudadano );
        return ciudadano;
 	}
@@ -635,6 +635,82 @@ public class VacuAndes
 	}
 	
 	/* ****************************************************************
+	 * 			Métodos para manejar las ATENCIONES
+	 *****************************************************************/
+	/**
+	 * Adiciona de manera persistente una atención
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El objeto Atencion adicionado. null si ocurre alguna Excepción
+	 */
+	public Atencion adicionarAtencion( String descripcion, String punto )
+	{
+       log.info( "Adicionando Atencion: " + descripcion + " - " + punto );
+       Atencion atencion = pp.adicionarAtencion( descripcion, punto );		
+       log.info( "Atencion adicionada: " + atencion );
+       return atencion;
+	}
+	
+	/**
+	 * Elimina un usuario por su documento
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El número de tuplas eliminadas
+	 */
+	public Long eliminarAtencion( String descripcion, String punto )
+	{
+		log.info( "Eliminando Atencion: " + descripcion + "-" + punto );
+		Long resp = pp.eliminarAtencion( descripcion, punto );		
+		log.info( "Atencion eliminada: " + resp + " tuplas eliminadas" );
+		return resp;
+	}
+	
+	/**
+	 * Encuentra todas las atenciones en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Atencion con todas las atenciones que conoce la aplicación
+	 */
+	public List<Atencion> darAtenciones()
+	{
+		log.info ("Consultando Atenciones");
+		List<Atencion> atenciones = pp.darAtenciones();	
+		log.info ("Consultando Atenciones: " + atenciones.size() + " existentes");
+		return atenciones;
+	}
+
+	/**
+	 * Encuentra todas las atenciones en VacuAndes y los devuelve como una lista de VOAtencion
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos VOAtencion con todas las atenciones que conoce la aplicación
+	 */
+	public List<VOAtencion> darVOAtenciones()
+	{
+		log.info ("Generando los VO de Atenciones");        
+       List<VOAtencion> voAtenciones = new LinkedList<VOAtencion>();
+       for( Atencion atencion : pp.darAtenciones() ) {
+    	   voAtenciones.add (atencion);
+       }
+       log.info ("Generando los VO de Atenciones: " + voAtenciones.size() + " existentes");
+       return voAtenciones;
+	}
+
+	/**
+	 * Encuentra la atención en VacuAndes con la condición de priorización y el punto
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return Un objeto Atencion con la condición y punto, lleno con su información básica
+	 */
+	public Atencion darAtencion( String descripcion, String punto )
+	{
+		log.info ("Buscando Atencion: " + descripcion + " - " + punto );
+		Atencion atencion = pp.darAtencion( descripcion, punto );
+		return atencion;
+	}
+	
+	/* ****************************************************************
 	 * 			Métodos para manejar la VACUNACION
 	 *****************************************************************/
 	/**
@@ -725,10 +801,10 @@ public class VacuAndes
 	 * @param id_eps - Id de la eps a la que pertenece el punto de vacunacion
 	 * @return El objeto Punto adicionado. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps )
+	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado )
 	{
        log.info( "Adicionando Punto: " + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps );
-       Long resp = pp.adicionarPunto( id, region, direccion, aplicadas, capacidad, id_eps );		
+       Long resp = pp.adicionarPunto( id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado );
        log.info( "Punto adicionado: "  + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps);
        return resp;
 	}
@@ -826,10 +902,10 @@ public class VacuAndes
 	 * @param tipo - Tipo de la vacuna
 	 * @return El objeto Vacuna adicionado. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarVacuna( String id, String preservacion, String aplicada, Long dosis, String tipo )
+	public Long adicionarVacuna( String id, String preservacion, String aplicada, Long dosis, String tipo, String llegada )
 	{
        log.info( "Adicionando Vacuna: " + id + " - " + preservacion+" -"+ aplicada+" - "+ dosis+" - "+ tipo );
-       Long resp = pp.adicionarVacuna( id, preservacion, aplicada, dosis, tipo );		
+       Long resp = pp.adicionarVacuna( id, preservacion, aplicada, dosis, tipo, llegada );
        log.info( "Vacuna adicionada: "  + id + " - " + preservacion+" -"+ aplicada+" - "+ dosis+" - "+ tipo);
        return resp;
 	}
@@ -1052,10 +1128,10 @@ public class VacuAndes
 	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
 	 * @return El objeto EPS adicionado. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarEps( String id, String descripcion, String region, Long vacunas )
+	public Long adicionarEps( String id, String descripcion, String region, Long vacunas, Long capacidadVacunas )
 	{
        log.info( "Adicionando EPS: " + id + " - " + descripcion+ " - "+ region + " - "+vacunas );
-       Long resp = pp.adicionarEps( id, descripcion, region, vacunas );		
+       Long resp = pp.adicionarEps( id, descripcion, region, vacunas, capacidadVacunas );		
        log.info( "EPS adicionada: "  + id + " - " + descripcion+ " - "+ region + " - "+vacunas);
        return resp;
 	}

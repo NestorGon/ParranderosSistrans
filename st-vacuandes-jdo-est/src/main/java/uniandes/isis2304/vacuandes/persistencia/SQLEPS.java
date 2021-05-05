@@ -51,10 +51,10 @@ public class SQLEPS {
 	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarEPS( PersistenceManager pm, String id, String region, Long vacunas ) 
+	public Long adicionarEPS( PersistenceManager pm, String id, String region, Long vacunas,  Long capacidadVacunas) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaEps() + "(ID, REGION, VACUNAS) values (?, ?, ?)");
-        q.setParameters(id, region, vacunas);
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaEps() + "(ID, REGION, VACUNAS, CAPACIDADVACUNAS) values (?, ?, ?, ?)");
+        q.setParameters(id, region, vacunas, capacidadVacunas);
         return (Long) q.executeUnique();
 	}
 	

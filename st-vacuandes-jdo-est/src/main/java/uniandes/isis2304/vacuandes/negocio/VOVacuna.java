@@ -36,6 +36,11 @@ public interface VOVacuna {
 	 */
 	public String getTipo();
 	
+	/**
+	 * @return string con la fecha de llegada de la vacuna
+	 */
+	public String getLlegada();
+	
 	@Override
 	/**
 	 * @return cadena de caracteres con los atributos de la vacuna

@@ -31,6 +31,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import uniandes.isis2304.vacuandes.negocio.Asignada;
+import uniandes.isis2304.vacuandes.negocio.Atencion;
 import uniandes.isis2304.vacuandes.negocio.Cita;
 import uniandes.isis2304.vacuandes.negocio.Ciudadano;
 import uniandes.isis2304.vacuandes.negocio.CondicionPriorizacion;
@@ -162,6 +163,11 @@ public class PersistenciaVacuAndes
 	 */
 	private SQLAsignada sqlAsignada;
 	
+	/**
+	 * Atributo para el acceso a la tabla ATENCION
+	 */
+	private SQLAtencion sqlAtencion;
+	
 	/* ****************************************************************
 	 * 			Métodos del MANEJADOR DE PERSISTENCIA
 	 *****************************************************************/
@@ -191,6 +197,7 @@ public class PersistenciaVacuAndes
 		tablas.add ("INFOUSUARIO");
 		tablas.add ("USUARIO");
 		tablas.add ("CITA");
+		tablas.add ("ATENCION");
 }
 
 	/**
@@ -281,6 +288,7 @@ public class PersistenciaVacuAndes
 		sqlCondicionPriorizacion = new SQLCondicionPriorizacion( this );
 		sqlEps = new SQLEPS( this );
 		sqlAsignada = new SQLAsignada( this );
+		sqlAtencion = new SQLAtencion( this );
 	}
 
 	/**
@@ -401,6 +409,14 @@ public class PersistenciaVacuAndes
 	public String darTablaCita()
 	{
 		return tablas.get( 14 );
+	}
+	
+	/**
+	 * @return La cadena de caracteres con el nombre de la tabla de Atención de VacuAndes
+	 */
+	public String darTablaAtencion()
+	{
+		return tablas.get( 15 );
 	}
 	
 	/**
@@ -910,19 +926,19 @@ public class PersistenciaVacuAndes
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El objeto Ciudadano adicionado. null si ocurre alguna Excepción
 	 */
-	public Ciudadano adicionarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	public Ciudadano adicionarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long tuplasInsertadas = sqlCiudadano.adicionarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            Long tuplasInsertadas = sqlCiudadano.adicionarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
             tx.commit();
             
             log.trace( "Inserción de ciudadano: " + documento + " - " + nombre + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
         }
         catch( Exception e )
         {
@@ -951,19 +967,19 @@ public class PersistenciaVacuAndes
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El objeto Ciudadano actualizado. null si ocurre alguna Excepción
 	 */
-	public Ciudadano actualizarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa )
+	public Ciudadano actualizarCiudadano( String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long tuplasActualizadas = sqlCiudadano.actualizarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            Long tuplasActualizadas = sqlCiudadano.actualizarCiudadano( pm, documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
             tx.commit();
             
             log.trace( "Actualización de ciudadano: " + documento + " - " + nombre + ": " + tuplasActualizadas + " tuplas actualizadas" );
             
-            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa );
+            return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
         }
         catch( Exception e )
         {
@@ -1133,6 +1149,99 @@ public class PersistenciaVacuAndes
 	}
 	
 	/* ****************************************************************
+	 * 			Métodos para manejar las ATENCIONES
+	 *****************************************************************/
+	
+	/**
+	 * Método que inserta, de manera transaccional, una tupla en la tabla ATENCION
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El objeto Atencion adicionado. null si ocurre alguna Excepción
+	 */
+	public Atencion adicionarAtencion( String descripcion, String punto )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long tuplasInsertadas = sqlAtencion.adicionarAtencion( pm, descripcion, punto );
+            tx.commit();
+            
+            log.trace( "Inserción de atencion: " + descripcion + " - " + punto + ": " + tuplasInsertadas + " tuplas insertadas" );
+            
+            return new Atencion( descripcion, punto );
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que elimina, de manera transaccional, una tupla en la tabla ATENCION
+	 * Adiciona entradas al log de la aplicación
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
+	 */
+	public Long eliminarAtencion( String descripcion, String punto ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlAtencion.eliminarAtencion( pm, descripcion, punto );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que consulta la tupla en la tabla ATENCION que tiene la condicion y el punto
+	 * @param descripcion - La descripcion de la condicion de priorizacion
+	 * @param punto - El identificador del punto de vacunación
+	 * @return El objeto Atencion, construidos con base en las tuplas de la tabla ATENCION
+	 */
+	public Atencion darAtencion( String descripcion, String punto )
+	{
+		return sqlAtencion.darAtencion( pmf.getPersistenceManager(), descripcion, punto );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla ATENCION
+	 * @return La lista de objetos Atencion, construidos con base en las tuplas de la tabla ATENCION
+	 */
+	public List<Atencion> darAtenciones()
+	{
+		return sqlAtencion.darAtenciones( pmf.getPersistenceManager() );
+	}
+	
+	/* ****************************************************************
 	 * 			Métodos para manejar la VACUNACION
 	 *****************************************************************/
 	
@@ -1242,14 +1351,14 @@ public class PersistenciaVacuAndes
 	 * @param id_eps - Id de la eps a la que pertenece el punto de vacunacion
 	 * @return Ls cantidad de tuplas modificadas. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps )
+	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long ti = sqlPunto.adicionarPunto( pm, id, region, direccion, aplicadas, capacidad, id_eps );
+            Long ti = sqlPunto.adicionarPunto( pm, id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado );
             tx.commit();
             
             log.trace( "Inserción de punto: " + id + " - " + region + " - "+ direccion+" - "+aplicadas+" - "+ capacidad+" - "+ id_eps+": " + ti + " tuplas insertadas" );
@@ -1389,14 +1498,14 @@ public class PersistenciaVacuAndes
 	 * @param tipo - Tipo de la vacuna
 	 * @return Ls cantidad de tuplas modificadas. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarVacuna( String id, String preservacion, String aplicada, Long dosis, String tipo )
+	public Long adicionarVacuna( String id, String preservacion, String aplicada, Long dosis, String tipo, String llegada )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long ti = sqlVacuna.adicionarVacuna( pm, id, preservacion, aplicada, dosis, tipo );
+            Long ti = sqlVacuna.adicionarVacuna( pm, id, preservacion, aplicada, dosis, tipo, llegada );
             tx.commit();
             
             log.trace( "Inserción de vacuna: " + id + " - " + id + " - "+ preservacion +" - "+aplicada +" - "+ dosis +" - "+ tipo +": " + ti + " tuplas insertadas" );
@@ -1727,14 +1836,14 @@ public class PersistenciaVacuAndes
 	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
 	 * @return Ls cantidad de tuplas modificadas. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarEps( String id, String descripcion, String region, Long vacunas )
+	public Long adicionarEps( String id, String descripcion, String region, Long vacunas, Long capacidadVacunas )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
         try
         {
             tx.begin();
-            Long ti = sqlEps.adicionarEPS( pm, id, region, vacunas );
+            Long ti = sqlEps.adicionarEPS( pm, id, region, vacunas, capacidadVacunas );
             tx.commit();
             
             log.trace( "Inserción de EPS: " + id + " - " + region +" - "+ vacunas+ ": " + ti + " tuplas insertadas" );
@@ -2067,7 +2176,7 @@ public class PersistenciaVacuAndes
         {
 //        	e.printStackTrace();
         	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
+        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
         }
         finally
         {

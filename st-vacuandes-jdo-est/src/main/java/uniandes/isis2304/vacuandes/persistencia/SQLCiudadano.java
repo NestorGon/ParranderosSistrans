@@ -70,10 +70,10 @@ public class SQLCiudadano {
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El número de tuplas insertadas
 	 */
-	public Long adicionarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa) 
+	public Long adicionarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCiudadano() + "(DOCUMENTO, NOMBRE, NACIMIENTO, HABILITADO, ID_ESTADO, ID_EPS, NUMERO_ETAPA) values (?, ?, ?, ?, ?, ?, ?)");
-        q.setParameters(documento, nombre, nacimiento, habilitado, estado, eps, etapa);
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCiudadano() + "(DOCUMENTO, NOMBRE, NACIMIENTO, HABILITADO, ID_ESTADO, ID_EPS, NUMERO_ETAPA, SEXO) values (?, ?, ?, ?, ?, ?, ?, ?)");
+        q.setParameters(documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo);
         return (Long) q.executeUnique();
 	}
 	
@@ -89,10 +89,10 @@ public class SQLCiudadano {
 	 * @param etapa - El número de la etapa a la que el ciudadano pertenece
 	 * @return El número de tuplas actualizadas
 	 */
-	public Long actualizarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa) 
+	public Long actualizarCiudadano( PersistenceManager pm, String documento, String nombre, Date nacimiento, String habilitado, Long estado, String eps, Integer etapa, String sexo) 
 	{
-        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaCiudadano() + " SET NOMBRE = ?, NACIMIENTO = ?, HABILITADO = ?, ID_ESTADO = ?, ID_EPS = ?, NUMERO_ETAPA = ? WHERE DOCUMENTO = ?");
-        q.setParameters(nombre, nacimiento, habilitado, estado, eps, etapa, documento);
+        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaCiudadano() + " SET NOMBRE = ?, NACIMIENTO = ?, HABILITADO = ?, ID_ESTADO = ?, ID_EPS = ?, NUMERO_ETAPA = ?, SEXO = ? WHERE DOCUMENTO = ?");
+        q.setParameters(nombre, nacimiento, habilitado, estado, eps, etapa, documento, sexo);
         return (Long) q.executeUnique();
 	}
 	

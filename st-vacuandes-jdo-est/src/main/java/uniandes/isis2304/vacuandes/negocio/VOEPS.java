@@ -26,6 +26,11 @@ public interface VOEPS {
 	 */
 	public Long getVacunas();
 	
+	/**
+	 * @return capacidad de almacenamiento de vacunas de la eps
+	 */
+	public Long getCapacidadVacunas();
+	
 	@Override
 	/**
 	 * @return cadena de caracteres con los atributos de la eps

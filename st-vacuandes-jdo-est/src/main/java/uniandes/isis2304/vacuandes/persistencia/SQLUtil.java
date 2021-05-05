@@ -92,6 +92,7 @@ class SQLUtil
 		Query qInfoUsuario = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaInfoUsuario() );
 		Query qUsuario = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaUsuario() );
 		Query qCita = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaCita() );
+		Query qAtencion = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaAtencion() );
 
 		Long epsEliminados = (Long) qEps.executeUnique ();
 		Long rolesEliminados = (Long) qRoles.executeUnique ();
@@ -107,10 +108,11 @@ class SQLUtil
 		Long infoUsuarioEliminados = (Long) qInfoUsuario.executeUnique ();
 		Long usuarioEliminados = (Long) qUsuario.executeUnique ();
 		Long citaEliminados = (Long) qCita.executeUnique ();
+		Long atencionEliminados = (Long) qAtencion.executeUnique ();
 		return new Long[] {epsEliminados, rolesEliminados, estadoEliminadas, etapaEliminadas,
 				condPriorEliminados, puntoEliminados, vacunaEliminados, asignadaEliminados,
 				ciudadanoEliminados, vacunacionEliminados, priorizacionEliminados, infoUsuarioEliminados,
-				usuarioEliminados, citaEliminados};
+				usuarioEliminados, citaEliminados, atencionEliminados};
 	}
 
 	/**
