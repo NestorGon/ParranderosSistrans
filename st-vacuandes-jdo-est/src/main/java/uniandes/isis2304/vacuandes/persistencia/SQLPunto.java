@@ -83,7 +83,7 @@ public class SQLPunto {
 	 */
 	public long aumentarAplicadasPuntoId(PersistenceManager pm, String id)
 	{
-        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaPunto () + " SET APLICADAS = APLICADAS + 1 WHERE ID = ?");
+        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaPunto () + " SET APLICADAS = APLICADAS + 1, VACUNAS = VACUNAS - 1 WHERE ID = ?");
         q.setParameters(id);
         return (long) q.executeUnique();
 	}	

@@ -52,8 +52,13 @@ import uniandes.isis2304.vacuandes.negocio.CondicionPriorizacion;
 import uniandes.isis2304.vacuandes.negocio.EPS;
 import uniandes.isis2304.vacuandes.negocio.Estado;
 import uniandes.isis2304.vacuandes.negocio.Punto;
+import uniandes.isis2304.vacuandes.negocio.Rol;
 import uniandes.isis2304.vacuandes.negocio.VOCiudadano;
+import uniandes.isis2304.vacuandes.negocio.VOEPS;
+import uniandes.isis2304.vacuandes.negocio.VOEstado;
 import uniandes.isis2304.vacuandes.negocio.VOInfoUsuario;
+import uniandes.isis2304.vacuandes.negocio.VOPunto;
+import uniandes.isis2304.vacuandes.negocio.VOVacuna;
 import uniandes.isis2304.vacuandes.negocio.VOVacunacion;
 import uniandes.isis2304.vacuandes.negocio.VacuAndes;
 
@@ -245,6 +250,151 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	 *****************************************************************/
 
 	/**
+	 * Registra un usuario en VacuAndes
+	 * Se crea una nueva tupla en la tabla de USUARIO e INFOUSUARIO
+	 */
+	public void registrarUsuario( ) {
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				//TODO revisar autenticación para el req RF4
+				if ( !usuario.getId_roles().equals(2L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del usuario", "Registrar usuario", JOptionPane.QUESTION_MESSAGE);
+			String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Registrar usuario", JOptionPane.QUESTION_MESSAGE);
+			String clave = JOptionPane.showInputDialog (this, "Ingrese la clave del usuario", "Registrar usuario", JOptionPane.QUESTION_MESSAGE);
+			String trabajo = JOptionPane.showInputDialog (this, "Ingrese el trabajo del usuario", "Registrar usuario", JOptionPane.QUESTION_MESSAGE);
+			
+			JList<String> list = new JList<>( darRoles() );
+			JOptionPane.showMessageDialog(null, list, "Selecccione el rol del usuario", JOptionPane.PLAIN_MESSAGE);
+			String rol = list.getSelectedValue();
+			
+			String puntoVac = JOptionPane.showInputDialog (this, "Ingrese el identificador del punto de vacunación", "Registrar usuario", JOptionPane.QUESTION_MESSAGE);
+			if ( documento != null && !documento.trim().equals("") && puntoVac != null && !puntoVac.trim().equals("") && login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") 
+					&& trabajo != null && !trabajo.trim().equals("") && rol != null && !rol.trim().equals(""))
+			{
+				documento = documento.trim();
+				login = login.trim();
+				clave = clave.trim();
+				trabajo = trabajo.trim();
+				rol = rol.trim();
+				puntoVac = puntoVac.trim();
+				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+				VOPunto punto = vacuAndes.darPunto( puntoVac );
+				VOInfoUsuario info = vacuAndes.darInfoUsuario(login);
+				if ( ciudadano == null ) {
+					throw new Exception("El usuario no ha sido registrado como ciudadano previamente");
+				}
+				if ( punto == null ) {
+					throw new Exception ("El punto de vacunación con id: " + puntoVac + " no se encuentra registrado en VacuAndes");
+				}
+				if ( info != null ) {
+					info = vacuAndes.adicionarInfoUsuario( documento, login, clave, trabajo, Long.parseLong(rol.split(":")[0]), puntoVac);
+				}
+				else {
+					throw new Exception ("El usuario ya está registrado en VacuAndes");
+				}
+				if ( info == null ) {
+					throw new Exception ("No se pudo registrar al usuario con login: " + login);
+				}
+				String resultado = "En registrarUsuario\n\n";
+				resultado += "Usuario registrado correctamente: " + info;
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
+		} 
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+		
+	}
+	
+	/**
+	 * Registra un punto de vacunación en VacuAndes
+	 * Se crea una nueva tupla en la tabla de PUNTO
+	 */
+	public void registrarPunto( ) {
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				//TODO revisar autenticación para el req RF6
+				if ( !usuario.getId_roles().equals(2L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			String id = JOptionPane.showInputDialog (this, "Ingrese el id del punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String region = JOptionPane.showInputDialog (this, "Ingrese la región del punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String direccion = JOptionPane.showInputDialog (this, "Ingrese la dirección del punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String aplicadasS = JOptionPane.showInputDialog (this, "Ingrese la cantidad de vacunas aplicadas en el punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String capacidadS = JOptionPane.showInputDialog (this, "Ingrese la cantidad de personas que pueden estar en el punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String id_eps = JOptionPane.showInputDialog (this, "Ingrese id de la eps asociada al punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String capacidadVacunasS = JOptionPane.showInputDialog (this, "Ingrese la cantidad de vacunas que pueden ser almacenadas en el punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String vacunasS = JOptionPane.showInputDialog (this, "Ingrese la cantidad actual de vacunas del punto", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			String habilitado = JOptionPane.showInputDialog (this, "Ingrese 'T' o 'F' si el punto está o no habilitado para prestar servicio", "Registrar punto", JOptionPane.QUESTION_MESSAGE);
+			
+			if ( id != null && !id.trim().equals("") && region != null && !region.trim().equals("") && direccion != null && !direccion.trim().equals("") && aplicadasS != null && !aplicadasS.trim().equals("") 
+					&& capacidadS != null && !capacidadS.trim().equals("") && id_eps != null && !id_eps.trim().equals("") && capacidadVacunasS != null && !capacidadVacunasS.trim().equals("")
+					&& vacunasS != null && !vacunasS.trim().equals("") && habilitado != null && !habilitado.trim().equals("") )
+			{
+				id = id.trim();
+				region = region.trim();
+				direccion = direccion.trim();
+				Long aplicadas = Long.parseLong(aplicadasS.trim());
+				Long capacidad = Long.parseLong(capacidadS.trim());
+				Long capacidadVacunas = Long.parseLong(capacidadVacunasS.trim());
+				Long vacunas = Long.parseLong(vacunasS.trim());
+				habilitado = habilitado.trim();
+				
+				VOEPS eps = vacuAndes.darEPS(id_eps);
+				VOPunto punto = vacuAndes.darPunto(id);
+				
+				if ( eps == null ) {
+					throw new Exception("La EPS no se encuentra registrada en VacuAndes");
+				}
+				if ( punto == null ) {
+					throw new Exception ("El punto de vacunación con id: " + punto + " ya se encuentra registrado en VacuAndes");
+				}
+				punto = vacuAndes.adicionarPunto(id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado);
+				if ( punto == null ) {
+					throw new Exception("No se pudo registra el punto con id: " + id);
+				}
+				String resultado = "En registrarPunto\n\n";
+				resultado += "Punto registrado correctamente: " + punto;
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
+		} 
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+		
+	}
+	
+	/**
 	 * Asigna un ciudadano a un único punto de vacunación
 	 * Se crea una nueva tupla de VACUNACION en la base de datos
 	 */
@@ -268,11 +418,33 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 				documento = documento.trim();
 				puntoVac = puntoVac.trim();
 				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-				//TODO Asegurar que el punto de vacunación existe
+				VOPunto punto = vacuAndes.darPunto( puntoVac );
 				VOVacunacion vac = vacuAndes.darVacunacion( documento, puntoVac );
+				if ( punto == null ) {
+					throw new Exception ("El punto de vacunación con id: " + puntoVac + " no se encuentra registrado en VacuAndes");
+				}
+				else if ( (punto.getCapacidad() - vacuAndes.darCantidadPunto(puntoVac)) == 0 ) {
+					throw new Exception ("El punto de vacunación no tiene capacidad para agregar al ciudadano con documento: " + documento );
+				}
 				if ( vac != null ) {
 					throw new Exception ("El ciudadano con documento " + documento + " ya se encuentra asignado al punto de vacunación con id " + puntoVac );
 				}
+				Boolean intersecta = false;
+				for ( String actual: vacuAndes.darCondicionesCiudadano(documento) ) {
+					for ( String actualP: vacuAndes.darCondicionesPunto(puntoVac) ) {
+						if ( actual.equals(actualP) ) {
+							intersecta = true;
+							break;
+						}
+					}
+					if ( intersecta ) {
+						break;
+					}
+				}
+				if ( !intersecta ) {
+					throw new Exception ("El ciudadano no puede ser atendido en el punto debido a que sus condiciones de priorización no son atendidas por el punto");
+				}
+				
 				if ( ciudadano != null ) {
 					vac = vacuAndes.adicionarVacunacion( documento, ciudadano.getId_eps(), puntoVac );
 				}
@@ -321,13 +493,39 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     		{
     			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
     			if ( ciudadano != null ) {
-    				if ( ciudadano.getId_estado().equals(Long.parseLong(idEstado) ) ) {
+    				VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
+    				if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
     					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
     				}
+    				VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
+    				if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
+    					if ( estado.getDescripcion().startsWith("VACUNADO") ) {
+    						String tipoVacuna = estado.getDescripcion().split(" ")[3];
+    						if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
+    							throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
+    						}
+    					}
+    					VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
+    					Boolean aplicada = false;
+    					if ( vacunacion != null ) {
+    						String id_punto = vacunacion.getId_punto();
+    						for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
+    							VOVacuna vacuna = vacuAndes.darVacuna( actual );
+    							if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[3]) ) {
+    								vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
+    								vacuAndes.aumentarAplicadasPuntoId(id_punto);
+    								aplicada = true;
+    								break;
+    							}
+    						}
+    						if ( !aplicada ) {
+    							throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
+    						}
+    					}
+    				}
     				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
-    			}
-        		if (ciudadano == null)
-        		{
+    			} 
+    			else {
         			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
         		}
         		String resultado = "En registrarAvanceVacunacion\n\n";
@@ -1008,6 +1206,20 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     	List<String> regiones = vacuAndes.darRegiones();
     	String[] retorno = new String[regiones.size()];
     	regiones.toArray(retorno);
+    	return retorno;
+    }
+    
+    /**
+     * Obtiene los roles registrados en vacuandes
+     * @return un arreglo de tamaño fijo de String con las regiones registradas
+     */
+    private String[] darRoles() {
+    	List<String> roles = new LinkedList();
+    	for ( Rol actual : vacuAndes.darRoles() ) {
+    		roles.add( actual.getId() + ":" +actual.getRol() );
+    	}
+    	String[] retorno = new String[roles.size()];
+    	roles.toArray(retorno);
     	return retorno;
     }
     

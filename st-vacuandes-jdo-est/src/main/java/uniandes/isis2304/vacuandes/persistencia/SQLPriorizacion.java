@@ -114,4 +114,18 @@ public class SQLPriorizacion {
 		q.setResultClass( Priorizacion.class );
 		return (List<Priorizacion>) q.executeList();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar las condiciones de priorización asociadas a un ciudadano
+	 * @param pm - El manejador de persistencia
+	 * @param documento - El documento del ciudadano
+	 * @return Una lista de objetos String con las condiciones de priorización encontradas
+	 */
+	public List<String> darCondicionesCiudadano( PersistenceManager pm, String documento ) {
+		Query q = pm.newQuery( SQL, "SELECT DESCRIPCION_CONDPRIOR FROM " + pp.darTablaPriorizacion() + " WHERE DOCUMENTO_CIUDADANO = ?");
+		q.setResultClass(String.class);
+		q.setParameters( documento );
+		return (List<String>) q.executeList();
+	}
+	
 }

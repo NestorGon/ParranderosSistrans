@@ -228,6 +228,17 @@ public class VacuAndes
 		return prior;
 	}
 	
+	/**
+	 * Encuentra las condiciones de priorización asociadas a un ciudadano
+	 * @param documento - El documento de identificación del ciudadano
+	 * @return La lista de objetos String con las condiciones de priorizacion encontradas
+	 */
+	public List<String> darCondicionesCiudadano( String documento ) {
+		log.info("Consultando las condiciones de priorizacion asociadas al ciudadano con documento: " + documento);
+		List<String> condiciones = pp.darCondicionesCiudadano( documento );
+		return condiciones;
+	}
+	
 	/* ****************************************************************
 	 * 			Métodos para manejar los ROLES
 	 *****************************************************************/
@@ -313,10 +324,10 @@ public class VacuAndes
 	 * @param punto - El punto de vacunación al que se encuentra asociado
 	 * @return El objeto InfoUsuario adicionado. null si ocurre alguna Excepción
 	 */
-	public InfoUsuario adicionarInfoUsuario( String login, String clave, String trabajo, Long roles, String punto )
+	public InfoUsuario adicionarInfoUsuario( String documento, String login, String clave, String trabajo, Long roles, String punto )
 	{
        log.info( "Adicionando InfoUsuario: " + login + " - " + trabajo );
-       InfoUsuario info = pp.adicionarInfoUsuario( login, clave, trabajo, roles, punto );		
+       InfoUsuario info = pp.adicionarInfoUsuario( documento, login, clave, trabajo, roles, punto );		
        log.info( "InfoUsuario adicionada: " + info );
        return info;
 	}
@@ -327,10 +338,10 @@ public class VacuAndes
 	 * @param login - El login único de un usuario
 	 * @return El número de tuplas eliminadas
 	 */
-	public Long eliminarInfoUsuario( String login )
+	public Long eliminarInfoUsuario( String documento, String login )
 	{
 		log.info( "Eliminando InfoUsuario: " + login );
-		Long resp = pp.eliminarInfoUsuario( login );		
+		Long resp = pp.eliminarInfoUsuario( documento, login );		
 		log.info( "InfoUsuario eliminada: " + resp + " tuplas eliminadas" );
 		return resp;
 	}
@@ -563,34 +574,6 @@ public class VacuAndes
 	/* ****************************************************************
 	 * 			Métodos para manejar los USUARIOS
 	 *****************************************************************/
-	/**
-	 * Adiciona de manera persistente un usuario
-	 * Adiciona entradas al log de la aplicación
-	 * @param documento - El documento de identificación del ciudadano
-	 * @param login - El login del usuario
-	 * @return El objeto Usuario adicionado. null si ocurre alguna Excepción
-	 */
-	public Usuario adicionarUsuario( String documento, String login )
-	{
-       log.info( "Adicionando Usuario: " + documento + " - " + login );
-       Usuario usuario = pp.adicionarUsuario( documento, login );		
-       log.info( "Usuario adicionado: " + usuario );
-       return usuario;
-	}
-	
-	/**
-	 * Elimina un usuario por su documento
-	 * Adiciona entradas al log de la aplicación
-	 * @param documento - El documento de identificación del ciudadano
-	 * @return El número de tuplas eliminadas
-	 */
-	public Long eliminarUsuario( String documento )
-	{
-		log.info( "Eliminando Usuario: " + documento );
-		Long resp = pp.eliminarUsuario( documento );		
-		log.info( "Usuario eliminado: " + resp + " tuplas eliminadas" );
-		return resp;
-	}
 	
 	/**
 	 * Encuentra todos los usuarios en VacuAndes
@@ -710,6 +693,17 @@ public class VacuAndes
 		return atencion;
 	}
 	
+	/**
+	 * Encuentra las condiciones de priorización que atiende un punto de vacunación
+	 * @param punto - El identificador del punto de vacunación
+	 * @return La lista con las condiciones de priorizacion encontradas
+	 */
+	public List<String> darCondicionesPunto( String punto ) {
+		log.info("Buscando condiciones de priorización del punto con id: " + punto);
+		List<String> condiciones = pp.darCondicionesPunto( punto );
+		return condiciones;
+	}
+	
 	/* ****************************************************************
 	 * 			Métodos para manejar la VACUNACION
 	 *****************************************************************/
@@ -787,6 +781,17 @@ public class VacuAndes
 		return vacunacion;
 	}
 	
+	/**
+	 * Encuentra la cantidad de vacunaciones del punto
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @return La cantidad de vacunaciones encontrada
+	 */
+	public Long darCantidadPunto( String id_punto ) {
+		log.info("Consultando cantidad de vacunaciones del punto con id: " + id_punto );
+		Long cantidad = pp.darCantidadPunto( id_punto );
+		return cantidad;
+	}
+	
 	/* ****************************************************************
 	 * 			Métodos para manejar el PUNTO
 	 *****************************************************************/
@@ -801,10 +806,10 @@ public class VacuAndes
 	 * @param id_eps - Id de la eps a la que pertenece el punto de vacunacion
 	 * @return El objeto Punto adicionado. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado )
+	public Punto adicionarPunto( String id, String region, String direccion, Long aplicadas, Long capacidad, String id_eps, Long capacidadVacunas, Long vacunas, String habilitado )
 	{
        log.info( "Adicionando Punto: " + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps );
-       Long resp = pp.adicionarPunto( id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado );
+       Punto resp = pp.adicionarPunto( id, region, direccion, aplicadas, capacidad, id_eps, capacidadVacunas, vacunas, habilitado );
        log.info( "Punto adicionado: "  + id + " - " + region+" -"+ direccion+" - "+ aplicadas+" - "+ capacidad+ " - "+id_eps);
        return resp;
 	}
@@ -886,7 +891,18 @@ public class VacuAndes
 		Long activas = pp.darCitasActivasPunto(id); 
 		log.info("Citas activas del punto encontrada: "+activas); 
 		return activas; 
-	} 
+	}
+	
+	/**
+	 * Método que aumenta la cantidad de aplicadas de un punto de vacunación
+	 * @param id - El identificador del punto de vacunación
+	 * @return la cantidad de tuplas modificadas
+	 */
+	public long aumentarAplicadasPuntoId( String id ) {
+		log.info("Aumentando cantidad de vacunas aplicadas en el punto con id: " + id);
+		Long aplicada = pp.aumentarAplicadasPuntoId(id);
+		return aplicada;
+	}
 
 	
 	/* ****************************************************************
@@ -965,6 +981,18 @@ public class VacuAndes
 		Vacuna vacuna = pp.darVacuna( id );
 		log.info ("Vacuna encontrada: " + id );
 		return vacuna;
+	}
+	
+	/**
+	 * Modifica el estado de aplicación de la vacuna
+	 * @param id - El identificador de la vacuna
+	 * @return La cantidad de tuplas modificadas
+	 */
+	public Long cambiarEstadoAplicacionVacunaT( String id ) {
+		log.info("Modificando aplicación de la vacuna con id: " + id);
+		Long resp = pp.cambiarEstadoAlplicacionVacunaT(id);
+		log.info("Se ha(n) modificado " + resp + " tupla(s)");
+		return resp;
 	}
 	
 	/* ****************************************************************
@@ -1282,6 +1310,17 @@ public class VacuAndes
 		Asignada asignada = pp.darAsignada( id_punto, id_vacuna );
 		log.info ("Vacuna encontrada: " + id_vacuna );
 		return asignada;
+	}
+	
+	/**
+	 * Encuentra las vacunas asignadas a un punto de vacunación
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @return La lista con las vacunas encontradas
+	 */
+	public List<String> darAsignadasPunto( String id_punto ) {
+		log.info("Consultando las vacunas asignadas al punto con id: " + id_punto);
+		List<String> asignadas = pp.darAsignadasPunto(id_punto);
+		return asignadas;
 	}
 
 	/* ****************************************************************
