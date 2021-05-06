@@ -100,4 +100,17 @@ public class SQLAsignada {
 		q.setResultClass( Asignada.class );
 		return (List<Asignada>) q.executeList();
 	}	
+	
+	/**
+	 * Crea y ejecuta la sentecia SQL para encontrar la información de las vacunas asignadas a un punto
+	 * @param pm - El manejador de persistencia
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @return Una lista de objetos String con las vacunas encontradas
+	 */
+	public List<String> darAsignadasPunto( PersistenceManager pm, String id_punto ) {
+		Query q = pm.newQuery( SQL, "SELECT ID_VACUNA FROM " + pp.darTablaAsignada() + " WHERE ID_PUNTO = ?");
+		q.setResultClass(String.class);
+		q.setParameters( id_punto );
+		return (List<String>) q.executeList();
+	}
 }
