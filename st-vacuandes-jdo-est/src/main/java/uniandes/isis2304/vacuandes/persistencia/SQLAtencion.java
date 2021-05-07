@@ -93,4 +93,17 @@ public class SQLAtencion {
 		q.setResultClass( Atencion.class );
 		return (List<Atencion>) q.executeList();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar las condiciones de priorización de un punto
+	 * @param pm - El manejador de persistencia
+	 * @param punto - El identificador del punto de vacunación
+	 * @return Una lista de objetos String con las condiciones de priorizacion encontradas
+	 */
+	public List<String> darCondicionesPunto( PersistenceManager pm, String punto ) {
+		Query q = pm.newQuery( SQL, "SELECT DESCRIPCION_CONDPRIOR FROM " + pp.darTablaAtencion() + " WHERE ID_PUNTO = ?" );
+		q.setResultClass(String.class);
+		return (List<String>) q.executeList();
+	}
+	
 }

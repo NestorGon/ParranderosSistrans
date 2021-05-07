@@ -94,4 +94,18 @@ public class SQLVacunacion {
 		q.setResultClass( Vacunacion.class );
 		return (List<Vacunacion>) q.executeList();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar todas las vacunaciones de un punto
+	 * @param pm - El manejador de persistencia
+	 * @param id_punto - El identificador del punto que se desea buscar
+	 * @return La cantidad de vacunaciones del punto
+	 */
+	public Long darCantidadPunto( PersistenceManager pm, String id_punto ) {
+		Query q = pm.newQuery( SQL, "SELECT COUNT(*) FROM " + pp.darTablaVacunacion() + " WHERE ID_PUNTO = ?");
+		q.setResultClass(Long.class);
+		q.setParameters( id_punto );
+		return (Long) q.executeUnique();
+	}
+	
 }
