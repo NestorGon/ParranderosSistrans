@@ -78,6 +78,7 @@ class SQLUtil
 	 */
 	public Long[] limpiarVacuAndes( PersistenceManager pm )
 	{
+		Query qVacuAndes = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaVacuAndes() );
 		Query qEps = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaEps() );
 		Query qRoles = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaRoles() );
 		Query qEstado = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaEstado() );
@@ -94,6 +95,7 @@ class SQLUtil
 		Query qCita = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaCita() );
 		Query qAtencion = pm.newQuery( SQL, "DELETE FROM " + pp.darTablaAtencion() );
 
+		Long vacuAndesEliminados = (Long) qVacuAndes.executeUnique();
 		Long epsEliminados = (Long) qEps.executeUnique ();
 		Long rolesEliminados = (Long) qRoles.executeUnique ();
 		Long estadoEliminadas = (Long) qEstado.executeUnique ();
@@ -112,7 +114,7 @@ class SQLUtil
 		return new Long[] {epsEliminados, rolesEliminados, estadoEliminadas, etapaEliminadas,
 				condPriorEliminados, puntoEliminados, vacunaEliminados, asignadaEliminados,
 				ciudadanoEliminados, vacunacionEliminados, priorizacionEliminados, infoUsuarioEliminados,
-				usuarioEliminados, citaEliminados, atencionEliminados};
+				usuarioEliminados, citaEliminados, atencionEliminados, vacuAndesEliminados};
 	}
 
 	/**
@@ -350,4 +352,87 @@ class SQLUtil
 
 		return lista;
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos que están en un punto de vacunación equivocado
+	 * debido a que sus condiciones de priorizacion no corresponden a las que el punto atiende
+	 * @param pm - El manejador de persistencia
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @return lista con los documentos de los ciudadanos encontrados
+	 */
+	public List<String> darCiudadanosPuntoEquivocado( PersistenceManager pm, String id_punto ) {
+		Query q = pm.newQuery( SQL, "SELECT C.DOCUMENTO "
+				+ "FROM CIUDADANO C, VACUNACION V "
+				+ "WHERE V.ID_PUNTO = ? AND "
+				+ "C.DOCUMENTO = V.DOCUMENTO_CIUDADANO AND "
+				+ "(SELECT COUNT(*) "
+				+ "FROM PRIORIZACION P, ATENCION A "
+				+ "WHERE P.DOCUMENTO_CIUDADANO = C.DOCUMENTO AND "
+				+ "A.ID_PUNTO = V.ID_PUNTO AND "
+				+ "A.DESCRIPCION_CONDPRIOR = P.DESCRIPCION_CONDPRIOR) = 0 ");
+		q.setParameters( id_punto );
+		q.setResultClass(String.class);
+		return (List<String>) q.executeList();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para conocer la etapa actual de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @return el número que indica la etapa actual de VacuAndes
+	 */
+	public Long darEtapaVacuAndes( PersistenceManager pm ) {
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaVacuAndes());
+		q.setResultClass( Long.class );
+		return (Long) q.executeUnique();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para actualizar la etapa actual de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @param numero_etapa - El número de la nueva etapa
+	 * @return el número que indica la cantidad de tuplas modificadas
+	 */
+	public Long actualizarEtapaVacuAndes( PersistenceManager pm, Long etapa ) {
+		Query q = pm.newQuery( SQL, "UPDATE " + pp.darTablaVacuAndes() + " SET NUMERO_ETAPA = ?");
+		q.setParameters( etapa );
+		q.setResultClass( Long.class );
+		return (Long) q.executeUnique();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para adicionar la etapa actual de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @param numero_etapa - El número de la etapa
+	 * @return el número que indica la cantidad de tuplas insertadas
+	 */
+	public Long adicionarEtapaVacuAndes( PersistenceManager pm, Long etapa ) {
+		Query q = pm.newQuery( SQL, "INSERT INTO " + pp.darTablaVacuAndes() + "(NUMERO_ETAPA) VALUES (?)");
+		q.setParameters( etapa );
+		q.setResultClass( Long.class );
+		return (Long) q.executeUnique();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para conocer los ciudadanos que pertenecen a la etapa y que no tienen citas asignadas 
+	 * @param pm - El manejador de persistencia
+	 * @param punto - El identificador del punto de vacunación
+	 * @param etapa - El identificador de la etapa
+	 * @return la lista con los documentos de los ciudadanos encontrados
+	 */
+	public List<String> darCiudadanosSinCita( PersistenceManager pm, String punto, Long etapa) {
+		Query q = pm.newQuery( SQL, "SELECT C.DOCUMENTO "
+				+ "FROM CIUDADANO C, EPS E, PUNTO P "
+				+ "WHERE C.ID_EPS = E.ID AND "
+				+ "P.ID = ? AND "
+				+ "E.ID = P.ID_EPS AND "
+				+ "C.HABILITADO = 'T' AND "
+				+ "C.NUMERO_ETAPA = ? AND "
+				+ "(SELECT COUNT(*) "
+				+ "FROM CITA CI "
+				+ "WHERE CI.DOCUMENTO_CIUDADANO = C.DOCUMENTO) = 0");
+		q.setParameters( punto, etapa );
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
+	}
+	
 }

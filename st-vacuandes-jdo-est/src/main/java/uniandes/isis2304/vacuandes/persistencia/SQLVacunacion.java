@@ -53,6 +53,21 @@ public class SQLVacunacion {
 	}
 	
 	/**
+	 * Crea y ejecuta la sentencia SQL para modificar una VACUNACION
+	 * @param pm - El manejador de persistencia
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la EPS
+	 * @param punto - El identificador del PUNTO
+	 * @return El número de tuplas modificadas
+	 */
+	public Long actualizarVacunacion( PersistenceManager pm, String documento, String eps, String punto )
+	{
+		Query q = pm.newQuery( SQL, "UPDATE " + pp.darTablaVacunacion() + " SET ID_PUNTO = ? WHERE DOCUMENTO_CIUDADANO = ? AND ID_EPS = ?" );
+		q.setParameters( punto, documento, eps );
+		return (Long) q.executeUnique();
+	}
+	
+	/**
 	 * Crea y ejecuta la sentencia SQL para eliminar una VACUNACION de la base de datos de VacuAndes por su documento y eps
 	 * @param pm - El manejador de persistencia
 	 * @param documento - El documento de identificación del ciudadano
