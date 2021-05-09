@@ -135,8 +135,6 @@ public class SQLPunto {
 		return resp.longValue();
 	}
 
-
-
 	/**
 	 * Crea y ejecuta la sentencia SQL para encontrar la información de los PUNTOS de la 
 	 * base de datos de VacuAndes
@@ -149,4 +147,47 @@ public class SQLPunto {
 		q.setResultClass( Punto.class );
 		return (List<Punto>) q.executeList();
 	}	
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para aumentar la cantidad de vacunas de un punto dado su id
+	 * @param pm - El manejador de persistencia
+	 * @param id - id del punto al que se le aumentará el numero de vacunas
+	 * @return El número de tuplas modificadas
+	 */
+	public long aumentarVacunasPuntoId(PersistenceManager pm, String id, Long vacunas)
+	{
+        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaPunto() + " SET VACUNAS = VACUNAS + ? WHERE ID = ?");
+        q.setParameters(vacunas, id);
+        return (long) q.executeUnique();
+	}	
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar el número de vacunas de un Punto de Vacunación
+	 * de la base de datos de VacuAndes dado su id
+	 * @param pm- El manejador de persistencia
+	 * @param id- El id del punto
+	 * @return El número de vacunas del punto
+	 */
+	public Long darVacunas( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery( SQL, "SELECT VACUNAS FROM "+ pp.darTablaPunto()+ " WHERE ID = ?");
+		q.setParameters(id);
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		return resp.longValue();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la capacidad de vacunas de un Punto de Vacunación
+	 * de la base de datos de VacuAndes dado su id
+	 * @param pm- El manejador de persistencia
+	 * @param id- El id del punto
+	 * @return La capacidad de vacunas del punto
+	 */
+	public Long darCapacidadVacunas( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery( SQL, "SELECT CAPACIDADVACUNAS FROM "+ pp.darTablaPunto()+ " WHERE ID = ?");
+		q.setParameters(id);
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		return resp.longValue();
+	}
 }

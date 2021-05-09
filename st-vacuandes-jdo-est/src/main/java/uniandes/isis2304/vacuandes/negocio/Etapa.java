@@ -55,6 +55,6 @@ public class Etapa implements VOEtapa{
 	 * @return cadena de caracteres con todos los atributos de la  etapa
 	 */
 	public String toString() {
-		return "Etapa[numero = "+ numero+", descripcion = "+ descripcion+"]";
+		return "Etapa: "+ numero+" - "+ descripcion;
 	}
 }
