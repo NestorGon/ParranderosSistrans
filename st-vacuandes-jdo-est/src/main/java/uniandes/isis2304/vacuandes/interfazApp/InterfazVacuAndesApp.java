@@ -391,7 +391,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		{ 
 			VOInfoUsuario usuario = panelValidacionUsuario();
 			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(2L) ) {
+				if ( !usuario.getId_roles().equals(1L) ) {
 					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
 				}
 			}
@@ -652,7 +652,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		{
 			VOInfoUsuario usuario = panelValidacionUsuario();
 			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(1L)) {
+				if ( !usuario.getId_roles().equals(3L)) {
 					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
 				}
 			}
