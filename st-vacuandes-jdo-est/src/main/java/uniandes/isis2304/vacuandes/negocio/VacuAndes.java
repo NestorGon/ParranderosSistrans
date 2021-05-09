@@ -724,6 +724,21 @@ public class VacuAndes
 	}
 	
 	/**
+	 * Modifica de manera persistente una vacunación
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la EPS
+	 * @param punto - El identificador del PUNTO
+	 * @return El número de tuplas modificadas
+	 */
+	public Long actualizarVacunacion( String documento, String eps, String punto )
+	{
+		log.info("Actualizando Vacunacion: " + documento + " - " + eps );
+		Long resp = pp.actualizarVacunacion( documento, eps, punto );
+		log.info("Vacunación actualizada");
+		return resp;
+	}
+	
+	/**
 	 * Elimina una cita por su fecha y hora y el documento del ciudadano
 	 * Adiciona entradas al log de la aplicación
 	 * @param documento - El documento de identificación del ciudadano
@@ -891,6 +906,20 @@ public class VacuAndes
 		Long activas = pp.darCitasActivasPunto(id); 
 		log.info("Citas activas del punto encontrada: "+activas); 
 		return activas; 
+	}
+	
+	/**
+	 * Método que cambia el estado de habilitado de un punto de vacunacion dado su id
+	 * @param id - El identificador del punto de vacunacion
+	 * @param habilitado - El nuevo estado de habilitado
+	 * @return El número de tuplas modificadas
+	 */
+	public Long cambiarHabilitadoPunto( String id, String habilitado )
+	{
+		log.info("Cambiando el estado de habilitado de un punto con id: " + id );
+		Long resp = pp.cambiarHabilitadoPunto(id, habilitado);
+		log.info("Estado de habilitado cambiado");
+		return resp;
 	}
 	
 	/**
@@ -1511,6 +1540,36 @@ public class VacuAndes
 		return vacunas;
 	}
 
+	/**
+	 * Método que cambia las condiciones de priorización que atiende un punto y elimina a los ciudadanos que 
+	 * no correspondan a las nuevas condiciones
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @param seleccionados - La lista con las nuevas condiciones de priorización
+	 * @param condiciones - La lista con las condiciones de priorización viejas
+	 * @return Lista con los documentos de los ciudadanos eliminados o null si ocurre una excepción
+	 */
+	public List<String> cambioEstadoPunto( String id_punto, List<String> seleccionados, List<String> condiciones ) 
+	{
+		log.info("Buscando y eliminando ciudadanos punto equivocado con id: " + id_punto);
+		List<String> resultado = pp.cambioEstadoPunto( id_punto, seleccionados, condiciones );
+		log.info("Ciudadanos en punto equivocado eliminados correctamente");
+		return resultado;
+	}
+	
+	/**
+	 * Método que rehabilita un punto, asignandole citas de los ciudadanos que están en la etapa correspondiente
+	 * @param punto - El identificador del punto de vacunación
+	 * @param etapa - El número de la etapa actual
+	 * @return La lista con los documentos de los ciudadanos con nuevas citas
+	 */
+	public List<String> rehabilitarPunto( String punto, Long etapa )
+	{
+		log.info("Rehabilitando punto con id: " + punto );
+		List<String> resultado = pp.rehabilitarPunto( punto, etapa );
+		log.info("Punto rehabilitado");
+		return resultado;
+	}
+
 	/* ****************************************************************
 	 * 			Métodos para administración
 	 *****************************************************************/
@@ -1527,5 +1586,43 @@ public class VacuAndes
         Long [] borrrados = pp.limpiarVacuAndes();	
         log.info ("Limpiando la BD de VacuAndes: Listo!");
         return borrrados;
+	}
+	
+	/**
+	 * Métodon que obtiene la etapa actual de VacuAndes
+	 * @return el número de la etapa actual
+	 */
+	public Long darEtapaVacuAndes()
+	{
+		log.info("Obteniendo etapa de VacuAndes");
+		Long resp = pp.darEtapaVacuAndes();
+		log.info("Etapa VacuAndes obtenida");
+		return resp;
+	}
+	
+	/**
+	 * Método que actualiza la etapa actual de VacuAndes
+	 * @param numero_etapa - El número de la nueva etapa
+	 * @return la cantidad de tuplas modificadas o -1 si ocurre una excepción
+	 */
+	public Long actualizarEtapaVacuAndes( Long numero_etapa )
+	{
+		log.info("Actualizando etapa de VacuAndes");
+		Long resp = pp.actualizarEtapaVacuAndes( numero_etapa );
+		log.info("Etapa VacuAndes actualizada");
+		return resp;
+	}
+	
+	/**
+	 * Método que adiciona la etapa actual de VacuAndes
+	 * @param numero_etapa - El número de la etapa
+	 * @return el número que indica la cantidad de tuplas insertadas
+	 */
+	public Long adicionarEtapaVacuAndes( Long numero_etapa )
+	{
+		log.info("Adicionando etapa de VacuAndes");
+		Long resp = pp.adicionarEtapaVacuAndes( numero_etapa );
+		log.info("Etapa de VacuAndes adicionada");
+		return resp;
 	}
 }

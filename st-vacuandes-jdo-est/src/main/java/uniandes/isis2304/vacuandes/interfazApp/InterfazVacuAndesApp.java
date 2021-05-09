@@ -147,7 +147,9 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 
 		setLayout (new BorderLayout());
 		add (new JLabel (new ImageIcon (path)), BorderLayout.NORTH );          
-		add( panelDatos, BorderLayout.CENTER );        
+		add( panelDatos, BorderLayout.CENTER );
+		this.setVisible(true);
+		inicializarEtapa();
 	}
 
 	/* ****************************************************************
@@ -443,8 +445,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		{
 			VOInfoUsuario usuario = panelValidacionUsuario();
 			if ( usuario != null ) {
-				//TODO revisar autenticación para el req RF4
-				if ( !usuario.getId_roles().equals(2L) ) {
+				if ( !usuario.getId_roles().equals(1L) ) {
 					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
 				}
 			}
@@ -516,7 +517,6 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		{
 			VOInfoUsuario usuario = panelValidacionUsuario();
 			if ( usuario != null ) {
-				//TODO revisar autenticación para el req RF6
 				if ( !usuario.getId_roles().equals(2L) ) {
 					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
 				}
@@ -802,74 +802,74 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
-
-	/**
-	 * Registra el avance en el proceso de vacunación de un ciudadano
-	 * Para esto realiza una actualización en el registro del ciudadano
-	 */
-	public void registrarAvanceVacunacion( )
-	{
-		try 
-		{
-			VOInfoUsuario usuario = panelValidacionUsuario();
-			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(4L) ) {
-					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-				}
-			} 
-			else {
-				return;
-			}
-			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
-			{
-				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-				if ( ciudadano != null ) {
-					VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
-					if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
-						throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
-					}
-					VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
-					if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
-						if ( estado.getDescripcion().startsWith("VACUNADO") ) {
-							String tipoVacuna = estado.getDescripcion().split(" ")[3];
-							if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
-								throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
-							}
-						}
-						VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
-						Boolean aplicada = false;
-						if ( vacunacion != null ) {
-							String id_punto = vacunacion.getId_punto();
-							for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
-								VOVacuna vacuna = vacuAndes.darVacuna( actual );
-								if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[3]) ) {
-									vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
-									vacuAndes.aumentarAplicadasPuntoId(id_punto);
-									aplicada = true;
-									break;
-								}
-							}
-							if ( !aplicada ) {
-								throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
-							}
-						}
-					}
-					ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
-				} 
-				else {
-					throw new Exception ("No se pudo actualizar al ciudadano " + documento );
-				}
-				String resultado = "En registrarAvanceVacunacion\n\n";
-				resultado += "Ciudadano actualizado correctamente: " + ciudadano;
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-			}
-			else
-			{
-				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-			}
+    
+    /**
+     * Registra el avance en el proceso de vacunación de un ciudadano
+     * Para esto realiza una actualización en el registro del ciudadano
+     */
+    public void registrarAvanceVacunacion( )
+    {
+    	try 
+    	{
+    		VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(4L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
+    		{
+    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+    			if ( ciudadano != null ) {
+    				VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
+    				if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
+    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+    				}
+    				VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
+    				if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
+    					if ( estado.getDescripcion().startsWith("VACUNADO") ) {
+    						String tipoVacuna = estado.getDescripcion().split(" ")[4];
+    						if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
+    							throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
+    						}
+    					}
+    					VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
+    					Boolean aplicada = false;
+    					if ( vacunacion != null ) {
+    						String id_punto = vacunacion.getId_punto();
+    						for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
+    							VOVacuna vacuna = vacuAndes.darVacuna( actual );
+    							if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[4]) ) {
+    								vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
+    								vacuAndes.aumentarAplicadasPuntoId(id_punto);
+    								aplicada = true;
+    								break;
+    							}
+    						}
+    						if ( !aplicada ) {
+    							throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
+    						}
+    					}
+    				}
+    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
+    			} 
+    			else {
+        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+        		}
+        		String resultado = "En registrarAvanceVacunacion\n\n";
+        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
 		} 
 		catch (Exception e) 
 		{
@@ -948,7 +948,119 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			String resultado = generarMensajeError(e); 
 			panelDatos.actualizarInterfaz(resultado); 
 		} 
-	} 
+	}
+	
+	/**
+	 * Cambia las condiciones de priorización que atiende un punto de vacunación y actualiza los ciudadanos asociados
+	 */
+	public void cambioEstadoPunto() {
+		try 
+    	{
+    		VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(2L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+    		String id_punto = JOptionPane.showInputDialog(this, "Ingrese el id del punto de vacunación", "Cambiar estado de un punto", JOptionPane.QUESTION_MESSAGE);
+			
+			JList<String> list = new JList<>( darGruposDePriorizacion() );
+			JOptionPane.showMessageDialog(null, list, "Selecccione los grupos poblacionales que va a atender el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			List<String> seleccionados = list.getSelectedValuesList();
+			
+    		if ( seleccionados == null || seleccionados.size() == 0 ) {
+    			List<String> condiciones = vacuAndes.darCondicionesPunto(id_punto);
+    			
+    			List<String> ciudadanos = vacuAndes.cambioEstadoPunto( id_punto, seleccionados, condiciones );
+    			if ( ciudadanos == null ) {
+    				throw new Exception("No se pudo eliminar a los ciudadanos que ahora no pertenecen al punto");
+    			}
+        		String resultado = "En cambioEstadoPunto\n\n";
+        		resultado += "Punto actualizado correctamente: " + id_punto;
+        		resultado += "\n Ciuadanos eliminados del punto de vacunación: ";
+        		for ( String actual: ciudadanos) {
+        			resultado += "\n " + actual;
+        		}
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
+		} 
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+	}
+	
+	/**
+	 * Rehabilita un punto y le asigna nuevas citas
+	 */
+	public void rehabilitarPunto()
+	{
+		try 
+    	{
+    		VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(2L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+    		String id_punto = JOptionPane.showInputDialog(this, "Ingrese el id del punto de vacunación", "Rehabilitar punto", JOptionPane.QUESTION_MESSAGE);
+			
+    		if ( id_punto == null || !id_punto.trim().equals("") ) {
+    			
+    			VOPunto punto = vacuAndes.darPunto( id_punto );
+    			if ( punto == null ) {
+    				throw new Exception("El punto que desea habiitar no existe en VacuAndes");
+    			} else if ( punto.getHabilitado().equals("T") ) {
+    				throw new Exception("El punto ya se encuentra habilitado");
+    			}
+        		Long etapa = vacuAndes.darEtapaVacuAndes();
+        		List<String> ciudadanos = vacuAndes.rehabilitarPunto( id_punto, etapa );
+    			
+        		if ( ciudadanos != null ) {
+        			
+        			String resultado = "En rehabilitarPunto\n\n";
+            		resultado += "Punto habilitado correctamente: " + id_punto;
+            		if ( ciudadanos.size() == 0 ) {
+            			resultado += "\n No hubo ciudadanos para asignarles cita en el punto";
+            		}
+            		else {
+            			resultado += "\n Ciudadanos asignados con cita en el punto de vacunación: ";
+                		for ( String actual: ciudadanos) {
+                			resultado += "\n " + actual;
+                		}
+            		}
+        			resultado += "\n Operación terminada";
+        			panelDatos.actualizarInterfaz(resultado);
+        		}
+        		else {
+        			throw new Exception("No se pudo rehabilitar el punto correctamente");
+        		}
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
+		} 
+		catch (Exception e) 
+		{
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+	}
 
 	/* ****************************************************************
 	 * 			Requerimientos Funcionales de Consulta
@@ -1661,8 +1773,35 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Inicializa la etapa de VacuAndes en caso de que no haya sido inicializada previamente
+	 */
+	private void inicializarEtapa() {
+		try {
+			if ( vacuAndes.darEtapaVacuAndes() == null ) {
+				String etapa = JOptionPane.showInputDialog (this, "Ingrese la etapa actual de vacuAndes", "Etapa VacuAndes", JOptionPane.QUESTION_MESSAGE);
+				if ( etapa != null && !etapa.trim().equals("") ) {
+					Long numero_etapa = Long.parseLong(etapa);
+					if ( vacuAndes.darEtapa(numero_etapa) != null ) {
+						if ( vacuAndes.adicionarEtapaVacuAndes(numero_etapa) == null ) {
+							throw new Exception ("La etapa no se pudo adicionar");
+						}
+						String resultado = "En inicializarEtapa\n\n"; 
+						resultado += "Etapa adicionada correctamente: " + numero_etapa; 
+						resultado += "\n Operación terminada"; 
+						panelDatos.actualizarInterfaz(resultado);
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+//			e.printStackTrace(); 
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
 
@@ -1703,8 +1842,8 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 
 			// Unifica la interfaz para Mac y para Windows.
 			UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName( ) );
-			InterfazVacuAndesApp interfaz = new InterfazVacuAndesApp( );
-			interfaz.setVisible( true );
+			new InterfazVacuAndesApp( );
+			
 		}
 		catch( Exception e )
 		{

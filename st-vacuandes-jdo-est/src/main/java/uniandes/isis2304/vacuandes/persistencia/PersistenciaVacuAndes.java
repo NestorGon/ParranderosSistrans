@@ -15,6 +15,7 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +44,7 @@ import uniandes.isis2304.vacuandes.negocio.Priorizacion;
 import uniandes.isis2304.vacuandes.negocio.Punto;
 import uniandes.isis2304.vacuandes.negocio.Rol;
 import uniandes.isis2304.vacuandes.negocio.Usuario;
+import uniandes.isis2304.vacuandes.negocio.VOCiudadano;
 import uniandes.isis2304.vacuandes.negocio.Vacuna;
 import uniandes.isis2304.vacuandes.negocio.Vacunacion;
 
@@ -198,6 +200,7 @@ public class PersistenciaVacuAndes
 		tablas.add ("USUARIO");
 		tablas.add ("CITA");
 		tablas.add ("ATENCION");
+		tablas.add ("VACUANDES");
 }
 
 	/**
@@ -417,6 +420,14 @@ public class PersistenciaVacuAndes
 	public String darTablaAtencion()
 	{
 		return tablas.get( 15 );
+	}
+	
+	/**
+	 * @return La cadena de caracteres con el nombre de la tabla de Vacuandes de VacuAndes
+	 */
+	public String darTablaVacuAndes()
+	{
+		return tablas.get( 16 );
 	}
 	
 	/**
@@ -1234,6 +1245,39 @@ public class PersistenciaVacuAndes
 	}
 	
 	/**
+	 * Método que modifica, de manera transaccional, una tupla en la tabla VACUNACION
+	 * @param documento - El documento de identificación del ciudadano
+	 * @param eps - El identificador de la EPS
+	 * @param punto - El identificador del PUNTO
+	 * @return El número de tuplas modificadas
+	 */
+	public Long actualizarVacunacion( String documento, String eps, String punto )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlVacunacion.actualizarVacunacion( pm, documento, eps, punto );
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
 	 * Método que elimina, de manera transaccional, una tupla en la tabla VACUNACION
 	 * Adiciona entradas al log de la aplicación
 	 * @param documento - El documento de identificación del ciudadano
@@ -1492,7 +1536,42 @@ public class PersistenciaVacuAndes
 	public Long darCitasActivasPunto( String id ) 
 	{ 
 		return sqlPunto.darCitasActivasPunto( pmf.getPersistenceManager(), id ); 
-	} 
+	}
+	
+	/**
+	 * Método que cambia el estado de habilitado de un punto de vacunacion dado su id
+	 * @param id - El identificador del punto de vacunacion
+	 * @param habilitado - El nuevo estado de habilitado
+	 * @return El número de tuplas modificadas
+	 */
+	public Long cambiarHabilitadoPunto( String id, String habilitado )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlPunto.cambiarHabilitadoPunto( pm, id, habilitado );
+            tx.commit();
+            
+            log.trace( "Actualización habilitado del punto con id: " + id );
+            
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+        	return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
 
 	
 	/* ****************************************************************
@@ -2186,6 +2265,110 @@ public class PersistenciaVacuAndes
 		return sqlUtil.darPuntosEfectivosHoras(pmf.getPersistenceManager(), hora1, hora2, min1, min2);
 	}
 	
+	/**
+	 * Método que cambia las condiciones de priorización que atiende un punto y elimina a los ciudadanos que 
+	 * no correspondan a las nuevas condiciones
+	 * @param id_punto - El identificador del punto de vacunación
+	 * @param seleccionados - La lista con las nuevas condiciones de priorización
+	 * @param condiciones - La lista con las condiciones de priorización viejas
+	 * @return Lista con los documentos de los ciudadanos eliminados o null si ocurre una excepción
+	 */
+	public List<String> cambioEstadoPunto( String id_punto, List<String> seleccionados, List<String> condiciones ) 
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            log.trace("Adicionando las nuevas condiciones de priorización");
+            for ( String actual: seleccionados ) {
+				if ( !condiciones.contains( actual ) ) {
+					sqlAtencion.adicionarAtencion( pm, actual, id_punto );
+				}
+			}
+            log.trace("Eliminando las condiciones de priorización que ya no atiende el punto");
+			for ( String actual: condiciones ) {
+				if ( !seleccionados.contains( actual ) ) {
+					sqlAtencion.eliminarAtencion( pm, actual, id_punto );
+				}
+			}
+            log.trace("Buscando ciudadanos punto equivocado con id: " + id_punto);
+            List<String> resp = sqlUtil.darCiudadanosPuntoEquivocado( pm, id_punto );
+            log.trace("Eliminando ciudadanos punto equivocado con id: " + id_punto);
+            for ( String actual: resp ) {
+            	VOCiudadano ciudadano = sqlCiudadano.darCiudadano(pm, actual);
+            	sqlVacunacion.eliminarVacunacion( pm, ciudadano.getDocumento(), ciudadano.getId_eps() );
+            }
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que rehabilita un punto, asignandole citas de los ciudadanos que están en la etapa correspondiente
+	 * @param punto - El identificador del punto de vacunación
+	 * @param etapa - El número de la etapa actual
+	 * @return La lista con los documentos de los ciudadanos con nuevas citas
+	 */
+	@SuppressWarnings("deprecation")
+	public List<String> rehabilitarPunto( String punto, Long etapa )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            sqlPunto.cambiarHabilitadoPunto(pm, punto, "T");
+            log.trace("Buscando ciudadanos sin cita");
+            List<String> resp = sqlUtil.darCiudadanosSinCita( pm, punto, etapa );
+            log.trace("Asignando ciudadanos sin cita al punto de vacunación con id: " + punto);
+            Date fecha = new Date();
+            fecha.setMinutes(0);
+            fecha.setSeconds(0);            
+            for( String actual: resp ) {
+            	VOCiudadano ciudadano = sqlCiudadano.darCiudadano( pm, actual );
+            	if ( sqlVacunacion.darVacunacion(pm, actual, ciudadano.getId_eps()) != null ) {
+            		sqlVacunacion.actualizarVacunacion( pm, ciudadano.getDocumento(), ciudadano.getId_eps(), punto );
+            	} 
+            	else {
+            		sqlVacunacion.adicionarVacunacion(pm, actual, ciudadano.getId_eps(), punto);
+            	}
+            	fecha.setTime((long) (fecha.getTime() + 3.6e6));
+            	SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        		String fechaHora = format.format( fecha );
+            	sqlCita.adicionarCita(pm, fechaHora, "F", actual, punto);
+            }            
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
 	
 	/* ****************************************************************
 	 * 			Métodos para administración
@@ -2213,7 +2396,7 @@ public class PersistenciaVacuAndes
         {
 //        	e.printStackTrace();
         	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
-        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
+        	return new Long[] {-1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L, -1L};
         }
         finally
         {
@@ -2224,6 +2407,82 @@ public class PersistenciaVacuAndes
             pm.close();
         }
 		
+	}
+	
+	/**
+	 * Métodon que obtiene la etapa actual de VacuAndes
+	 * @return el número de la etapa actual
+	 */
+	public Long darEtapaVacuAndes()
+	{
+		Long resp = sqlUtil.darEtapaVacuAndes( pmf.getPersistenceManager() );
+		return resp;
+	}
+	
+	/**
+	 * Método que actualiza la etapa actual de VacuAndes
+	 * @param numero_etapa - El número de la nueva etapa
+	 * @return la cantidad de tuplas modificadas o -1 si ocurre una excepción
+	 */
+	public Long actualizarEtapaVacuAndes( Long numero_etapa )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx=pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlUtil.actualizarEtapaVacuAndes( pm, numero_etapa );
+            tx.commit ();
+            log.info ("Etapa de VacuAndes actualizada");
+            return resp;
+        }
+        catch (Exception e)
+        {
+//        	e.printStackTrace();
+        	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
+        	return null;
+        }
+        finally
+        {
+            if (tx.isActive())
+            {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
+	
+	/**
+	 * Método que adiciona la etapa actual de VacuAndes
+	 * @param numero_etapa - El número de la etapa
+	 * @return el número que indica la cantidad de tuplas insertadas
+	 */
+	public Long adicionarEtapaVacuAndes( Long numero_etapa )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx=pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlUtil.adicionarEtapaVacuAndes( pm, numero_etapa );
+            tx.commit ();
+            log.info ("Etapa de VacuAndes adicionada");
+            return resp;
+        }
+        catch (Exception e)
+        {
+//        	e.printStackTrace();
+        	log.error ("Exception : " + e.getMessage() + "\n" + darDetalleException(e));
+        	return null;
+        }
+        finally
+        {
+            if (tx.isActive())
+            {
+                tx.rollback();
+            }
+            pm.close();
+        }
 	}
 	
 
