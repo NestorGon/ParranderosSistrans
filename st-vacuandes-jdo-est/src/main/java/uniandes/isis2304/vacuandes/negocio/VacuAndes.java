@@ -1156,11 +1156,11 @@ public class VacuAndes
 	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
 	 * @return El objeto EPS adicionado. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarEps( String id, String descripcion, String region, Long vacunas, Long capacidadVacunas )
+	public Long adicionarEps( String id, String region, Long vacunas, Long capacidadVacunas )
 	{
-       log.info( "Adicionando EPS: " + id + " - " + descripcion+ " - "+ region + " - "+vacunas );
-       Long resp = pp.adicionarEps( id, descripcion, region, vacunas, capacidadVacunas );		
-       log.info( "EPS adicionada: "  + id + " - " + descripcion+ " - "+ region + " - "+vacunas);
+       log.info( "Adicionando EPS: " + id + " - "+ region + " - "+vacunas );
+       Long resp = pp.adicionarEps( id, region, vacunas, capacidadVacunas );		
+       log.info( "EPS adicionada: "  + id + " - "+ region + " - "+vacunas);
        return resp;
 	}
 	
@@ -1202,6 +1202,45 @@ public class VacuAndes
 		List<EPS> epss = pp.darEPSs();	
 		log.info ("Consultando EPSs: " + epss.size() + " existentes");
 		return epss;
+	}
+	
+	/**
+	 * Da el número de vacunas de una eps
+	 * Adiciona entradas al log de la aplicación
+	 * @return El numero de vacunas de la eps
+	 */
+	public Long darVacunasEPS(String id)
+	{
+		log.info("Se está hallando el número de vacunas de la eps");
+		Long vacunas = pp.darVacunasEPS(id);
+		log.info("Numero de vacunas hallado");
+		return vacunas;
+	}
+	
+	/**
+	 * Da la capacidad de vacunas de una eps
+	 * Adiciona entradas al log de la aplicación
+	 * @return La capacidad de vacunas de la eps
+	 */
+	public Long darCapacidadEPS(String id)
+	{
+		log.info("Se está hallando la capacidad de vacunas de la eps");
+		Long vacunas = pp.darCapacidadEPS(id);
+		log.info("Capacidad de vacunas hallada");
+		return vacunas;
+	}
+	
+	/**
+	 * Aumenta el numero de vacunas de una EPS dado su Id
+	 * Adiciona entradas al log de la aplicación
+	 * @return El numero de tuplas actualizadas
+	 */
+	public Long aumentarVacunasEPSId(Long vacunas, String id)
+	{
+		log.info("Actualizando EPS");
+		Long act = pp.aumentarVacunasEPSId(vacunas, id);
+		log.info("EPS actualizada");
+		return act;
 	}
 
 	/**
@@ -1431,6 +1470,45 @@ public class VacuAndes
 		List<String> resultado = pp.darPuntosEfectivosHoras( hora1, hora2, min1, min2);
 		log.info("Puntos efectivos horas encontrados");
 		return resultado;
+	}
+	
+	/**
+	 * Da el número de vacunas de un punto
+	 * Adiciona entradas al log de la aplicación
+	 * @return El numero de vacunas de la eps
+	 */
+	public Long darVacunasPunto(String id)
+	{
+		log.info("Se está hallando el número de vacunas del punto");
+		Long vacunas = pp.darVacunasPunto(id);
+		log.info("Numero de vacunas hallado");
+		return vacunas;
+	}
+	
+	/**
+	 * Aumenta el numero de vacunas de un Punto dado su Id
+	 * Adiciona entradas al log de la aplicación
+	 * @return El numero de tuplas actualizadas
+	 */
+	public Long aumentarVacunasPuntoId(Long vacunas, String id)
+	{
+		log.info("Actualizando Punto");
+		Long act = pp.aumentarVacunasPuntoId(vacunas, id);
+		log.info("Punto actualizado");
+		return act;
+	}
+	
+	/**
+	 * Da la capacidad de vacunas de un punto
+	 * Adiciona entradas al log de la aplicación
+	 * @return La capacidad de vacunas del punto
+	 */
+	public Long darCapacidadVacunasPunto(String id)
+	{
+		log.info("Se está hallando la capacidad de vacunas del punto");
+		Long vacunas = pp.darCapacidadVacunasPunto(id);
+		log.info("Capacidad de vacunas hallada");
+		return vacunas;
 	}
 
 	/* ****************************************************************

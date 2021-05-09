@@ -52,7 +52,7 @@ public class SQLCondicionPriorizacion {
 	 */
 	public Long adicionarCondicionPriorizacion( PersistenceManager pm, Long numero_etapa, String descripcion ) 
 	{
-        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCondicionPriorizacion() + "(NUEMRO_ETAPA, DESCRIPCION) values (?, ?)");
+        Query q = pm.newQuery(SQL, "INSERT INTO " + pp.darTablaCondicionPriorizacion() + "(NUMERO_ETAPA, DESCRIPCION) values (?, ?)");
         q.setParameters(numero_etapa, descripcion);
         return (Long) q.executeUnique();
 	}

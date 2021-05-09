@@ -1,5 +1,6 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -124,4 +125,35 @@ public class SQLEPS {
 		q.setResultClass( String.class );
 		return (List<String>) q.executeList();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar el número de vacunas de una EPS
+	 * de la base de datos de VacuAndes dado su id
+	 * @param pm- El manejador de persistencia
+	 * @param id- El id de la EPS
+	 * @return El número de vacunas
+	 */
+	public Long darVacunas( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery( SQL, "SELECT VACUNAS FROM "+ pp.darTablaEps()+ " WHERE ID = ?");
+		q.setParameters(id);
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		return resp.longValue();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la capacidad de vacunas de una EPS
+	 * de la base de datos de VacuAndes dado su id
+	 * @param pm- El manejador de persistencia
+	 * @param id- El id de la EPS
+	 * @return La capacidad de vacunas de la EPS
+	 */
+	public Long darCapacidad( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery( SQL, "SELECT CAPACIDADVACUNAS FROM "+ pp.darTablaEps()+ " WHERE ID = ?");
+		q.setParameters(id);
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		return resp.longValue();
+	}
+	
 }

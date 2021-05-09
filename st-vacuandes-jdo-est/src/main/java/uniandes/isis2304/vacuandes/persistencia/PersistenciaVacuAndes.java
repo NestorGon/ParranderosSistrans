@@ -1423,6 +1423,39 @@ public class PersistenciaVacuAndes
 		return sqlPunto.darPuntos( pmf.getPersistenceManager() );
 	}
 	
+	/**
+	 * Método que cambia el numero de vacunas de un Punto dado su id
+	 * @param id - id del punto al que se le cambiará el  numero de vacunas
+	 * @param vacunas - numero de vacunas que se adicionará
+	 */
+	public long aumentarVacunasPuntoId( Long vacunas, String id ) {
+		
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            Long resp = sqlPunto.aumentarVacunasPuntoId( pm, id, vacunas );
+            log.trace("Cambio de vacunas del punto id: "+ id);
+            tx.commit();
+            return resp;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return -1L;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+		
+	}
+	
 	/** 
 	 * Método que consulta la capacidad de un PUNTO dado su id 
 	 * @param id - el id del punto a buscar 
@@ -1432,6 +1465,24 @@ public class PersistenciaVacuAndes
 	{ 
 		return sqlPunto.darCapacidadPunto( pmf.getPersistenceManager(), id ); 
 	} 
+	
+	/**
+	 * Método que consulta el número de vacunas de una EPS dado su Id
+	 * @return El número de vacunas de una EPS
+	 */
+	public Long darVacunasPunto( String id)
+	{
+		return sqlPunto.darVacunas(pmf.getPersistenceManager(), id);
+	}
+	
+	/**
+	 * Método que consulta la capacidad de vacunas de una EPS dado su Id
+	 * @return El número de vacunas de una EPS
+	 */
+	public Long darCapacidadVacunasPunto( String id)
+	{
+		return sqlPunto.darCapacidadVacunas(pmf.getPersistenceManager(), id);
+	}
 	 
 	/** 
 	 * Método que consulta la cantidad de citas activas de un PUNTO dado su id 
@@ -1795,7 +1846,7 @@ public class PersistenciaVacuAndes
 	 * @param vacunas - cantidad de vacunas con la que cuenta la eps
 	 * @return Ls cantidad de tuplas modificadas. -1 si ocurre alguna Excepción
 	 */
-	public Long adicionarEps( String id, String descripcion, String region, Long vacunas, Long capacidadVacunas )
+	public Long adicionarEps( String id, String region, Long vacunas, Long capacidadVacunas )
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -1916,6 +1967,24 @@ public class PersistenciaVacuAndes
 	public List<String> darRegiones()
 	{
 		return sqlEps.darRegiones( pmf.getPersistenceManager() );
+	}
+	
+	/**
+	 * Método que consulta el número de vacunas de una EPS dado su Id
+	 * @return El número de vacunas de una EPS
+	 */
+	public Long darVacunasEPS( String id)
+	{
+		return sqlEps.darVacunas(pmf.getPersistenceManager(), id);
+	}
+	
+	/**
+	 * Método que consulta la capacidad de vacunas de una EPS dado su Id
+	 * @return El número de vacunas de una EPS
+	 */
+	public Long darCapacidadEPS( String id)
+	{
+		return sqlEps.darCapacidad(pmf.getPersistenceManager(), id);
 	}
 	
 	/* ****************************************************************
