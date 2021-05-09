@@ -280,7 +280,13 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 
 			JList<String> list = new JList<>( etapasS );
 			JOptionPane.showMessageDialog(null, list, "Selecccione la etapa a la que quiere que pertenezca la Condición de Priorización que va a registrar (seleccione únicamente una)", JOptionPane.PLAIN_MESSAGE);
+			
 			String seleccionado = list.getSelectedValue();
+			
+			if(seleccionado == null )
+			{
+				throw new Exception( "Ningúna etapa fue seleccionada");
+			}
 
 			String[] etapa = seleccionado.split(":");
 			String informacion = etapa[1];
@@ -604,6 +610,11 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			JList<String> list = new JList<>( epsS );
 			JOptionPane.showMessageDialog(null, list, "Seleccione la EPS a la que quiere registrarle el lote de vacunas (Selecciona solo una)", JOptionPane.PLAIN_MESSAGE);
 			String seleccionado = list.getSelectedValue();
+			
+			if(seleccionado == null )
+			{
+				throw new Exception( "Ningúna EPS fue seleccionada");
+			}
 
 			String[] eps = seleccionado.split(",");
 			String informacion = eps[0];
@@ -673,6 +684,11 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			JList<String> list = new JList<>( puntosS );
 			JOptionPane.showMessageDialog(null, list, "Seleccione el Punto al que quiere registrarle el lote de vacunas (Selecciona solo uno)", JOptionPane.PLAIN_MESSAGE);
 			String seleccionado = list.getSelectedValue();
+			
+			if(seleccionado == null )
+			{
+				throw new Exception( "Ningún punto fue seleccionado");
+			}
 
 			String[] punto = seleccionado.split(",");
 			String informacion = punto[0];
