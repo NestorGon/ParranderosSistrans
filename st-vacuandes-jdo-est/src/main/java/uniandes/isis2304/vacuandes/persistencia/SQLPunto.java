@@ -86,6 +86,20 @@ public class SQLPunto {
         Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaPunto () + " SET APLICADAS = APLICADAS + 1, VACUNAS = VACUNAS - 1 WHERE ID = ?");
         q.setParameters(id);
         return (long) q.executeUnique();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para cambiar el estado de habilitado de un punto de vacunacion dado su id
+	 * @param pm - El manejador de persistencia
+	 * @param id - El identificador del punto de vacunacion
+	 * @param habilitado - El nuevo estado de habilitado
+	 * @return El número de tuplas modificadas
+	 */
+	public Long cambiarHabilitadoPunto(PersistenceManager pm, String id, String habilitado)
+	{
+        Query q = pm.newQuery(SQL, "UPDATE " + pp.darTablaPunto () + " SET HABILITADO = ? WHERE ID = ?");
+        q.setParameters( habilitado, id );
+        return (long) q.executeUnique();
 	}	
 	
 	/**
