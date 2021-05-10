@@ -14,6 +14,8 @@
 
 package uniandes.isis2304.vacuandes.negocio;
 
+import java.sql.Timestamp;
+
 /**
  * Clase para modelar el concepto CITA del negocio de VacuAndes
  *
@@ -26,7 +28,7 @@ public class Cita implements VOCita {
 	/**
 	 * La fecha y hora de la cita
 	 */
-	private String fechaHora;
+	private Timestamp fechaHora;
 	
 	/**
 	 * Si la cita ya se finalizó o no
@@ -50,7 +52,7 @@ public class Cita implements VOCita {
 	public Cita() {
 	}
 
-	public Cita( String fechaHora, String finalizada, String documento_ciudadano, String punto ) {
+	public Cita( Timestamp fechaHora, String finalizada, String documento_ciudadano, String punto ) {
 		super();
 		this.fechaHora = fechaHora;
 		this.finalizada = finalizada;
@@ -66,11 +68,11 @@ public class Cita implements VOCita {
 		this.id_punto = id_punto;
 	}
 
-	public String getFechaHora() {
+	public Timestamp getFechaHora() {
 		return fechaHora;
 	}
 
-	public void setFechaHora( String fechaHora ) {
+	public void setFechaHora( Timestamp fechaHora ) {
 		this.fechaHora = fechaHora;
 	}
 
@@ -86,7 +88,7 @@ public class Cita implements VOCita {
 		return documento_ciudadano;
 	}
 
-	public void setDocumento( String documento_ciudadano ) {
+	public void setDocumento_ciudadano( String documento_ciudadano ) {
 		this.documento_ciudadano = documento_ciudadano;
 	}
 	
@@ -96,6 +98,6 @@ public class Cita implements VOCita {
 	 */
 	public String toString() 
 	{
-		return "Cita [fechaHora = " + fechaHora + ", finzalidada = " + finalizada + ", documento_ciudadano = " + documento_ciudadano + "]";
+		return "Cita [fechaHora = " + fechaHora + ", finzalidada = " + finalizada + ", documento_ciudadano = " + documento_ciudadano + ", id_punto = "+ id_punto+"]";
 	}
 }

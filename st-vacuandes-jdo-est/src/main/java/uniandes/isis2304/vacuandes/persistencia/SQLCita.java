@@ -81,12 +81,10 @@ public class SQLCita {
 	 * @param documento - El documento de identificación del ciudadano asociado a la cita
 	 * @return EL número de tuplas eliminadas
 	 */
-	public Long eliminarCita( PersistenceManager pm, Date fechaHora, String documento )
+	public Long eliminarCita( PersistenceManager pm, String fechaHora, String documento )
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		String dateString = format.format( fechaHora );
         Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaCita() + " WHERE FECHAHORA = TO_DATE(?, 'DD-MM-YYYY HH24:MI') AND DOCUMENTO_CIUDADANO = ?");
-        q.setParameters( dateString, documento );
+        q.setParameters( fechaHora, documento );
         return (Long) q.executeUnique();
 	}
 
@@ -98,13 +96,11 @@ public class SQLCita {
 	 * @param documento - El documento de identificación del ciudadano
 	 * @return El objeto CITA que tiene el identificador dado
 	 */
-	public Cita darCita( PersistenceManager pm, Date fechaHora, String documento ) 
+	public Cita darCita( PersistenceManager pm, String fechaHora, String documento ) 
 	{
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		String dateString = format.format( fechaHora );
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaCita() + " WHERE FECHAHORA = TO_DATE(?, 'DD-MM-YYYY HH24:MI') AND DOCUMENTO_CIUDADANO = ?" );
 		q.setResultClass( Cita.class );
-		q.setParameters( dateString, documento );
+		q.setParameters( fechaHora, documento );
 		return (Cita) q.executeUnique();
 	}
 
@@ -120,5 +116,34 @@ public class SQLCita {
 		q.setResultClass( Cita.class );
 		return (List<Cita>) q.executeList();
 	}
-
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la informacion de las CITAS de un punto 
+	 * específico dado su id de la base de datos de VacuAndes
+	 * @param pm- El manejador de persistencia
+	 * @param id- el id del punto de vacunacion
+	 * @return Una lista de objetos CITA
+	 */
+	public List<Cita> darCitasNoFPunto( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery(SQL, "SELECT * FROM "+ pp.darTablaCita()+ " WHERE ID_PUNTO = ? AND FINALIZADA = 'F'");
+		q.setParameters(id);		
+		q.setResultClass( Cita.class );
+		return (List<Cita>) q.executeList();
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la informacion de las CITAS de un punto 
+	 * específico dado su id de la base de datos de VacuAndes
+	 * @param pm- El manejador de persistencia
+	 * @param id- el id del punto de vacunacion
+	 * @return Una lista de objetos CITA
+	 */
+	public List<Cita> darCitaPunto( PersistenceManager pm, String id)
+	{
+		Query q = pm.newQuery(SQL, "SELECT * FROM "+ pp.darTablaCita()+ " WHERE ID_PUNTO = ?");
+		q.setParameters(id);		
+		q.setResultClass( Cita.class );
+		return (List<Cita>) q.executeList();
+	}
 }

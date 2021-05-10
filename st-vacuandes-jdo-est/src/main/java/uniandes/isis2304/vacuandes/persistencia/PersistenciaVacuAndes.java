@@ -15,6 +15,7 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -482,7 +483,8 @@ public class PersistenciaVacuAndes
             
             log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new Cita( fechaHora, finalizada, ciudadano, punto );
+            Timestamp ts = Timestamp.valueOf(fechaHora);
+            return new Cita( ts , finalizada, ciudadano, punto );
         }
         catch( Exception e )
         {
@@ -506,7 +508,7 @@ public class PersistenciaVacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El número de tuplas eliminadas. -1 si ocurre alguna Excepción
 	 */
-	public Long eliminarCita( Date fechaHora, String ciudadano ) 
+	public Long eliminarCita( String fechaHora, String ciudadano ) 
 	{
 		PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -539,7 +541,7 @@ public class PersistenciaVacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano
 	 * @return El objeto Cita, construidos con base en las tuplas de la tabla CITA
 	 */
-	public Cita darCita( Date fechaHora, String ciudadano )
+	public Cita darCita( String fechaHora, String ciudadano )
 	{
 		return sqlCita.darCita( pmf.getPersistenceManager(), fechaHora, ciudadano );
 	}
@@ -551,6 +553,24 @@ public class PersistenciaVacuAndes
 	public List<Cita> darCitas()
 	{
 		return sqlCita.darCitas( pmf.getPersistenceManager() );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla CITA que tengan un id de punto específico
+	 * @return La lista de objetos Cita, construidos con base en las tuplas de la tabla CITA
+	 */
+	public List<Cita> darCitasNoFPunto( String id )
+	{
+		return sqlCita.darCitasNoFPunto( pmf.getPersistenceManager(), id );
+	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla CITA que tengan un id de punto específico
+	 * @return La lista de objetos Cita, construidos con base en las tuplas de la tabla CITA
+	 */
+	public List<Cita> darCitasPunto( String id )
+	{
+		return sqlCita.darCitasNoFPunto( pmf.getPersistenceManager(), id );
 	}
 	
 	/* ****************************************************************
@@ -1468,6 +1488,15 @@ public class PersistenciaVacuAndes
 	}
 	
 	/**
+	 * Método que consulta todas las tuplas en la tabla PUNTO habilitados
+	 * @return La lista de objetos Punto, construidos con base en las tuplas de la tabla PUNTO
+	 */
+	public List<Punto> darPuntosHabilitadosEPS(String id)
+	{
+		return sqlPunto.darPuntosHabilitadosEPS( pmf.getPersistenceManager(), id );
+	}
+	
+	/**
 	 * Método que cambia el numero de vacunas de un Punto dado su id
 	 * @param id - id del punto al que se le cambiará el  numero de vacunas
 	 * @param vacunas - numero de vacunas que se adicionará
@@ -1509,6 +1538,7 @@ public class PersistenciaVacuAndes
 	{ 
 		return sqlPunto.darCapacidadPunto( pmf.getPersistenceManager(), id ); 
 	} 
+	
 	
 	/**
 	 * Método que consulta el número de vacunas de una EPS dado su Id
@@ -2369,7 +2399,81 @@ public class PersistenciaVacuAndes
         }
 	}
 	
-	
+	/**
+	 * Método que deshabilita un punto, asignandole citas de los ciudadanos que tenian citas en ese punto
+	 * @param punto - El identificador del punto de vacunación al que se asignarán las citas
+	 * @return La lista de las nuevas citas
+	 */
+	@SuppressWarnings("deprecation")
+	public String[] deshabilitarPunto( String id_puntoV, String id, String id_eps )
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+        try
+        {
+            tx.begin();
+            sqlPunto.cambiarHabilitadoPunto(pm, id_puntoV, "F");
+            log.trace("Asignando citas al punto de vacunación con id: " + id);   
+            List<Cita> citasNoF = darCitasNoFPunto(id_puntoV);
+            List<Cita> citasP = darCitasPunto(id);
+            Date mayor = new Date();
+            for(int i=0; i< citasP.size(); i++)
+            {
+            	Timestamp actual = citasP.get(i).getFechaHora();
+            	if(actual.compareTo(mayor)>0)
+            	{
+            		System.out.println(actual);
+            		mayor = actual;
+            	}
+            }
+            Date fecha = mayor;
+            System.out.println(mayor);
+            fecha.setMinutes(0);
+            fecha.setSeconds(0); 
+            String[] citas = new String[citasNoF.size()];
+            int contador = 0;
+            for( Cita actual: citasNoF ) {
+            	String documento = actual.getDocumento_ciudadano();
+            	VOCiudadano ciudadano = sqlCiudadano.darCiudadano( pm, documento );
+            	if ( sqlVacunacion.darVacunacion(pm, documento, id_eps) != null ) 
+            	{
+            		sqlVacunacion.actualizarVacunacion( pm, ciudadano.getDocumento(), id_eps, id );
+            	} 
+            	else 
+            	{
+            		sqlVacunacion.adicionarVacunacion(pm, documento, id_eps, id);
+            	}
+            	String fechaS = actual.getFechaHora().toString();
+            	fechaS = fechaS.substring(0,fechaS.length()-5);
+            	String[] fechahora = fechaS.split(" ");
+            	String hora= fechahora[1];
+            	String[] añomesdia = fechahora[0].split("-");
+            	sqlCita.eliminarCita(pm, añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora , actual.getDocumento_ciudadano());
+            	fecha.setTime((long) (fecha.getTime() + 3.6e6));
+            	SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        		String fechaHora = format.format( fecha );
+            	sqlCita.adicionarCita(pm, fechaHora, "F", documento, id);
+            	String cita = sqlCita.darCita(pm, fechaHora, documento).toString();
+            	citas[contador] = cita;
+            	contador++;            	
+            }            
+            tx.commit();
+            return citas;
+        }
+        catch( Exception e )
+        {
+//        	e.printStackTrace();
+        	log.error( "Exception : " + e.getMessage() + "\n" + darDetalleException(e) );
+            return null;
+        }
+        finally
+        {
+            if( tx.isActive() ) {
+                tx.rollback();
+            }
+            pm.close();
+        }
+	}
 	/* ****************************************************************
 	 * 			Métodos para administración
 	 *****************************************************************/

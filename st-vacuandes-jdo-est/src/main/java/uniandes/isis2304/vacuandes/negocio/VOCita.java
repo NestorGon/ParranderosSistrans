@@ -14,6 +14,8 @@
 
 package uniandes.isis2304.vacuandes.negocio;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Interfaz para los métodos get de CITA. 
@@ -28,7 +30,7 @@ public interface VOCita {
 	/**
 	 * @return La fecha y hora de la cita
 	 */
-	public String getFechaHora();
+	public Timestamp getFechaHora();
 	
 	/**
 	 * @return Si la cita ya se finalizó o no
