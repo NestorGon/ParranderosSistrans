@@ -15,6 +15,7 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -482,7 +483,8 @@ public class PersistenciaVacuAndes
             
             log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
             
-            return new Cita( fechaHora, finalizada, ciudadano, punto );
+            Timestamp ts = Timestamp.valueOf(fechaHora);
+            return new Cita( ts , finalizada, ciudadano, punto );
         }
         catch( Exception e )
         {
@@ -2413,10 +2415,22 @@ public class PersistenciaVacuAndes
             sqlPunto.cambiarHabilitadoPunto(pm, id_puntoV, "F");
             log.trace("Asignando citas al punto de vacunación con id: " + id);   
             List<Cita> citasNoF = darCitasNoFPunto(id_puntoV);
-            String[] citas = new String[citasNoF.size()];
-            Date fecha = new Date();
+            List<Cita> citasP = darCitasPunto(id);
+            Date mayor = new Date();
+            for(int i=0; i< citasP.size(); i++)
+            {
+            	Timestamp actual = citasP.get(i).getFechaHora();
+            	if(actual.compareTo(mayor)>0)
+            	{
+            		System.out.println(actual);
+            		mayor = actual;
+            	}
+            }
+            Date fecha = mayor;
+            System.out.println(mayor);
             fecha.setMinutes(0);
-            fecha.setSeconds(0);
+            fecha.setSeconds(0); 
+            String[] citas = new String[citasNoF.size()];
             int contador = 0;
             for( Cita actual: citasNoF ) {
             	String documento = actual.getDocumento_ciudadano();
@@ -2429,7 +2443,12 @@ public class PersistenciaVacuAndes
             	{
             		sqlVacunacion.adicionarVacunacion(pm, documento, id_eps, id);
             	}
-            	sqlCita.eliminarCita(pm, actual.getFechaHora(), actual.getDocumento_ciudadano());
+            	String fechaS = actual.getFechaHora().toString();
+            	fechaS = fechaS.substring(0,fechaS.length()-5);
+            	String[] fechahora = fechaS.split(" ");
+            	String hora= fechahora[1];
+            	String[] añomesdia = fechahora[0].split("-");
+            	sqlCita.eliminarCita(pm, añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora , actual.getDocumento_ciudadano());
             	fecha.setTime((long) (fecha.getTime() + 3.6e6));
             	SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         		String fechaHora = format.format( fecha );

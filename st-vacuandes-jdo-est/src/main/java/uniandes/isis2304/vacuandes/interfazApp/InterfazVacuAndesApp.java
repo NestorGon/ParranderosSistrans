@@ -1051,11 +1051,14 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			for( int i=0; i<puntosH.size(); i++)
 			{
 				Punto actual = puntosH.get(i);
-				listaPuntosH= actual.toString().split(",");
-				Long capacidad = actual.getCapacidad();
-				Long activas = vacuAndes.darCitasActivasPunto(actual.getId());
-				Long disponible = capacidad - activas;
-				puntosHS[i] = listaPuntosH[0]+", numero de citas disponible: "+ disponible+ "]";
+				if(!actual.getId().equals(numero))
+				{
+					listaPuntosH= actual.toString().split(",");
+					Long capacidad = actual.getCapacidad();
+					Long activas = vacuAndes.darCitasActivasPunto(actual.getId());
+					Long disponible = capacidad - activas;
+					puntosHS[i] = listaPuntosH[0]+", numero de citas disponible: "+ disponible+ "]";
+				}
 			}
 
 			JOptionPane.showMessageDialog(this, "La cantidad de citas activas que había en el punto que desea deshabilitar son: \n"+ activasPunto);
@@ -1082,9 +1085,9 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			String id_punto = partidoH[1];
 
 			id_punto = id_punto.trim();	
-			
+
 			String[] citas = vacuAndes.deshabilitarPunto(numero, id_punto, id_eps);
-			
+
 			String mensaje = "";
 			for(int i=0; i<citas.length; i++)
 			{
