@@ -100,7 +100,7 @@ public class VacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return El número de tuplas eliminadas
 	 */
-	public Long eliminarCita( Date fechaHora, String ciudadano )
+	public Long eliminarCita( String fechaHora, String ciudadano )
 	{
 		log.info( "Eliminando Cita: " + fechaHora + " - " + ciudadano  );
 		Long resp = pp.eliminarCita( fechaHora, ciudadano );		
@@ -118,6 +118,19 @@ public class VacuAndes
 		log.info ("Consultando Citas");
 		List<Cita> citas = pp.darCitas();	
 		log.info ("Consultando Citas: " + citas.size() + " existentes");
+		return citas;
+	}
+	
+	/**
+	 * Encuentra todas las citas en VacuAndes de un Punto específico
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Cita con todas las citas que conoce la aplicación
+	 */
+	public List<Cita> darCitasNoFPunto(String id)
+	{
+		log.info ("Consultando Citas de un Punto");
+		List<Cita> citas = pp.darCitasNoFPunto(id);	
+		log.info ("Consultando Citas: " + citas.size() + " existentes de un punto");
 		return citas;
 	}
 
@@ -144,7 +157,7 @@ public class VacuAndes
 	 * @param ciudadano - El documento de identificación del ciudadano asociado a la cita
 	 * @return Un objeto Cita con la fecha y hora y ciudadano, lleno con su información básica
 	 */
-	public Cita darCita( Date fechaHora, String ciudadano )
+	public Cita darCita( String fechaHora, String ciudadano )
 	{
 		log.info ("Buscando Cita: " + fechaHora + " - " + ciudadano);
 		Cita cita = pp.darCita( fechaHora, ciudadano );
@@ -853,6 +866,19 @@ public class VacuAndes
 		log.info ("Consultando Punto");
 		List<Punto> puntos = pp.darPuntos();	
 		log.info ("Consultando Punto: " + puntos.size() + " existentes");
+		return puntos;
+	}
+	
+	/**
+	 * Encuentra todas los puntos habilitados en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
+	 */
+	public List<Punto> darPuntosHabilitadosEPS( String id )
+	{
+		log.info ("Consultando Puntos habilitados de una EPS");
+		List<Punto> puntos = pp.darPuntosHabilitadosEPS(id);	
+		log.info ("Consultando Puntos habilitados de una EPS: " + puntos.size() + " existentes");
 		return puntos;
 	}
 
@@ -1567,6 +1593,19 @@ public class VacuAndes
 		log.info("Rehabilitando punto con id: " + punto );
 		List<String> resultado = pp.rehabilitarPunto( punto, etapa );
 		log.info("Punto rehabilitado");
+		return resultado;
+	}
+	
+	/**
+	 * Método que deshabilita un punto, le asigna citas a un nuevo punto
+	 * @param punto - El identificador del punto de vacunación al que se le asignará una nueva cita
+	 * @return La lista con los documentos de los ciudadanos con nuevas citas
+	 */
+	public String[] deshabilitarPunto( String puntoViejo, String punto, String eps )
+	{
+		log.info("Deshabilitando punto con id: " + punto );
+		String[] resultado = pp.deshabilitarPunto( puntoViejo, punto, eps );
+		log.info("Punto deshabilitado");
 		return resultado;
 	}
 

@@ -86,7 +86,7 @@ public class Cita implements VOCita {
 		return documento_ciudadano;
 	}
 
-	public void setDocumento( String documento_ciudadano ) {
+	public void setDocumento_ciudadano( String documento_ciudadano ) {
 		this.documento_ciudadano = documento_ciudadano;
 	}
 	
@@ -96,6 +96,6 @@ public class Cita implements VOCita {
 	 */
 	public String toString() 
 	{
-		return "Cita [fechaHora = " + fechaHora + ", finzalidada = " + finalizada + ", documento_ciudadano = " + documento_ciudadano + "]";
+		return "Cita [fechaHora = " + fechaHora + ", finzalidada = " + finalizada + ", documento_ciudadano = " + documento_ciudadano + ", id_punto = "+ id_punto+"]";
 	}
 }

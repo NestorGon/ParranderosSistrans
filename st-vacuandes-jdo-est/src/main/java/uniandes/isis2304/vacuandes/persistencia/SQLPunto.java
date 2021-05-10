@@ -141,7 +141,7 @@ public class SQLPunto {
 	 */
 	public Long darCitasActivasPunto( PersistenceManager pm, String id ) 
 	{
-		Query q = pm.newQuery( SQL, "SELECT COUNT(*)CANTIDAD FROM " + pp.darTablaCita() + " WHERE ID_PUNTO = ? AND FINALIZADA = 'T' GROUP BY ID_PUNTO" );
+		Query q = pm.newQuery( SQL, "SELECT COUNT(*)CANTIDAD FROM " + pp.darTablaCita() + " WHERE ID_PUNTO = ? AND FINALIZADA = 'F' GROUP BY ID_PUNTO" );
 		q.setParameters( id );
 		BigDecimal resp = (BigDecimal) q.executeUnique();
 		if(resp == null)
@@ -161,6 +161,20 @@ public class SQLPunto {
 		q.setResultClass( Punto.class );
 		return (List<Punto>) q.executeList();
 	}	
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la información de los PUNTOS habilitados de la 
+	 * base de datos de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @return Una lista de objetos PUNTO
+	 */
+	public List<Punto> darPuntosHabilitadosEPS( PersistenceManager pm, String id_eps)
+	{
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaPunto() + " WHERE HABILITADO = 'T' AND ID_EPS = ?" );
+		q.setParameters(id_eps);
+		q.setResultClass( Punto.class );
+		return (List<Punto>) q.executeList();
+	}
 	
 	/**
 	 * Crea y ejecuta la sentencia SQL para aumentar la cantidad de vacunas de un punto dado su id
