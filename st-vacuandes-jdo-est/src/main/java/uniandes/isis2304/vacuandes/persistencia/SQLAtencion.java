@@ -102,6 +102,7 @@ public class SQLAtencion {
 	 */
 	public List<String> darCondicionesPunto( PersistenceManager pm, String punto ) {
 		Query q = pm.newQuery( SQL, "SELECT DESCRIPCION_CONDPRIOR FROM " + pp.darTablaAtencion() + " WHERE ID_PUNTO = ?" );
+		q.setParameters( punto );
 		q.setResultClass(String.class);
 		return (List<String>) q.executeList();
 	}

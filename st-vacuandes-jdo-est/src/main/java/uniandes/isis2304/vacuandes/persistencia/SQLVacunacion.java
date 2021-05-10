@@ -76,7 +76,7 @@ public class SQLVacunacion {
 	 */
 	public Long eliminarVacunacion( PersistenceManager pm, String documento, String eps )
 	{
-        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaVacunacion() + " WHERE DOCUMENTO_CIUDADNAO = ? AND ID_EPS = ?");
+        Query q = pm.newQuery(SQL, "DELETE FROM " + pp.darTablaVacunacion() + " WHERE DOCUMENTO_CIUDADANO = ? AND ID_EPS = ?");
         q.setParameters(documento, eps);
         return (Long) q.executeUnique();
 	}
