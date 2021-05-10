@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import uniandes.isis2304.vacuandes.negocio.Ciudadano;
+
 /**
  * Clase que encapsula los métodos que hacen acceso a la base de datos para la secuencia y limpieza de VacuAndes
  * 
@@ -205,6 +207,138 @@ class SQLUtil
         q = pm.newQuery( SQL, "DROP TABLE \"CANTIDAD\"");
         q.execute();
         return resp;
+	}
+	
+	/**
+	 * Crea y ejecuta la sentecia SQL que encuentra los ciudadanos correspondientes a los cohortes especificados
+	 * @param pm - El manejador de persistencia
+	 * @param edad - La edad o rango de edades
+	 * @param sexo - La lista con los sexos
+	 * @param condiciones - La lista con las condiciones de priorización
+	 * @param region - La lista con las regiones
+	 * @param eps - La lista con las EPS
+	 * @param punto - La lista con los puntos de vacunación
+	 * @param dosis - La lista con las dosis
+	 * @param tecnologiaVac - La lista con las tecnologías de las vacunas
+	 * @return Una lista con objetos de tipo ciudadano que pertenecen al cohorte
+	 */
+	public List<Ciudadano> analizarCohortes( PersistenceManager pm, String edad, List<String> sexo, List<String> condiciones, List<String> region, List<String> eps, List<String> punto, List<String> dosis, List<String> tecnologiaVac )
+	{
+		if ( edad != null ) {
+			if ( edad.contains("-") ) {
+				String[] split = edad.split("-");
+				edad = "BETWEEN " + split[0] + " AND " + split[1]; 
+			} else {
+				edad = "= " + edad;
+			}
+		}
+		
+		String qEdad = "AND (TRUNC(MONTHS_BETWEEN(SYSDATE, NACIMIENTO)/12) " + edad + ") ";
+		String qSexo = "AND SEXO IN ";
+		if ( sexo != null ) {
+			String strOut = "";
+			for(int i=0; i< sexo.size(); i++){
+				strOut += "'"+sexo.get(i)+"'";
+				if ( i < sexo.size()-1) {
+					strOut += ",";
+				}
+			}
+			qSexo += "(" + strOut + ") ";
+		}
+		
+		String qCondiciones = "AND (SELECT COUNT(*) "
+				+ "FROM PRIORIZACION P "
+				+ "WHERE C.DOCUMENTO = P.DOCUMENTO_CIUDADANO AND "
+				+ "P.DESCRIPCION_CONDPRIOR IN ";
+		if ( condiciones != null ) {
+			String strOut = "";
+			for(int i=0; i< condiciones.size(); i++){
+				strOut += "'"+condiciones.get(i)+"'";
+				if ( i < condiciones.size()-1) {
+					strOut += ",";
+				}
+			}
+			qCondiciones += "(" + strOut + ")) > 0 ";
+		}
+		
+		String qRegion = "AND (SELECT COUNT(*) "
+				+ "FROM EPS E "
+				+ "WHERE C.ID_EPS = E.ID AND "
+				+ "E.REGION IN ";
+		if ( region != null ) {
+			String strOut = "";
+			for(int i=0; i< region.size(); i++){
+				strOut += "'"+region.get(i)+"'";
+				if ( i < region.size()-1) {
+					strOut += ",";
+				}
+			}
+			qRegion += "(" + strOut + ")) > 0 ";
+		}
+		
+		String qEPS = "AND C.ID_EPS IN  ";
+		if ( eps != null ) {
+			String strOut = "";
+			for(int i=0; i< eps.size(); i++){
+				strOut += "'"+eps.get(i)+"'";
+				if ( i < eps.size()-1) {
+					strOut += ",";
+				}
+			}
+			qEPS += "(" + strOut + ") ";
+		}
+		
+		String qPunto = "AND (SELECT COUNT(*) "
+				+ "FROM VACUNACION V "
+				+ "WHERE C.DOCUMENTO = V.DOCUMENTO_CIUDADANO AND "
+				+ "V.ID_PUNTO IN ";
+		if ( punto != null ) {
+			String strOut = "";
+			for(int i=0; i< punto.size(); i++){
+				strOut += "'"+punto.get(i)+"'";
+				if ( i < punto.size()-1) {
+					strOut += ",";
+				}
+			}
+			qPunto += "(" + strOut + ")) > 0 ";
+		}
+		
+		String qDosisTec = "AND (SELECT COUNT(*) "
+				+ "FROM ESTADO E "
+				+ "WHERE C.ID_ESTADO = E.ID ";
+		if ( dosis != null ) {
+			String strOut = "";
+			for(int i=0; i< dosis.size(); i++){
+				strOut += "E.DESCRIPCION LIKE '%"+dosis.get(i)+"%' ";
+				if ( i < dosis.size()-1) {
+					strOut += "OR ";
+				}
+			}
+			qDosisTec += "AND (" + strOut + ") ";
+		}
+		
+		if ( tecnologiaVac != null ) {
+			String strOut = "";
+			for(int i=0; i< tecnologiaVac.size(); i++){
+				strOut += "E.DESCRIPCION LIKE '%"+tecnologiaVac.get(i)+"%' ";
+				if ( i < tecnologiaVac.size()-1) {
+					strOut += "OR ";
+				}
+			}
+			qDosisTec += "AND (" + strOut + ") ";
+		}
+		qDosisTec += ") > 0 ";
+		Query q = pm.newQuery( SQL, "SELECT * FROM CIUDADANO C "
+				+ "WHERE 1=1 "
+				+ (edad != null ? qEdad: "")
+				+ (sexo != null ? qSexo: "")
+				+ (condiciones != null ? qCondiciones: "")
+				+ (region != null ? qRegion: "")
+				+ (eps != null ? qEPS: "")
+				+ (punto != null ? qPunto: "")
+				+ (dosis != null || tecnologiaVac != null ? qDosisTec: ""));
+		q.setResultClass( Ciudadano.class );
+		return (List<Ciudadano>) q.executeList();
 	}
 
 	/**

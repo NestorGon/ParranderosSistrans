@@ -112,5 +112,17 @@ public class SQLVacuna {
 		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaVacuna() );
 		q.setResultClass( Vacuna.class );
 		return (List<Vacuna>) q.executeList();
-	}	
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontras todas las tecnologías de vacunas
+	 * @param pm - El manejador de persistencia
+	 * @return La lista con las tecnologías encontradas
+	 */
+	public List<String> darTecnologiasVacunas( PersistenceManager pm )
+	{
+		Query q = pm.newQuery( SQL, "SELECT UNIQUE(TIPO) FROM " + pp.darTablaVacuna());
+		q.setResultClass( String.class );
+		return (List<String>) q.executeList();
+	}
 }
