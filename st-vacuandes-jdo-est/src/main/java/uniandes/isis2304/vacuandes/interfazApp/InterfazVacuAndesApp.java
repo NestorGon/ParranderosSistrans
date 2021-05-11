@@ -25,6 +25,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -1556,6 +1561,81 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 
 	}
+	
+	/**
+	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano
+	 */public void ciudadanosContacto()
+	 {
+		 try 
+			{
+				VOInfoUsuario usuario = panelValidacionUsuario();
+				if ( usuario != null ) {
+					if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)
+						 && !usuario.getId_roles().equals(4L) && !usuario.getId_roles().equals(5L) && !usuario.getId_roles().equals(6L)) {
+						throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+					}
+				}
+				else {
+					return;
+				}
+				String documento = JOptionPane.showInputDialog(this, "Ingrese el documento del ciudadano", "Hallar ciudadanos en contacto", JOptionPane.QUESTION_MESSAGE);
+				String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la fecha de búsqueda en formato DD-MM-YYYY", "Hallar ciudadanos en contacto", JOptionPane.QUESTION_MESSAGE)+ " 00:00";
+				
+				DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        		LocalDate fecha = LocalDate.parse(fecha2.trim(), format);
+        		        		
+        		LocalDate fecha10 = fecha.plusDays(-10);
+        		String fechaatras = fecha10.toString();
+        		String[] fechapartida = fechaatras.split("-");
+				String fecha1 = fechapartida[2]+"-"+fechapartida[1]+"-"+fechapartida[0]+" 00:00";
+        		
+        		documento= documento.trim();
+        		
+        		String id_punto = vacuAndes.darIdPuntoVacunacionDocumento(documento);
+        		
+        		List<Cita> citasCiudadano = vacuAndes.darCitasCiudadanoPunto(id_punto, documento);
+        		
+        		List<String> ciudadanos= new ArrayList<String>();
+        		
+        		for(int i=0; i<citasCiudadano.size(); i++)
+        		{
+        			String fechaS = citasCiudadano.get(i).getFechaHora().toString();
+    				fechaS = fechaS.substring(0,fechaS.length()-5);
+    				String[] fechaho = fechaS.split(" ");
+    				String hora= fechaho[1];
+    				String[] añomesdia = fechaho[0].split("-");
+    				String fechahora = añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora;
+    				
+    				System.out.println(fechahora);
+    				
+    				List<String> documentos = vacuAndes.ciudadanosContacto(documento, fecha1, fecha2, id_punto, fechahora);
+    				
+    				for(int j=0; j<documentos.size(); j++)
+    				{
+    					if(!documentos.get(j).equals(documento))
+    					{
+    						ciudadanos.add(documentos.get(j));
+    					}
+    				}
+    				
+        		}
+        		
+        		String resultado = "Los documentos de los ciudadanos que entraron en contacto con el ciudadano de documento "+documento+" son: \n";
+        		for(int k=0; k<ciudadanos.size();k++)
+        		{
+        			resultado+= ciudadanos.get(k)+"\n";
+        		}
+ 
+    			panelDatos.actualizarInterfaz(resultado);
+        		
+			}
+			catch (Exception e) {
+				//			e.printStackTrace();
+				String resultado = generarMensajeError(e);
+				panelDatos.actualizarInterfaz(resultado);
+			}
+	 }
+	
 
 	/* ****************************************************************
 	 * 			Métodos administrativos

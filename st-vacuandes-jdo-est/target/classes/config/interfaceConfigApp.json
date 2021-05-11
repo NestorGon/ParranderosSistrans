@@ -103,7 +103,7 @@
 				},
 				{
 					"label": "Ciudadanos en contacto",
-					"event": "analizarOperacion"
+					"event": "ciudadanosContacto"
 				}
 			]
 		},

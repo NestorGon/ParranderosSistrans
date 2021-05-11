@@ -354,6 +354,35 @@ class SQLUtil
 	}
 	
 	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos que estuvieron en contacto con un ciudadano en un punto de vacunación
+	 * @param pm- El manejador de persistencia
+	 * @param fechahora - Fecha y hora en la que se buscan los ciudadanos
+	 * @return lista con los documentos de los ciudadanos encontrados
+	 */
+	public List<String> ciudadanosContacto( PersistenceManager pm, String fecha1, String fecha2, String id_punto, String fechahora)
+	{
+		Query q1= pm.newQuery(SQL, "CREATE TABLE INFO(FECHAHORA, DOCUMENTO) AS"
+                 + " (SELECT CITA.FECHAHORA, CIUDADANO.DOCUMENTO"
+                 + " FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)"
+                 + " JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID"
+                 + " WHERE CITA.FECHAHORA > TO_DATE('"+fecha1+"', 'DD-MM-YYYY HH24:MI') AND"
+                 + " CITA.FECHAHORA < TO_DATE('"+fecha2+"', 'DD-MM-YYYY HH24:MI')"
+                 + " AND PUNTO.ID = '"+id_punto+"')");
+		q1.execute();
+		
+		Query q = pm.newQuery(SQL, "SELECT DOCUMENTO"
+                  + " FROM INFO"
+                  + " WHERE FECHAHORA = TO_DATE('"+fechahora+"', 'DD-MM-YYYY HH24:MI')");
+		q.setResultClass(String.class);
+		List<String> ciudadanos = (List<String>) q.execute();
+		
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+		
+		return ciudadanos;
+	}
+	
+	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos que están en un punto de vacunación equivocado
 	 * debido a que sus condiciones de priorizacion no corresponden a las que el punto atiende
 	 * @param pm - El manejador de persistencia
