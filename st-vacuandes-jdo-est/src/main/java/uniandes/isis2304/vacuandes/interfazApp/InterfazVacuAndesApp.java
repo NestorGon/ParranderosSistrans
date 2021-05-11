@@ -1572,7 +1572,6 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	}
 	
 	/**
-<<<<<<< HEAD
 	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano
 	 */public void ciudadanosContacto()
 	 {
@@ -1646,7 +1645,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			}
 	 }
 	
-=======
+     /**
 	 * Consulta la base de datos para encontrar los ciudadanos que pertenecen a grupos poblacionales variables
 	 */
 	public void analizarCohortes( )
@@ -1737,7 +1736,6 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
->>>>>>> main
 
 	/* ****************************************************************
 	 * 			Métodos administrativos
