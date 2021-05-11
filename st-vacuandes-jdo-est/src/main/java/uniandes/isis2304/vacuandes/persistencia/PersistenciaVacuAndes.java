@@ -478,12 +478,22 @@ public class PersistenciaVacuAndes
 		try
 		{
 			tx.begin();
+			
 			Long tuplasInsertadas = sqlCita.adicionarCita( pm, fechaHora, finalizada, ciudadano, punto );
 			tx.commit();
 
 			log.trace( "Inserción de cita: " + fechaHora + " - " + ciudadano + ": " + tuplasInsertadas + " tuplas insertadas" );
 
-			Timestamp ts = Timestamp.valueOf(fechaHora);
+			fechaHora = fechaHora+":00.000000";
+			
+			String[] fechah = fechaHora.split(" ");
+			String hora= fechah[1];
+			String[] añomesdia = fechah[0].split("-");
+			
+			String fecha = añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora;
+			
+			Timestamp ts = Timestamp.valueOf(fecha);
+			
 			return new Cita( ts , finalizada, ciudadano, punto );
 		}
 		catch( Exception e )
@@ -2450,7 +2460,6 @@ public class PersistenciaVacuAndes
 				Timestamp actual = citasP.get(i).getFechaHora();
 				if(actual.compareTo(mayor)>0)
 				{
-					System.out.println(actual);
 					mayor = actual;
 				}
 			}

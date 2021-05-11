@@ -1615,8 +1615,6 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
     				String[] añomesdia = fechaho[0].split("-");
     				String fechahora = añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora;
     				
-    				System.out.println(fechahora);
-    				
     				List<String> documentos = vacuAndes.ciudadanosContacto(documento, fecha1, fecha2, id_punto, fechahora);
     				
     				for(int j=0; j<documentos.size(); j++)
@@ -1633,6 +1631,11 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
         		for(int k=0; k<ciudadanos.size();k++)
         		{
         			resultado+= ciudadanos.get(k)+"\n";
+        		}
+        		
+        		if(ciudadanos.size() == 0 )
+        		{
+        			resultado= "El ciudadano de documento "+ documento+ " no se encontraba en ningún punto en los 10 dias previos a la fecha dada";
         		}
  
     			panelDatos.actualizarInterfaz(resultado);
