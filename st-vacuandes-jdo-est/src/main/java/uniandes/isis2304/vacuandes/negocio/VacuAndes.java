@@ -1077,6 +1077,18 @@ public class VacuAndes
 		return resp;
 	}
 	
+	/**
+	 * Método que consulta todas las tecnologías de vacunas
+	 * @return La lista con las tecnologías encontradas
+	 */
+	public List<String> darTecnologiasVacunas()
+	{
+		log.info("Consultando las tecnologías de las vacunas");
+		List<String> tecnologias = pp.darTecnologiasVacunas();
+		log.info("Tecnologías de vacunas consultadas");
+		return tecnologias;
+	}
+	
 	/* ****************************************************************
 	 * 			Métodos para manejar la ETAPA
 	 *****************************************************************/
@@ -1646,6 +1658,26 @@ public class VacuAndes
 		List<String> resultado = pp.ciudadanosContacto(documento, fecha1, fecha2, id_punto, fechahora);
 		log.info("Ciudadanos en contacto encontrados");
 		return resultado;
+	}
+	
+	/**
+	 * Método que consulta los ciudadanos correspondientes a los cohortes especificados
+	 * @param edad - La edad o rango de edades
+	 * @param sexo - La lista con los sexos
+	 * @param condiciones - La lista con las condiciones de priorización
+	 * @param region - La lista con las regiones
+	 * @param eps - La lista con las EPS
+	 * @param punto - La lista con los puntos de vacunación
+	 * @param dosis - La lista con las dosis
+	 * @param tecnologiaVac - La lista con las tecnologías de las vacunas
+	 * @return Una lista con objetos de tipo ciudadano que pertenecen al cohorte
+	 */
+	public List<Ciudadano> analizarCohortes( String edad, List<String> sexo, List<String> condiciones, List<String> region, List<String> eps, List<String> punto, List<String> dosis, List<String> tecnologiaVac )
+	{
+		log.info("Analizando cohorte");
+		List<Ciudadano> ciudadanos = pp.analizarCohortes(edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac);
+		log.info("Cohorte analizado");
+		return ciudadanos;
 	}
 
 	/* ****************************************************************

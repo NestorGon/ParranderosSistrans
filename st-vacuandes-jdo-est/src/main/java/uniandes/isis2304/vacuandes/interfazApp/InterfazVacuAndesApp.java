@@ -53,6 +53,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 
 import uniandes.isis2304.vacuandes.negocio.Cita;
+import uniandes.isis2304.vacuandes.negocio.Ciudadano;
 import uniandes.isis2304.vacuandes.negocio.CondicionPriorizacion;
 import uniandes.isis2304.vacuandes.negocio.EPS;
 import uniandes.isis2304.vacuandes.negocio.Estado;
@@ -807,74 +808,74 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
-
-	/**
-	 * Registra el avance en el proceso de vacunación de un ciudadano
-	 * Para esto realiza una actualización en el registro del ciudadano
-	 */
-	public void registrarAvanceVacunacion( )
-	{
-		try 
-		{
-			VOInfoUsuario usuario = panelValidacionUsuario();
-			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(4L) ) {
-					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-				}
-			} 
-			else {
-				return;
-			}
-			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-			if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
-			{
-				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-				if ( ciudadano != null ) {
-					VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
-					if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
-						throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
-					}
-					VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
-					if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
-						if ( estado.getDescripcion().startsWith("VACUNADO") ) {
-							String tipoVacuna = estado.getDescripcion().split(" ")[4];
-							if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
-								throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
-							}
-						}
-						VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
-						Boolean aplicada = false;
-						if ( vacunacion != null ) {
-							String id_punto = vacunacion.getId_punto();
-							for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
-								VOVacuna vacuna = vacuAndes.darVacuna( actual );
-								if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[4]) ) {
-									vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
-									vacuAndes.aumentarAplicadasPuntoId(id_punto);
-									aplicada = true;
-									break;
-								}
-							}
-							if ( !aplicada ) {
-								throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
-							}
-						}
-					}
-					ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
-				} 
-				else {
-					throw new Exception ("No se pudo actualizar al ciudadano " + documento );
-				}
-				String resultado = "En registrarAvanceVacunacion\n\n";
-				resultado += "Ciudadano actualizado correctamente: " + ciudadano;
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-			}
-			else
-			{
-				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-			}
+    
+    /**
+     * Registra el avance en el proceso de vacunación de un ciudadano
+     * Para esto realiza una actualización en el registro del ciudadano
+     */
+    public void registrarAvanceVacunacion( )
+    {
+    	try 
+    	{
+    		VOInfoUsuario usuario = panelValidacionUsuario();
+    		if ( usuario != null ) {
+    			if ( !usuario.getId_roles().equals(4L) ) {
+    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+    			}
+    		} 
+    		else {
+    			return;
+    		}
+    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
+    		{
+    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+    			if ( ciudadano != null ) {
+    				VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
+    				if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
+    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+    				}
+    				VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
+    				if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
+    					if ( estado.getDescripcion().startsWith("VACUNADO") ) {
+    						String tipoVacuna = estado.getDescripcion().split(" ")[3];
+    						if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
+    							throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
+    						}
+    					}
+    					VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
+    					Boolean aplicada = false;
+    					if ( vacunacion != null ) {
+    						String id_punto = vacunacion.getId_punto();
+    						for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
+    							VOVacuna vacuna = vacuAndes.darVacuna( actual );
+    							if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[3]) ) {
+    								vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
+    								vacuAndes.aumentarAplicadasPuntoId(id_punto);
+    								aplicada = true;
+    								break;
+    							}
+    						}
+    						if ( !aplicada ) {
+    							throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
+    						}
+    					}
+    				}
+    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
+    			} 
+    			else {
+        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+        		}
+        		String resultado = "En registrarAvanceVacunacion\n\n";
+        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
 		} 
 		catch (Exception e) 
 		{
@@ -975,27 +976,35 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			JList<String> list = new JList<>( darGruposDePriorizacion() );
 			JOptionPane.showMessageDialog(null, list, "Selecccione los grupos poblacionales que va a atender el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
 			List<String> seleccionados = list.getSelectedValuesList();
-
-			if ( seleccionados == null || seleccionados.size() == 0 ) {
-				List<String> condiciones = vacuAndes.darCondicionesPunto(id_punto);
-
-				List<String> ciudadanos = vacuAndes.cambioEstadoPunto( id_punto, seleccionados, condiciones );
-				if ( ciudadanos == null ) {
-					throw new Exception("No se pudo eliminar a los ciudadanos que ahora no pertenecen al punto");
-				}
-				String resultado = "En cambioEstadoPunto\n\n";
-				resultado += "Punto actualizado correctamente: " + id_punto;
-				resultado += "\n Ciuadanos eliminados del punto de vacunación: ";
-				for ( String actual: ciudadanos) {
-					resultado += "\n " + actual;
-				}
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-			}
-			else
-			{
-				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-			}
+			
+    		if ( seleccionados != null && seleccionados.size() > 0  && id_punto != null && !id_punto.trim().equals("") ) {
+    			if( vacuAndes.darPunto(id_punto) == null ) {
+    				throw new Exception("El punto ingresado no se encuentra registrado en VacuAndes");
+    			}
+    			List<String> condiciones = vacuAndes.darCondicionesPunto(id_punto);
+    			
+    			List<String> ciudadanos = vacuAndes.cambioEstadoPunto( id_punto, seleccionados, condiciones );
+    			if ( ciudadanos == null ) {
+    				throw new Exception("No se pudo eliminar a los ciudadanos que ahora no pertenecen al punto");
+    			}
+        		String resultado = "En cambioEstadoPunto\n\n";
+        		resultado += "Punto actualizado correctamente: " + id_punto;
+        		if ( ciudadanos.size() == 0 ) {
+        			resultado += "\n No hubo ciudadanos para eliminarlos del punto";
+        		}
+        		else {
+        			resultado += "\n Ciuadanos eliminados del punto de vacunación: ";
+            		for ( String actual: ciudadanos) {
+            			resultado += "\n " + actual;
+            		}
+        		}
+    			resultado += "\n Operación terminada";
+    			panelDatos.actualizarInterfaz(resultado);
+    		}
+    		else
+    		{
+    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+    		}
 		} 
 		catch (Exception e) 
 		{
@@ -1563,6 +1572,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 	}
 	
 	/**
+<<<<<<< HEAD
 	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano
 	 */public void ciudadanosContacto()
 	 {
@@ -1636,6 +1646,98 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			}
 	 }
 	
+=======
+	 * Consulta la base de datos para encontrar los ciudadanos que pertenecen a grupos poblacionales variables
+	 */
+	public void analizarCohortes( )
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			Boolean edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac;
+			String selecEdad = null;
+			List<String> selecSexo=null, selecCondiciones=null, selecRegion=null, selecEps=null, selecPunto=null, selecDosis=null, selecTecnologiaVac=null;
+			JList<String> list = new JList<>( new String[]{"Edad","Sexo","Condiciones de priorización","Región", "Eps", "Punto de vac.", "Dosis aplicadas", "Tecnología vacuna"} );
+			JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el cochorte (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			List<String> seleccionados = list.getSelectedValuesList();
+			edad = seleccionados.contains("Edad") ? true: false;
+			sexo = seleccionados.contains("Sexo") ? true: false;
+			condiciones = seleccionados.contains("Condiciones de priorización") ? true: false;
+			region = seleccionados.contains("Región") ? true: false;
+			eps = seleccionados.contains("Eps") ? true: false;
+			punto = seleccionados.contains("Punto de vac.") ? true: false;
+			dosis = seleccionados.contains("Dosis aplicadas") ? true: false;
+			tecnologiaVac = seleccionados.contains("Tecnología vacuna") ? true: false;
+			
+			if ( edad ) {
+				selecEdad = JOptionPane.showInputDialog(null, "Ingrese la edad (EDAD) o rango de edades (EDAD1-EDAD2)", "Edades", JOptionPane.QUESTION_MESSAGE);
+			}
+			if ( sexo ) {
+				list = new JList<>( new String[]{"FEMENINO","MASCULINO"} );
+				JOptionPane.showMessageDialog(null, list, "Selecccione el sexo (cmd o ctrl sostenido para seleeccionar varios)", JOptionPane.PLAIN_MESSAGE);
+				selecSexo = list.getSelectedValuesList();
+			}
+			if ( condiciones ) {
+				list = new JList<>( darGruposDePriorizacion() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la condición de priorización (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecCondiciones = list.getSelectedValuesList();
+			}
+			if ( region ) {
+				list = new JList<>( darRegiones() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecRegion = list.getSelectedValuesList();
+			}
+			if ( eps ) {
+				list = new JList<>( darTodasEps() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecEps = list.getSelectedValuesList();
+			}
+			if ( punto ) {
+				list = new JList<>( darPuntos() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecPunto = list.getSelectedValuesList();
+			}
+			if ( dosis ) {
+				list = new JList<>( new String[]{"DOSIS 1", "DOSIS 2"} );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la dosis (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecDosis = list.getSelectedValuesList();
+			}
+			if ( tecnologiaVac ) {
+				list = new JList<>( darTecnologiaVacunas() );
+				JOptionPane.showMessageDialog(null, list, "Selecccione la tecnología (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				selecTecnologiaVac = list.getSelectedValuesList();
+			}
+			List<Ciudadano> ciudadanos = vacuAndes.analizarCohortes(selecEdad, selecSexo, selecCondiciones, selecRegion, selecEps, selecPunto, selecDosis, selecTecnologiaVac);
+			if ( ciudadanos == null ) {
+				throw new Exception("No hay ningún ciudadano registrado en VacuAndes que pertenezca al cohorte");
+			}
+			String resultado = "En analizarCohortesl\n\n";
+			if ( ciudadanos.size() == 0 ) {
+				resultado += "\n No se encontraron ciudadanos en el cohorte";
+			} else {
+				resultado += "\n Los ciudadanos encontrados en el cohorte son: \n";
+				for ( Ciudadano actual: ciudadanos ) {
+					resultado += actual.toString() + "\n";
+				}
+			}
+			resultado += "\n Operación terminada";
+			panelDatos.actualizarInterfaz(resultado);
+		}
+		catch (Exception e) {
+			//			e.printStackTrace();
+			String resultado = generarMensajeError(e);
+			panelDatos.actualizarInterfaz(resultado);
+		}
+	}
+>>>>>>> main
 
 	/* ****************************************************************
 	 * 			Métodos administrativos
@@ -1877,6 +1979,34 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 		String[] retorno = new String[eps.size()];
 		eps.toArray(retorno);
+		return retorno;
+	}
+	
+	/**
+	 * Obtiene los Puntos de vacunación registrados en vacuandes
+	 * @return un arreglo de tamaño fijo de String con los Puntos registrados
+	 */
+	private String[] darPuntos() {
+		List<String> puntos = new LinkedList<>();
+		for ( Punto actual: vacuAndes.darPuntos() ) {
+			puntos.add( actual.getId() );
+		}
+		String[] retorno = new String[puntos.size()];
+		puntos.toArray(retorno);
+		return retorno;
+	}
+	
+	/**
+	 * Obtiene las tecnologías de las vacunas registradas en vacuandes
+	 * @return un arreglo de tamaño fijo de String con las tecnologías registrados
+	 */
+	private String[] darTecnologiaVacunas() {
+		List<String> tecnologias = new LinkedList<>();
+		for ( String actual: vacuAndes.darTecnologiasVacunas() ) {
+			tecnologias.add( actual );
+		}
+		String[] retorno = new String[tecnologias.size()];
+		tecnologias.toArray(retorno);
 		return retorno;
 	}
 

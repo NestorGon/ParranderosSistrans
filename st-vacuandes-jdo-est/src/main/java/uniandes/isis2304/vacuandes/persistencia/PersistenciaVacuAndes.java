@@ -1359,7 +1359,7 @@ public class PersistenciaVacuAndes
 	{
 		return sqlVacunacion.darVacunaciones( pmf.getPersistenceManager() );
 	}
-	
+		
 	/**
 	 * Método que consulta el id de un punto de una vacunación dado el documento de un ciudadano
 	 * @return id- id del punto
@@ -1747,6 +1747,16 @@ public class PersistenciaVacuAndes
 	{
 		return sqlVacuna.darVacunas( pmf.getPersistenceManager() );
 	}
+	
+	/**
+	 * Método que consulta todas las tecnologías de vacunas
+	 * @return La lista con las tecnologías encontradas
+	 */
+	public List<String> darTecnologiasVacunas()
+	{
+		return sqlVacuna.darTecnologiasVacunas( pmf.getPersistenceManager() );
+	}
+	
 
 	/* ****************************************************************
 	 * 			Métodos para manejar las ETAPAS
@@ -2494,6 +2504,23 @@ public class PersistenciaVacuAndes
 	}
 
 	/**
+	 * Método que consulta los ciudadanos correspondientes a los cohortes especificados
+	 * @param edad - La edad o rango de edades
+	 * @param sexo - La lista con los sexos
+	 * @param condiciones - La lista con las condiciones de priorización
+	 * @param region - La lista con las regiones
+	 * @param eps - La lista con las EPS
+	 * @param punto - La lista con los puntos de vacunación
+	 * @param dosis - La lista con las dosis
+	 * @param tecnologiaVac - La lista con las tecnologías de las vacunas
+	 * @return Una lista con objetos de tipo ciudadano que pertenecen al cohorte
+	 */
+	public List<Ciudadano> analizarCohortes( String edad, List<String> sexo, List<String> condiciones, List<String> region, List<String> eps, List<String> punto, List<String> dosis, List<String> tecnologiaVac )
+	{
+		return sqlUtil.analizarCohortes( pmf.getPersistenceManager(), edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac);
+	}
+	
+	/**
 	 * Consulta ciudadanos que estuvieron al mismo tiempo en el mismo punto que otro ciudadano
 	 */
 	public List<String> ciudadanosContacto(String documento, String fecha1, String fecha2, String id_punto, String fechahora)
@@ -2501,6 +2528,7 @@ public class PersistenciaVacuAndes
 		PersistenceManager pm = pmf.getPersistenceManager();
 		return sqlUtil.ciudadanosContacto(pm, fecha1, fecha2, id_punto, fechahora);
 	}
+    
 	/* ****************************************************************
 	 * 			Métodos para administración
 	 *****************************************************************/

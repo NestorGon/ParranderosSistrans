@@ -9,63 +9,55 @@
 		  "options":
 			[
 				{
-					"label": "1.Registrar las condiciones de priorización",
+					"label": "Registrar las condiciones de priorización",
 					"event": "registrarPriorizacion"
 				},
 				{
-					"label": "2.Registrar estados válidos para vacunación",
+					"label": "Registrar estados válidos para vacunación",
 					"event": "registrarEstados"
 				},
 				{
-					"label": "3.Registrar una oficina de EPS",
+					"label": "Registrar una oficina de EPS",
 					"event": "registrarEPS"
 				},
 				{
-					"label": "4.Registrar usuario de VacuAndes",
+					"label": "Registrar usuario de VacuAndes",
 					"event": "registrarUsuario"
 				},
 				{
-					"label": "5.Registrar ciudadanos",
-					"event": "registrarCiudadanos"
-				},
-				{
-					"label": "6.Registrar Punto de Vacunación",
+					"label": "Registrar Punto de Vacunación",
 					"event": "registrarPunto"
 				},
 				{
-					"label": "7.Asignar talento humano a un Punto de Vac.",
-					"event": "asignarTalentoHumano"
-				},
-				{
-					"label": "8.Registrar llegada de lote a EPS",
+					"label": "Registrar llegada de lote a EPS",
 					"event": "registrarLoteEPS"
 				},
 				{
-					"label": "9.Registrar llegada de lote a Punto de Vac.",
+					"label": "Registrar llegada de lote a Punto de Vac.",
 					"event": "registraLotePunto"
 				},
 				{
-					"label": "10.Asignar ciudadano a punto de vacunación",
+					"label": "Asignar ciudadano a punto de vacunación",
 					"event": "adicionarVacunacion"
 				},
 				{
-					"label": "11.Asignar cita de vacunación a un ciudadano",
+					"label": "Asignar cita de vacunación a un ciudadano",
 					"event": "asignarCita"
 				},
 				{
-					"label": "12.Registrar avance de vacunación",
+					"label": "Registrar avance de vacunación",
 					"event": "registrarAvanceVacunacion"
 				},
 				{
-					"label": "13.Registrar estado Punto de Vac.",
+					"label": "Registrar estado Punto de Vac.",
 					"event": "cambioEstadoPunto"
 				},
 				{
-					"label": "14.Deshabilitar Punto de Vac.",
+					"label": "Deshabilitar Punto de Vac.",
 					"event": "deshabilitarPunto"
 				},
 				{
-					"label": "15.Rehabilitar Punto de Vac.",
+					"label": "Rehabilitar Punto de Vac.",
 					"event": "rehabilitarPunto"
 				}
 			]
@@ -84,14 +76,6 @@
 				{
 					"label": "Índice de vacunación",
 					"event": "mostrarIndiceGrupoPoblacional"
-				},
-				{
-					"label": "Puntos con disponibilidad",
-					"event": "mostrarPuntosDisponibles"
-				},
-				{
-					"label": "Proceso de vacunación de un ciudadano",
-					"event": "mostrarProcesoVacunacionCiudadano"
 				},
 				{
 					"label": "Analizar operación de VacuAndes",
