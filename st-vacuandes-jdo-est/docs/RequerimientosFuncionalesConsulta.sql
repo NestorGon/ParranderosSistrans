@@ -1,3 +1,25 @@
+--Sentencia RFC7
+--Esta sentencia es un ejemplo para el tiempo DD y el punto 14
+--Esta consulta crea la tabla info
+CREATE TABLE INFO (CANTIDAD, TIEMPO) AS
+(SELECT COUNT(*) AS CANTIDAD, TO_CHAR(CITA.FECHAHORA, '"+tiempo+"') AS TIEMPO"
+FROM CITA
+WHERE CITA.ID_PUNTO = '14'
+GROUP BY TO_CHAR(CITA.FECHAHORA, 'DD'))
+--Tres formas de acceder a la tabla acontinuación:
+-- Hallar el tiempo con mayor concurrencia
+SELECT TIEMPO
+FROM INFO
+ORDER BY CANTIDAD DESC
+FETCH FIRST 1 ROWS ONLY
+--Hallar las cantidades agrupadas por tiempo
+SELECT CANTIDAD
+FROM INFO
+--Hallar un tiempo dado una cantidad
+SELECT TIEMPO
+FROM INFO
+WHERE CANTIDAD = 12
+
 --Sentencia RFC8
 --Esta sentencia es un ejemplo de la consulta incluyendo todos los parámetros disponibles
 --La sentencia puede variar dependiendo de los parámetros seleccionados

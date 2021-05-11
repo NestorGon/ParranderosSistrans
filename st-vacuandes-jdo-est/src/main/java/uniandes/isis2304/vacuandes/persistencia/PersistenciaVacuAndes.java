@@ -2530,6 +2530,30 @@ public class PersistenciaVacuAndes
 	}
 	
 	/**
+	 * Método que consulta los tiempos más concurridos de un punto
+	 */
+	public String analizarOperacionTiempo( String id, String tiempo ){
+		
+		return  sqlUtil.analizarOperacionTiempo(pmf.getPersistenceManager(), tiempo, id);
+	}
+	
+	/**
+	 * Método que consulta las cantidades de personas agrupado por fechas
+	 */
+	public List<Long> analizarOperacionCantidad( String id, String tiempo ){
+		
+		return  sqlUtil.analizarOperacionCantidad(pmf.getPersistenceManager(), tiempo, id);
+	}
+	
+	/**
+	 * Método que consulta las cantidades de personas agrupado por fechas
+	 */
+	public String analizarOperacionTiempoCantidad( String id, String tiempo, Long cantidad ){
+		
+		return  sqlUtil.analizarOperacionTiempoCantidad(pmf.getPersistenceManager(),cantidad, tiempo, id);
+	}
+	
+	/**
 	 * Consulta ciudadanos que estuvieron al mismo tiempo en el mismo punto que otro ciudadano
 	 */
 	public List<String> ciudadanosContacto(String documento, String fecha1, String fecha2, String id_punto, String fechahora)

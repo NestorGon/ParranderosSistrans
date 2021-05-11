@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.datanucleus.store.rdbms.query.ForwardQueryResult;
+
 import uniandes.isis2304.vacuandes.negocio.Ciudadano;
 
 /**
@@ -516,6 +518,88 @@ class SQLUtil
 		return ciudadanos;
 	}
 	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los puntos más concurridos en un tiempo específicado
+	 * @param tiempo - tiempo
+	 * @param pm- Manejador de persistencia
+	 * @return Lista con las cantidades de vacunas por tiempos
+	 */
+	public List<Long> analizarOperacionCantidad( PersistenceManager pm, String tiempo, String id)
+	{
+		Query q1 = pm.newQuery(SQL, "CREATE TABLE INFO (CANTIDAD, TIEMPO) AS"
+                   + " (SELECT COUNT(*) AS CANTIDAD, TO_CHAR(CITA.FECHAHORA, '"+tiempo+"') AS TIEMPO"
+                   + " FROM CITA"
+                   + " WHERE CITA.ID_PUNTO = '"+id+"'"
+                   + " GROUP BY TO_CHAR(CITA.FECHAHORA, '"+tiempo+"'))");
+		q1.execute();
+		
+		Query q= pm.newQuery(SQL, "SELECT CANTIDAD"
+                 + " FROM INFO");
+		q.setResultClass(Long.class);
+		List<Long> cantidades = (List<Long>) q.executeList();
+		
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+		
+		return cantidades;
+	}
+	
+	/**
+	 * Crea y ejecuta sentencia que haya el tiempo dado una cantidad específica
+	 * @param pm - Manejador de persistencia
+	 * @return String fecha con la cantidad dada
+	 */
+	public String analizarOperacionTiempoCantidad( PersistenceManager pm, Long cantidad, String tiempo, String id )
+	{
+		Query q1 = pm.newQuery(SQL, "CREATE TABLE INFO (CANTIDAD, TIEMPO) AS"
+                + " (SELECT COUNT(*) AS CANTIDAD, TO_CHAR(CITA.FECHAHORA, '"+tiempo+"') AS TIEMPO"
+                + " FROM CITA"
+                + " WHERE CITA.ID_PUNTO = '"+id+"'"
+                + " GROUP BY TO_CHAR(CITA.FECHAHORA, '"+tiempo+"'))");
+		q1.execute();
+		
+		Query q= pm.newQuery(SQL, "SELECT TIEMPO"
+              + " FROM INFO"
+			  + " WHERE CANTIDAD = "+ cantidad);
+		ForwardQueryResult<String> tiempoS =  (ForwardQueryResult<String>) q.execute();
+		
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+		
+		String tiempoSS = tiempoS.toString();
+		
+		return tiempoSS;
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los tiempos y la cantidad de ciudadanos en el punto en ese tiempo
+	 * @param tiempo - tiempo
+	 * @param pm - Manejador de persistencia
+	 * @return lista de afluencia por fechas
+	 */
+	public String analizarOperacionTiempo( PersistenceManager pm, String tiempo, String id)
+	{
+		
+		Query q1 = pm.newQuery(SQL, "CREATE TABLE INFO (CANTIDAD, TIEMPO) AS"
+                + " (SELECT COUNT(*) AS CANTIDAD, TO_CHAR(CITA.FECHAHORA, '"+tiempo+"') AS TIEMPO"
+                + " FROM CITA"
+                + " WHERE CITA.ID_PUNTO = '"+id+"'"
+                + " GROUP BY TO_CHAR(CITA.FECHAHORA, '"+tiempo+"'))");
+		q1.execute();
+		
+		Query q= pm.newQuery(SQL, "SELECT TIEMPO"
+              + " FROM INFO"
+			  + " ORDER BY CANTIDAD DESC"
+              + " FETCH FIRST 1 ROWS ONLY");
+		ForwardQueryResult<String> tiempoS =  (ForwardQueryResult<String>) q.execute();
+		
+		Query q2 = pm.newQuery( SQL, "DROP TABLE \"INFO\" CASCADE CONSTRAINTS");
+		q2.execute();
+		
+        String tiempoSS = tiempoS.toString();
+		
+		return tiempoSS;
+	}
 	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos que están en un punto de vacunación equivocado
 	 * debido a que sus condiciones de priorizacion no corresponden a las que el punto atiende

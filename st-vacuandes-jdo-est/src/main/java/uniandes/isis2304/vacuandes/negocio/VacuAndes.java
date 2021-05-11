@@ -1649,6 +1649,48 @@ public class VacuAndes
 	}
 	
 	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public String analizarOperacionTiempo( String tiempo, String id)
+	{
+		log.info("Buscando tiempo de mayor afluencia del punto con id: " + id );
+		String resultado = pp.analizarOperacionTiempo(id, tiempo);
+		log.info("Tiempo hallado");
+		return resultado;
+	}
+	
+	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public List<Long> analizarOperacionCantidad(String tiempo, String id)
+	{
+		log.info("Buscando cantidades por tiempo punto con id: " + id );
+		List<Long> resultado = pp.analizarOperacionCantidad(id, tiempo);
+		log.info("Cantidades halladas");
+		return resultado;
+	}
+	
+	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public String analizarOperacionTiempoCantidad( Long cantidad, String tiempo, String id)
+	{
+		log.info("Buscando tiempo para cantidad: " + cantidad );
+		String resultado = pp.analizarOperacionTiempoCantidad(id, tiempo, cantidad);
+		log.info("Tiempo hallado");
+		return resultado;
+	}
+	
+	/**
 	 * Método que da una lista de ciudadanos que estuvieron en contacto con un ciudadano específico
 	 * 
 	 */
