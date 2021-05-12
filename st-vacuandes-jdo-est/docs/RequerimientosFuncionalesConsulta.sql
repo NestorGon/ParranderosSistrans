@@ -1,3 +1,25 @@
+--Sentencia RFC7
+--Esta sentencia es un ejemplo para el tiempo DD y el punto 14
+--Esta consulta crea la tabla info
+CREATE TABLE INFO (CANTIDAD, TIEMPO) AS
+(SELECT COUNT(*) AS CANTIDAD, TO_CHAR(CITA.FECHAHORA, '"+tiempo+"') AS TIEMPO"
+FROM CITA
+WHERE CITA.ID_PUNTO = '14'
+GROUP BY TO_CHAR(CITA.FECHAHORA, 'DD'))
+--Tres formas de acceder a la tabla acontinuación:
+-- Hallar el tiempo con mayor concurrencia
+SELECT TIEMPO
+FROM INFO
+ORDER BY CANTIDAD DESC
+FETCH FIRST 1 ROWS ONLY
+--Hallar las cantidades agrupadas por tiempo
+SELECT CANTIDAD
+FROM INFO
+--Hallar un tiempo dado una cantidad
+SELECT TIEMPO
+FROM INFO
+WHERE CANTIDAD = 12
+
 --Sentencia RFC8
 --Esta sentencia es un ejemplo de la consulta incluyendo todos los parámetros disponibles
 --La sentencia puede variar dependiendo de los parámetros seleccionados
@@ -23,3 +45,19 @@ WHERE (TRUNC(MONTHS_BETWEEN(SYSDATE, NACIMIENTO)/12) BETWEEN 20 AND 22) AND
        WHERE C.ID_ESTADO = E.ID AND
              (E.DESCRIPCION LIKE '%DOSIS 1%' or E.DESCRIPCION LIKE '%DOSIS 2%') AND
              E.DESCRIPCION LIKE '%PFIZER%') > 0;
+
+SENTENCIA RFC9
+-- Esta sentencia es un ejemplo de consulta para el documento de ciudadano 2637738, la fecha ingresada 20-03-2021 y la fecha inicial 10-03-2021 para el punto 11 y la fecha 11-03-2021 12:00
+-- Primero se crea una tabla info con la informacion de las fechas y documentos de los ciudadanos con citas en el punto especificado entre el rango de fechas dado
+-- De esta tabla se toman únicamente los documentos cuya fecha y hora es igual a la dada
+CREATE TABLE INFO(FECHAHORA, DOCUMENTO) AS 
+ (SELECT CITA.FECHAHORA, CIUDADANO.DOCUMENTO
+ FROM (CITA JOIN CIUDADANO ON CITA.DOCUMENTO_CIUDADANO = CIUDADANO.DOCUMENTO)
+ JOIN PUNTO ON CITA.ID_PUNTO = PUNTO.ID
+ WHERE CITA.FECHAHORA > TO_DATE('10-03-2021', 'DD-MM-YYYY HH24:MI') AND
+ CITA.FECHAHORA < TO_DATE('20-03-2021', 'DD-MM-YYYY HH24:MI')"
+ AND PUNTO.ID = '11');
+
+SELECT DOCUMENTO
+FROM INFO
+WHERE FECHAHORA = TO_DATE('11-03-2021 12:00', 'DD-MM-YYYY HH24:MI');

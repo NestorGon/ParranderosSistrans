@@ -133,6 +133,19 @@ public class VacuAndes
 		log.info ("Consultando Citas: " + citas.size() + " existentes de un punto");
 		return citas;
 	}
+	
+	/**
+	 * Encuentra todas las citas en VacuAndes de un Punto y documento específico
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Cita con todas las citas que conoce la aplicación
+	 */
+	public List<Cita> darCitasCiudadanoPunto(String id, String documento)
+	{
+		log.info ("Consultando Citas de un Punto dado un Ciudadano");
+		List<Cita> citas = pp.darCitasCiudadanoPunto(id, documento);	
+		log.info ("Consultando Citas: " + citas.size() + " existentes de un punto dado un ciudadano");
+		return citas;
+	}
 
 	/**
 	 * Encuentra todas las citas en VacuAndes y las devuelve como una lista de VOCita
@@ -807,6 +820,20 @@ public class VacuAndes
 		log.info ("Buscando Vacunacion: " + documento + " - " + eps );
 		Vacunacion vacunacion = pp.darVacunacion( documento, eps );
 		return vacunacion;
+	}
+	
+	/**
+	 * Encuentra el id de un punto de una vacunacion dado el documento del ciudadano
+	 * Adiciona entradas al log de la aplicacion
+	 * @param documento- documento del ciudadano
+	 * @return id- id del punto
+	 */
+	public String darIdPuntoVacunacionDocumento( String documento )
+	{
+		log.info("Buscando id del punto dado el documento "+ documento);
+		String id = pp.darIdPuntoVacunacionDocumento(documento);
+		log.info("Busqueda ffinalizada");
+		return id;
 	}
 	
 	/**
@@ -1618,6 +1645,60 @@ public class VacuAndes
 		log.info("Deshabilitando punto con id: " + punto );
 		String[] resultado = pp.deshabilitarPunto( puntoViejo, punto, eps );
 		log.info("Punto deshabilitado");
+		return resultado;
+	}
+	
+	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public String analizarOperacionTiempo( String tiempo, String id)
+	{
+		log.info("Buscando tiempo de mayor afluencia del punto con id: " + id );
+		String resultado = pp.analizarOperacionTiempo(id, tiempo);
+		log.info("Tiempo hallado");
+		return resultado;
+	}
+	
+	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public List<Long> analizarOperacionCantidad(String tiempo, String id)
+	{
+		log.info("Buscando cantidades por tiempo punto con id: " + id );
+		List<Long> resultado = pp.analizarOperacionCantidad(id, tiempo);
+		log.info("Cantidades halladas");
+		return resultado;
+	}
+	
+	/**
+	 * Método que consulta el tiempo con mayor afluencia de un punto
+	 * Agrega entradas al log de la aplicación
+	 * @param tiempo- tipo de tiempo
+	 * @param id - id del punto
+	 */
+	public String analizarOperacionTiempoCantidad( Long cantidad, String tiempo, String id)
+	{
+		log.info("Buscando tiempo para cantidad: " + cantidad );
+		String resultado = pp.analizarOperacionTiempoCantidad(id, tiempo, cantidad);
+		log.info("Tiempo hallado");
+		return resultado;
+	}
+	
+	/**
+	 * Método que da una lista de ciudadanos que estuvieron en contacto con un ciudadano específico
+	 * 
+	 */
+	public List<String> ciudadanosContacto (String documento, String fecha1, String fecha2, String id_punto, String fechahora)
+	{
+		log.info("Buscando los ciudadanos en contacto");
+		List<String> resultado = pp.ciudadanosContacto(documento, fecha1, fecha2, id_punto, fechahora);
+		log.info("Ciudadanos en contacto encontrados");
 		return resultado;
 	}
 	

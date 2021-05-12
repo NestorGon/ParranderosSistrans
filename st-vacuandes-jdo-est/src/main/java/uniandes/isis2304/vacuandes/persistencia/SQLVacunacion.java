@@ -123,4 +123,19 @@ public class SQLVacunacion {
 		return (Long) q.executeUnique();
 	}
 	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la información del punto de vacunación de la VACUNACION de la 
+	 * base de datos de VacuAndes dado el documento de un ciudadano
+	 * @param pm - El manejador de persistencia
+	 * @pram documento- El docuemnto del ciudadano
+	 * @return El string id del punto
+	 */
+	public String darIdPuntoVacunacionDocumento( PersistenceManager pm, String documento )
+	{
+		Query q = pm.newQuery( SQL, "SELECT ID_PUNTO FROM " + pp.darTablaVacunacion()+ " WHERE DOCUMENTO_CIUDADANO = ?" );
+		q.setParameters(documento);
+		q.setResultClass( String.class );
+		return (String) q.executeUnique();
+	}
+	
 }

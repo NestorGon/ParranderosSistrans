@@ -25,6 +25,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -803,74 +808,74 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			panelDatos.actualizarInterfaz(resultado);
 		}
 	}
-    
-    /**
-     * Registra el avance en el proceso de vacunación de un ciudadano
-     * Para esto realiza una actualización en el registro del ciudadano
-     */
-    public void registrarAvanceVacunacion( )
-    {
-    	try 
-    	{
-    		VOInfoUsuario usuario = panelValidacionUsuario();
-    		if ( usuario != null ) {
-    			if ( !usuario.getId_roles().equals(4L) ) {
-    				throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-    			}
-    		} 
-    		else {
-    			return;
-    		}
-    		String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-    		String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
-    		if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
-    		{
-    			VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
-    			if ( ciudadano != null ) {
-    				VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
-    				if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
-    					throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
-    				}
-    				VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
-    				if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
-    					if ( estado.getDescripcion().startsWith("VACUNADO") ) {
-    						String tipoVacuna = estado.getDescripcion().split(" ")[3];
-    						if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
-    							throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
-    						}
-    					}
-    					VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
-    					Boolean aplicada = false;
-    					if ( vacunacion != null ) {
-    						String id_punto = vacunacion.getId_punto();
-    						for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
-    							VOVacuna vacuna = vacuAndes.darVacuna( actual );
-    							if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[3]) ) {
-    								vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
-    								vacuAndes.aumentarAplicadasPuntoId(id_punto);
-    								aplicada = true;
-    								break;
-    							}
-    						}
-    						if ( !aplicada ) {
-    							throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
-    						}
-    					}
-    				}
-    				ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
-    			} 
-    			else {
-        			throw new Exception ("No se pudo actualizar al ciudadano " + documento );
-        		}
-        		String resultado = "En registrarAvanceVacunacion\n\n";
-        		resultado += "Ciudadano actualizado correctamente: " + ciudadano;
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    		}
-    		else
-    		{
-    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-    		}
+
+	/**
+	 * Registra el avance en el proceso de vacunación de un ciudadano
+	 * Para esto realiza una actualización en el registro del ciudadano
+	 */
+	public void registrarAvanceVacunacion( )
+	{
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(4L) ) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			} 
+			else {
+				return;
+			}
+			String documento = JOptionPane.showInputDialog (this, "Ingrese el documento del ciudadano", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+			String idEstado = JOptionPane.showInputDialog (this, "Ingrese el identificador del nuevo estado", "Registrar avance vacunación", JOptionPane.QUESTION_MESSAGE);
+			if ( documento != null && !documento.trim().equals("") && idEstado != null && !idEstado.trim().equals("") )
+			{
+				VOCiudadano ciudadano = vacuAndes.darCiudadano( documento );
+				if ( ciudadano != null ) {
+					VOEstado estado = vacuAndes.darEstado( ciudadano.getId_estado() );
+					if ( estado.getId().equals(Long.parseLong(idEstado) ) ) {
+						throw new Exception( "El estado ingresado es igual al estado actual del ciudadano" );
+					}
+					VOEstado nuevoEstado = vacuAndes.darEstado(Long.parseLong(idEstado)); 
+					if ( nuevoEstado.getDescripcion().startsWith("VACUNADO") ) {
+						if ( estado.getDescripcion().startsWith("VACUNADO") ) {
+							String tipoVacuna = estado.getDescripcion().split(" ")[3];
+							if ( !nuevoEstado.getDescripcion().contains(tipoVacuna) ) {
+								throw new Exception("No se puede registrar el avance en el proceso debido a que no coincide el tipo de vacuna: " + tipoVacuna);
+							}
+						}
+						VOVacunacion vacunacion = vacuAndes.darVacunacion( documento, ciudadano.getId_eps() );
+						Boolean aplicada = false;
+						if ( vacunacion != null ) {
+							String id_punto = vacunacion.getId_punto();
+							for( String actual: vacuAndes.darAsignadasPunto(id_punto) ) {
+								VOVacuna vacuna = vacuAndes.darVacuna( actual );
+								if ( vacuna.getAplicada().equals("F") && vacuna.getTipo().equalsIgnoreCase(nuevoEstado.getDescripcion().split(" ")[3]) ) {
+									vacuAndes.cambiarEstadoAplicacionVacunaT(actual);
+									vacuAndes.aumentarAplicadasPuntoId(id_punto);
+									aplicada = true;
+									break;
+								}
+							}
+							if ( !aplicada ) {
+								throw new Exception("No se pudo registrar el avance en el proceso debido a que no hubo vacunas disponibles");
+							}
+						}
+					}
+					ciudadano = vacuAndes.actualizarCiudadano( documento, ciudadano.getNombre(), ciudadano.getNacimiento(), ciudadano.getHabilitado(), Long.parseLong(idEstado), ciudadano.getId_eps(), ciudadano.getNumero_etapa(), ciudadano.getSexo() );
+				} 
+				else {
+					throw new Exception ("No se pudo actualizar al ciudadano " + documento );
+				}
+				String resultado = "En registrarAvanceVacunacion\n\n";
+				resultado += "Ciudadano actualizado correctamente: " + ciudadano;
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
 		} 
 		catch (Exception e) 
 		{
@@ -971,35 +976,35 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			JList<String> list = new JList<>( darGruposDePriorizacion() );
 			JOptionPane.showMessageDialog(null, list, "Selecccione los grupos poblacionales que va a atender el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
 			List<String> seleccionados = list.getSelectedValuesList();
-			
-    		if ( seleccionados != null && seleccionados.size() > 0  && id_punto != null && !id_punto.trim().equals("") ) {
-    			if( vacuAndes.darPunto(id_punto) == null ) {
-    				throw new Exception("El punto ingresado no se encuentra registrado en VacuAndes");
-    			}
-    			List<String> condiciones = vacuAndes.darCondicionesPunto(id_punto);
-    			
-    			List<String> ciudadanos = vacuAndes.cambioEstadoPunto( id_punto, seleccionados, condiciones );
-    			if ( ciudadanos == null ) {
-    				throw new Exception("No se pudo eliminar a los ciudadanos que ahora no pertenecen al punto");
-    			}
-        		String resultado = "En cambioEstadoPunto\n\n";
-        		resultado += "Punto actualizado correctamente: " + id_punto;
-        		if ( ciudadanos.size() == 0 ) {
-        			resultado += "\n No hubo ciudadanos para eliminarlos del punto";
-        		}
-        		else {
-        			resultado += "\n Ciuadanos eliminados del punto de vacunación: ";
-            		for ( String actual: ciudadanos) {
-            			resultado += "\n " + actual;
-            		}
-        		}
-    			resultado += "\n Operación terminada";
-    			panelDatos.actualizarInterfaz(resultado);
-    		}
-    		else
-    		{
-    			panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
-    		}
+
+			if ( seleccionados != null && seleccionados.size() > 0  && id_punto != null && !id_punto.trim().equals("") ) {
+				if( vacuAndes.darPunto(id_punto) == null ) {
+					throw new Exception("El punto ingresado no se encuentra registrado en VacuAndes");
+				}
+				List<String> condiciones = vacuAndes.darCondicionesPunto(id_punto);
+
+				List<String> ciudadanos = vacuAndes.cambioEstadoPunto( id_punto, seleccionados, condiciones );
+				if ( ciudadanos == null ) {
+					throw new Exception("No se pudo eliminar a los ciudadanos que ahora no pertenecen al punto");
+				}
+				String resultado = "En cambioEstadoPunto\n\n";
+				resultado += "Punto actualizado correctamente: " + id_punto;
+				if ( ciudadanos.size() == 0 ) {
+					resultado += "\n No hubo ciudadanos para eliminarlos del punto";
+				}
+				else {
+					resultado += "\n Ciuadanos eliminados del punto de vacunación: ";
+					for ( String actual: ciudadanos) {
+						resultado += "\n " + actual;
+					}
+				}
+				resultado += "\n Operación terminada";
+				panelDatos.actualizarInterfaz(resultado);
+			}
+			else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
 		} 
 		catch (Exception e) 
 		{
@@ -1009,6 +1014,10 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Deshabilita un punto y re asigna sus citas a otro punto de la misma eps
+	 */
+	@SuppressWarnings("deprecation")
 	public void deshabilitarPunto()
 	{
 		try 
@@ -1080,7 +1089,7 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			JList<String> listaP = new JList<>( puntosHS );
 			JOptionPane.showMessageDialog(this, "A continuación seleccione el punto en el que asignará las citas");
 			JOptionPane.showMessageDialog(null, listaP, "Tenga en cuenta disponibilidad", JOptionPane.PLAIN_MESSAGE);
-			@SuppressWarnings("deprecation")
+
 			String seleccionadoP = listaP.getSelectedValue();
 
 			if(seleccionadoP == null )
@@ -1565,522 +1574,734 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 
 	}
-	
-	/**
-	 * Consulta la base de datos para encontrar los ciudadanos que pertenecen a grupos poblacionales variables
-	 */
-	public void analizarCohortes( )
-	{
-		try 
-		{
-			VOInfoUsuario usuario = panelValidacionUsuario();
-			if ( usuario != null ) {
-				if ( !usuario.getId_roles().equals(1L)) {
-					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
-				}
-			}
-			else {
-				return;
-			}
-			Boolean edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac;
-			String selecEdad = null;
-			List<String> selecSexo=null, selecCondiciones=null, selecRegion=null, selecEps=null, selecPunto=null, selecDosis=null, selecTecnologiaVac=null;
-			JList<String> list = new JList<>( new String[]{"Edad","Sexo","Condiciones de priorización","Región", "Eps", "Punto de vac.", "Dosis aplicadas", "Tecnología vacuna"} );
-			JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el cochorte (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-			List<String> seleccionados = list.getSelectedValuesList();
-			edad = seleccionados.contains("Edad") ? true: false;
-			sexo = seleccionados.contains("Sexo") ? true: false;
-			condiciones = seleccionados.contains("Condiciones de priorización") ? true: false;
-			region = seleccionados.contains("Región") ? true: false;
-			eps = seleccionados.contains("Eps") ? true: false;
-			punto = seleccionados.contains("Punto de vac.") ? true: false;
-			dosis = seleccionados.contains("Dosis aplicadas") ? true: false;
-			tecnologiaVac = seleccionados.contains("Tecnología vacuna") ? true: false;
-			
-			if ( edad ) {
-				selecEdad = JOptionPane.showInputDialog(null, "Ingrese la edad (EDAD) o rango de edades (EDAD1-EDAD2)", "Edades", JOptionPane.QUESTION_MESSAGE);
-			}
-			if ( sexo ) {
-				list = new JList<>( new String[]{"FEMENINO","MASCULINO"} );
-				JOptionPane.showMessageDialog(null, list, "Selecccione el sexo (cmd o ctrl sostenido para seleeccionar varios)", JOptionPane.PLAIN_MESSAGE);
-				selecSexo = list.getSelectedValuesList();
-			}
-			if ( condiciones ) {
-				list = new JList<>( darGruposDePriorizacion() );
-				JOptionPane.showMessageDialog(null, list, "Selecccione la condición de priorización (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecCondiciones = list.getSelectedValuesList();
-			}
-			if ( region ) {
-				list = new JList<>( darRegiones() );
-				JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecRegion = list.getSelectedValuesList();
-			}
-			if ( eps ) {
-				list = new JList<>( darTodasEps() );
-				JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecEps = list.getSelectedValuesList();
-			}
-			if ( punto ) {
-				list = new JList<>( darPuntos() );
-				JOptionPane.showMessageDialog(null, list, "Selecccione el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecPunto = list.getSelectedValuesList();
-			}
-			if ( dosis ) {
-				list = new JList<>( new String[]{"DOSIS 1", "DOSIS 2"} );
-				JOptionPane.showMessageDialog(null, list, "Selecccione la dosis (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecDosis = list.getSelectedValuesList();
-			}
-			if ( tecnologiaVac ) {
-				list = new JList<>( darTecnologiaVacunas() );
-				JOptionPane.showMessageDialog(null, list, "Selecccione la tecnología (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
-				selecTecnologiaVac = list.getSelectedValuesList();
-			}
-			List<Ciudadano> ciudadanos = vacuAndes.analizarCohortes(selecEdad, selecSexo, selecCondiciones, selecRegion, selecEps, selecPunto, selecDosis, selecTecnologiaVac);
-			if ( ciudadanos == null ) {
-				throw new Exception("No hay ningún ciudadano registrado en VacuAndes que pertenezca al cohorte");
-			}
-			String resultado = "En analizarCohortesl\n\n";
-			if ( ciudadanos.size() == 0 ) {
-				resultado += "\n No se encontraron ciudadanos en el cohorte";
-			} else {
-				resultado += "\n Los ciudadanos encontrados en el cohorte son: \n";
-				for ( Ciudadano actual: ciudadanos ) {
-					resultado += actual.toString() + "\n";
-				}
-			}
-			resultado += "\n Operación terminada";
-			panelDatos.actualizarInterfaz(resultado);
-		}
-		catch (Exception e) {
-			//			e.printStackTrace();
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-	}
-
-	/* ****************************************************************
-	 * 			Métodos administrativos
-	 *****************************************************************/
-	/**
-	 * Muestra el log de VacuAndes
-	 */
-	public void mostrarLogVacuAndes()
-	{
-		mostrarArchivo( "vacuandes.log" );
-	}
 
 	/**
-	 * Muestra el log de datanucleus
-	 */
-	public void mostrarLogDatanuecleus ()
-	{
-		mostrarArchivo( "datanucleus.log" );
-	}
+	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano
+	 */public void ciudadanosContacto()
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)
+						 && !usuario.getId_roles().equals(4L) && !usuario.getId_roles().equals(5L) && !usuario.getId_roles().equals(6L)) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+			 String documento = JOptionPane.showInputDialog(this, "Ingrese el documento del ciudadano", "Hallar ciudadanos en contacto", JOptionPane.QUESTION_MESSAGE);
+			 String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la fecha de búsqueda en formato DD-MM-YYYY", "Hallar ciudadanos en contacto", JOptionPane.QUESTION_MESSAGE)+ " 00:00";
 
-	/**
-	 * Limpia el contenido del log de vacuandes
-	 * Muestra en el panel de datos la traza de la ejecución
-	 */
-	public void limpiarLogVacuAndes()
-	{
-		// Ejecución de la operación y recolección de los resultados
-		boolean resp = limpiarArchivo( "vacuandes.log" );
+			 DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+			 LocalDate fecha = LocalDate.parse(fecha2.trim(), format);
 
-		// Generación de la cadena de caracteres con la traza de la ejecución de la demo
-		String resultado = "\n\n************ Limpiando el log de vacuandes ************ \n";
-		resultado += "Archivo " + (resp ? "limpiado exitosamente" : "NO PUDO ser limpiado !!");
-		resultado += "\nLimpieza terminada";
+			 LocalDate fecha10 = fecha.plusDays(-10);
+			 String fechaatras = fecha10.toString();
+			 String[] fechapartida = fechaatras.split("-");
+			 String fecha1 = fechapartida[2]+"-"+fechapartida[1]+"-"+fechapartida[0]+" 00:00";
 
-		panelDatos.actualizarInterfaz(resultado);
-	}
+			 documento= documento.trim();
 
-	/**
-	 * Limpia el contenido del log de datanucleus
-	 * Muestra en el panel de datos la traza de la ejecución
-	 */
-	public void limpiarLogDatanucleus()
-	{
-		// Ejecución de la operación y recolección de los resultados
-		boolean resp = limpiarArchivo("datanucleus.log");
+			 String id_punto = vacuAndes.darIdPuntoVacunacionDocumento(documento);
 
-		// Generación de la cadena de caracteres con la traza de la ejecución de la demo
-		String resultado = "\n\n************ Limpiando el log de datanucleus ************ \n";
-		resultado += "Archivo " + (resp ? "limpiado exitosamente" : "NO PUDO ser limpiado !!");
-		resultado += "\nLimpieza terminada";
+			 List<Cita> citasCiudadano = vacuAndes.darCitasCiudadanoPunto(id_punto, documento);
 
-		panelDatos.actualizarInterfaz(resultado);
-	}
+			 List<String> ciudadanos= new ArrayList<String>();
 
-	/**
-	 * Limpia todas las tuplas de todas las tablas de la base de datos de parranderos
-	 * Muestra en el panel de datos el número de tuplas eliminadas de cada tabla
-	 */
-	public void limpiarBD()
-	{
-		try 
-		{
-			// Ejecución de la demo y recolección de los resultados
-			Long eliminados [] = vacuAndes.limpiarVacuAndes();
+			 for(int i=0; i<citasCiudadano.size(); i++)
+			 {
+				 String fechaS = citasCiudadano.get(i).getFechaHora().toString();
+				 fechaS = fechaS.substring(0,fechaS.length()-5);
+				 String[] fechaho = fechaS.split(" ");
+				 String hora= fechaho[1];
+				 String[] añomesdia = fechaho[0].split("-");
+				 String fechahora = añomesdia[2]+"-"+añomesdia[1]+"-"+añomesdia[0]+" "+hora;
 
-			// Generación de la cadena de caracteres con la traza de la ejecución de la demo
-			String resultado = "\n\n************ Limpiando la base de datos ************ \n";
-			resultado += eliminados [0] + " EPS eliminados\n";
-			resultado += eliminados [1] + " ROLES eliminados\n";
-			resultado += eliminados [2] + " ESTADOS eliminados\n";
-			resultado += eliminados [3] + " ETAPAS eliminadas\n";
-			resultado += eliminados [4] + " CONDICIONPRIORIZACION eliminadas\n";
-			resultado += eliminados [5] + " PUNTOS eliminados\n";
-			resultado += eliminados [6] + " VACUNAS eliminadas\n";
-			resultado += eliminados [7] + " ASIGNADAS eliminadas\n";
-			resultado += eliminados [8] + " CIUDADANOS eliminados\n";
-			resultado += eliminados [9] + " VACUNACIONES eliminadas\n";
-			resultado += eliminados [10] + " PRIORIZACIONES eliminadas\n";
-			resultado += eliminados [11] + " INFOUSUARIOS eliminadas\n";
-			resultado += eliminados [12] + " USUARIOS eliminados\n";
-			resultado += eliminados [13] + " CITAS eliminadas\n";
-			resultado += "\nLimpieza terminada";
+				 List<String> documentos = vacuAndes.ciudadanosContacto(documento, fecha1, fecha2, id_punto, fechahora);
 
-			panelDatos.actualizarInterfaz(resultado);
-		} 
-		catch (Exception e) 
-		{
-			//			e.printStackTrace();
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-	}
+				 for(int j=0; j<documentos.size(); j++)
+				 {
+					 if(!documentos.get(j).equals(documento))
+					 {
+						 ciudadanos.add(documentos.get(j));
+					 }
+				 }
 
-	/**
-	 * Muestra el modelo conceptual de VacuAndes
-	 */
-	public void mostrarModeloConceptual ()
-	{
-		mostrarArchivo ("data/ModeloConceptualVacuAndes.pdf");
-	}
+			 }
 
-	/**
-	 * Muestra el esquema de la base de datos de VacuAndes
-	 */
-	public void mostrarEsquemaBD ()
-	{
-		mostrarArchivo ("data/ModeloRelacionalVacuAndes.pdf");
-	}
+			 String resultado = "Los documentos de los ciudadanos que entraron en contacto con el ciudadano de documento "+documento+" son: \n";
+			 for(int k=0; k<ciudadanos.size();k++)
+			 {
+				 resultado+= ciudadanos.get(k)+"\n";
+			 }
 
-	/**
-	 * Muestra el script de creación de la base de datos
-	 */
-	public void mostrarScriptBD ()
-	{
-		mostrarArchivo ("data/CreacionEsquemaVacuAndes.sql");
-	}
+			 if(ciudadanos.size() == 0 )
+			 {
+				 resultado= "El ciudadano de documento "+ documento+ " no se encontraba en ningún punto en los 10 dias previos a la fecha dada";
+			 }
 
-	/**
-	 * Muestra la arquitectura de referencia para VacuAndes
-	 */
-	public void mostrarArqRef ()
-	{
-		mostrarArchivo ("data/ArquitecturaReferencia.pdf");
-	}
+			 panelDatos.actualizarInterfaz(resultado);
 
-	/**
-	 * Muestra la documentación Javadoc del proyectp
-	 */
-	public void mostrarJavadoc ()
-	{
-		mostrarArchivo ("doc/index.html");
-	}
+		 }
+		 catch (Exception e) {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+	 }
 
-	/**
-	 * Muestra la información acerca del desarrollo de esta apicación
-	 */
-	public void acercaDe ()
-	{
-		String resultado = "\n\n ************************************\n\n";
-		resultado += " * Universidad	de	los	Andes	(Bogotá	- Colombia)\n";
-		resultado += " * Departamento	de	Ingeniería	de	Sistemas	y	Computación\n";
-		resultado += " * Licenciado	bajo	el	esquema	Academic Free License versión 2.1\n";
-		resultado += " * \n";		
-		resultado += " * Curso: isis2304 - Sistemas Transaccionales\n";
-		resultado += " * Proyecto: VacuAndes\n";
-		resultado += " * @version 1.0\n";
-		resultado += " * @author Néstor González\n";
-		resultado += " * @author Mariana Zamora\n";
-		resultado += " * Abril de 2021\n";
-		resultado += " * \n";
-		resultado += "\n ************************************\n\n";
+	 /**
+	  * Consulta la base de datos para encontrar los ciudadanos que pertenecen a grupos poblacionales variables
+	  */
+	 public void analizarCohortes( )
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L)) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+			 Boolean edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac;
+			 String selecEdad = null;
+			 List<String> selecSexo=null, selecCondiciones=null, selecRegion=null, selecEps=null, selecPunto=null, selecDosis=null, selecTecnologiaVac=null;
+			 JList<String> list = new JList<>( new String[]{"Edad","Sexo","Condiciones de priorización","Región", "Eps", "Punto de vac.", "Dosis aplicadas", "Tecnología vacuna"} );
+			 JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar el cochorte (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			 List<String> seleccionados = list.getSelectedValuesList();
+			 edad = seleccionados.contains("Edad") ? true: false;
+			 sexo = seleccionados.contains("Sexo") ? true: false;
+			 condiciones = seleccionados.contains("Condiciones de priorización") ? true: false;
+			 region = seleccionados.contains("Región") ? true: false;
+			 eps = seleccionados.contains("Eps") ? true: false;
+			 punto = seleccionados.contains("Punto de vac.") ? true: false;
+			 dosis = seleccionados.contains("Dosis aplicadas") ? true: false;
+			 tecnologiaVac = seleccionados.contains("Tecnología vacuna") ? true: false;
 
-		panelDatos.actualizarInterfaz(resultado);		
-	}
+			 if ( edad ) {
+				 selecEdad = JOptionPane.showInputDialog(null, "Ingrese la edad (EDAD) o rango de edades (EDAD1-EDAD2)", "Edades", JOptionPane.QUESTION_MESSAGE);
+			 }
+			 if ( sexo ) {
+				 list = new JList<>( new String[]{"FEMENINO","MASCULINO"} );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione el sexo (cmd o ctrl sostenido para seleeccionar varios)", JOptionPane.PLAIN_MESSAGE);
+				 selecSexo = list.getSelectedValuesList();
+			 }
+			 if ( condiciones ) {
+				 list = new JList<>( darGruposDePriorizacion() );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione la condición de priorización (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecCondiciones = list.getSelectedValuesList();
+			 }
+			 if ( region ) {
+				 list = new JList<>( darRegiones() );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione la región (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecRegion = list.getSelectedValuesList();
+			 }
+			 if ( eps ) {
+				 list = new JList<>( darTodasEps() );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione la eps (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecEps = list.getSelectedValuesList();
+			 }
+			 if ( punto ) {
+				 list = new JList<>( darPuntos() );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione el punto (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecPunto = list.getSelectedValuesList();
+			 }
+			 if ( dosis ) {
+				 list = new JList<>( new String[]{"DOSIS 1", "DOSIS 2"} );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione la dosis (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecDosis = list.getSelectedValuesList();
+			 }
+			 if ( tecnologiaVac ) {
+				 list = new JList<>( darTecnologiaVacunas() );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione la tecnología (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 selecTecnologiaVac = list.getSelectedValuesList();
+			 }
+			 List<Ciudadano> ciudadanos = vacuAndes.analizarCohortes(selecEdad, selecSexo, selecCondiciones, selecRegion, selecEps, selecPunto, selecDosis, selecTecnologiaVac);
+			 if ( ciudadanos == null ) {
+				 throw new Exception("No hay ningún ciudadano registrado en VacuAndes que pertenezca al cohorte");
+			 }
+			 String resultado = "En analizarCohortesl\n\n";
+			 if ( ciudadanos.size() == 0 ) {
+				 resultado += "\n No se encontraron ciudadanos en el cohorte";
+			 } else {
+				 resultado += "\n Los ciudadanos encontrados en el cohorte son: \n";
+				 for ( Ciudadano actual: ciudadanos ) {
+					 resultado += actual.toString() + "\n";
+				 }
+			 }
+			 resultado += "\n Operación terminada";
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+		 catch (Exception e) {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+	 }
+
+	 /**
+	  * Consulta la bnase de datos para hallar el tiempo con mayor afluencia, el más riesgoso y el menos riesgoso
+	  */
+	 public void analizarOperacion()
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)
+						 && !usuario.getId_roles().equals(4L) && !usuario.getId_roles().equals(5L) && !usuario.getId_roles().equals(6L)) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+
+			 String[] lista = {"Año", "Mes", "Dia", "Hora"};
+			 JList<String> list = new JList<>( lista );
+			 JOptionPane.showMessageDialog(null, list, "Seleccione la unidad de tiempo (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
+			 String seleccionado = list.getSelectedValue();
+
+			 if(seleccionado == null)
+			 {
+				 throw new Exception( "No seleccionó ninguna unidad de tiempo" );
+			 }
+
+			 String tiempo = "";
+
+			 if( seleccionado.equals("Año") )
+			 {
+				 tiempo= "YYYY";
+			 }
+			 else if ( seleccionado.equals("Mes") )
+			 {
+				 tiempo = "MM";
+			 }
+			 else if( seleccionado.equals("Dia") )
+			 {
+				 tiempo = "DD";
+			 }
+			 else if( seleccionado.equals("Hora") )
+			 {
+				 tiempo= "HH24";
+			 }
+
+			 String id_punto = JOptionPane.showInputDialog(this, "Ingrese el id del punto de vacunación", "Ananlizar operación", JOptionPane.QUESTION_MESSAGE);
+
+			 if( id_punto == null && id_punto.equals(""))
+			 {
+				 throw new Exception("No ha ingresado un id");
+			 }
+
+			 Long capacidadPunto = vacuAndes.darCapacidad(id_punto);
+			 
+			 String ti = vacuAndes.analizarOperacionTiempo(tiempo, id_punto);
+		 
+			 if(ti.equals("[]"))
+			 {
+				 panelDatos.actualizarInterfaz("El punto "+id_punto+" no tiene citas");
+				 return;
+			 }
+
+			 String mensaje = "El "+seleccionado+" con mayor afluencia en el punto fue: "+ ti +"\n";
+
+			 List<Long> cantidades = vacuAndes.analizarOperacionCantidad(tiempo, id_punto);
+
+			 List<Long> mayor = new ArrayList<Long>();
+			 List<Long> menor = new ArrayList<Long>();
+
+			 double div=0.0;
+
+			 for(int i = 0; i<cantidades.size(); i++)
+			 {
+				 div = (double) cantidades.get(i)/capacidadPunto;
+
+				 if(div>= 0.9)
+				 {
+				    if(!mayor.contains(cantidades.get(i)))
+					   mayor.add(cantidades.get(i));
+				 }
+
+				 if(div <= 0.1)
+				 {
+					 if(!menor.contains(cantidades.get(i)))
+					      menor.add(cantidades.get(i));
+				 }
+			 }
+
+			 String mayorS = "";
+
+			 if(seleccionado.equals("Mes"))
+			 {
+				 mayorS+= "\nLos/as "+seleccionado+"es"+ " de mayor riesgo fueron: \n";
+			 }
+			 else
+			 {
+				 mayorS+= "\nLos/as "+seleccionado+"s"+ " de mayor riesgo fueron: \n";
+			 }
+
+			 for(int i=0; i<mayor.size();i++)
+			 {
+				 mayorS+= vacuAndes.analizarOperacionTiempoCantidad(mayor.get(i), tiempo, id_punto)+"\n";
+			 }
+			 if(mayor.size()==0)
+				 mayorS= "\nNo hubo afluencia mayor al 90% en el punto\n";
+			 
+			 String menorS="";
+
+			 if(seleccionado.equals("Mes"))
+			 {
+				 menorS+= "\nLos/as "+seleccionado+"es"+ " de menor riesgo fueron: \n";
+			 }
+			 else
+			 {
+				 menorS+= "\nLos/as "+seleccionado+"s"+ " de menor riesgo fueron: \n";
+			 }
+
+			 for(int i=0; i<menor.size();i++)
+			 {
+				 menorS+= vacuAndes.analizarOperacionTiempoCantidad(menor.get(i), tiempo, id_punto)+"\n";
+			 }
+			 if(menor.size()==0)
+				 menorS= "\nNo hubo afluencia menor al 10% en el punto\n";
+
+			 panelDatos.actualizarInterfaz(mensaje+mayorS+menorS);
+		 }
+		 catch (Exception e) {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+	 }
+
+	 /* ****************************************************************
+	  * 			Métodos administrativos
+	  *****************************************************************/
+	 /**
+	  * Muestra el log de VacuAndes
+	  */
+	 public void mostrarLogVacuAndes()
+	 {
+		 mostrarArchivo( "vacuandes.log" );
+	 }
+
+	 /**
+	  * Muestra el log de datanucleus
+	  */
+	 public void mostrarLogDatanuecleus ()
+	 {
+		 mostrarArchivo( "datanucleus.log" );
+	 }
+
+	 /**
+	  * Limpia el contenido del log de vacuandes
+	  * Muestra en el panel de datos la traza de la ejecución
+	  */
+	 public void limpiarLogVacuAndes()
+	 {
+		 // Ejecución de la operación y recolección de los resultados
+		 boolean resp = limpiarArchivo( "vacuandes.log" );
+
+		 // Generación de la cadena de caracteres con la traza de la ejecución de la demo
+		 String resultado = "\n\n************ Limpiando el log de vacuandes ************ \n";
+		 resultado += "Archivo " + (resp ? "limpiado exitosamente" : "NO PUDO ser limpiado !!");
+		 resultado += "\nLimpieza terminada";
+
+		 panelDatos.actualizarInterfaz(resultado);
+	 }
+
+	 /**
+	  * Limpia el contenido del log de datanucleus
+	  * Muestra en el panel de datos la traza de la ejecución
+	  */
+	 public void limpiarLogDatanucleus()
+	 {
+		 // Ejecución de la operación y recolección de los resultados
+		 boolean resp = limpiarArchivo("datanucleus.log");
+
+		 // Generación de la cadena de caracteres con la traza de la ejecución de la demo
+		 String resultado = "\n\n************ Limpiando el log de datanucleus ************ \n";
+		 resultado += "Archivo " + (resp ? "limpiado exitosamente" : "NO PUDO ser limpiado !!");
+		 resultado += "\nLimpieza terminada";
+
+		 panelDatos.actualizarInterfaz(resultado);
+	 }
+
+	 /**
+	  * Limpia todas las tuplas de todas las tablas de la base de datos de parranderos
+	  * Muestra en el panel de datos el número de tuplas eliminadas de cada tabla
+	  */
+	 public void limpiarBD()
+	 {
+		 try 
+		 {
+			 // Ejecución de la demo y recolección de los resultados
+			 Long eliminados [] = vacuAndes.limpiarVacuAndes();
+
+			 // Generación de la cadena de caracteres con la traza de la ejecución de la demo
+			 String resultado = "\n\n************ Limpiando la base de datos ************ \n";
+			 resultado += eliminados [0] + " EPS eliminados\n";
+			 resultado += eliminados [1] + " ROLES eliminados\n";
+			 resultado += eliminados [2] + " ESTADOS eliminados\n";
+			 resultado += eliminados [3] + " ETAPAS eliminadas\n";
+			 resultado += eliminados [4] + " CONDICIONPRIORIZACION eliminadas\n";
+			 resultado += eliminados [5] + " PUNTOS eliminados\n";
+			 resultado += eliminados [6] + " VACUNAS eliminadas\n";
+			 resultado += eliminados [7] + " ASIGNADAS eliminadas\n";
+			 resultado += eliminados [8] + " CIUDADANOS eliminados\n";
+			 resultado += eliminados [9] + " VACUNACIONES eliminadas\n";
+			 resultado += eliminados [10] + " PRIORIZACIONES eliminadas\n";
+			 resultado += eliminados [11] + " INFOUSUARIOS eliminadas\n";
+			 resultado += eliminados [12] + " USUARIOS eliminados\n";
+			 resultado += eliminados [13] + " CITAS eliminadas\n";
+			 resultado += "\nLimpieza terminada";
+
+			 panelDatos.actualizarInterfaz(resultado);
+		 } 
+		 catch (Exception e) 
+		 {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+	 }
+
+	 /**
+	  * Muestra el modelo conceptual de VacuAndes
+	  */
+	 public void mostrarModeloConceptual ()
+	 {
+		 mostrarArchivo ("data/ModeloConceptualVacuAndes.pdf");
+	 }
+
+	 /**
+	  * Muestra el esquema de la base de datos de VacuAndes
+	  */
+	 public void mostrarEsquemaBD ()
+	 {
+		 mostrarArchivo ("data/ModeloRelacionalVacuAndes.pdf");
+	 }
+
+	 /**
+	  * Muestra el script de creación de la base de datos
+	  */
+	 public void mostrarScriptBD ()
+	 {
+		 mostrarArchivo ("data/CreacionEsquemaVacuAndes.sql");
+	 }
+
+	 /**
+	  * Muestra la arquitectura de referencia para VacuAndes
+	  */
+	 public void mostrarArqRef ()
+	 {
+		 mostrarArchivo ("data/ArquitecturaReferencia.pdf");
+	 }
+
+	 /**
+	  * Muestra la documentación Javadoc del proyectp
+	  */
+	 public void mostrarJavadoc ()
+	 {
+		 mostrarArchivo ("doc/index.html");
+	 }
+
+	 /**
+	  * Muestra la información acerca del desarrollo de esta apicación
+	  */
+	 public void acercaDe ()
+	 {
+		 String resultado = "\n\n ************************************\n\n";
+		 resultado += " * Universidad	de	los	Andes	(Bogotá	- Colombia)\n";
+		 resultado += " * Departamento	de	Ingeniería	de	Sistemas	y	Computación\n";
+		 resultado += " * Licenciado	bajo	el	esquema	Academic Free License versión 2.1\n";
+		 resultado += " * \n";		
+		 resultado += " * Curso: isis2304 - Sistemas Transaccionales\n";
+		 resultado += " * Proyecto: VacuAndes\n";
+		 resultado += " * @version 1.0\n";
+		 resultado += " * @author Néstor González\n";
+		 resultado += " * @author Mariana Zamora\n";
+		 resultado += " * Abril de 2021\n";
+		 resultado += " * \n";
+		 resultado += "\n ************************************\n\n";
+
+		 panelDatos.actualizarInterfaz(resultado);		
+	 }
 
 
-	/* ****************************************************************
-	 * 			Métodos privados para la presentación de resultados y otras operaciones
-	 *****************************************************************/
+	 /* ****************************************************************
+	  * 			Métodos privados para la presentación de resultados y otras operaciones
+	  *****************************************************************/
 
-	/**
-	 * Valida el login y clave de un usuario de VacuAndes para conocer su rol y acceso a los requerimientos
-	 * @return Un objeto VOInfoUsuario con la información del usuario encontrado o null si no lo encuentra
-	 */
-	private VOInfoUsuario panelValidacionUsuario() {
-		try {
-			String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
-			String clave = JOptionPane.showInputDialog (this, "Ingrese la contraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+	 /**
+	  * Valida el login y clave de un usuario de VacuAndes para conocer su rol y acceso a los requerimientos
+	  * @return Un objeto VOInfoUsuario con la información del usuario encontrado o null si no lo encuentra
+	  */
+	 private VOInfoUsuario panelValidacionUsuario() {
+		 try {
+			 String login = JOptionPane.showInputDialog (this, "Ingrese el login del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
+			 String clave = JOptionPane.showInputDialog (this, "Ingrese la contraseña del usuario", "Validar usuario", JOptionPane.QUESTION_MESSAGE);
 
-			if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
-				VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
-				if ( usuario == null ) {
-					throw new Exception( "El usuarion con el login " + login + " no está registrado" );
-				}
-				if ( !usuario.getClave().equals(clave.trim()) ) {
-					throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
-				}
-				String resultado = "En validar usuario\n\n";
-				resultado += "Usuario validado correctamente";
-				resultado += "\n Operación terminada";
-				panelDatos.actualizarInterfaz(resultado);
-				return usuario;
-			}
-		} catch (Exception e) {
-			//			e.printStackTrace();
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-		return null;
-	}
+			 if ( login != null && !login.trim().equals("") && clave != null && !clave.trim().equals("") ) {
+				 VOInfoUsuario usuario = vacuAndes.darInfoUsuario( login );
+				 if ( usuario == null ) {
+					 throw new Exception( "El usuarion con el login " + login + " no está registrado" );
+				 }
+				 if ( !usuario.getClave().equals(clave.trim()) ) {
+					 throw new Exception( "La clave ingresada no corresponde al usuario con el login " + login );
+				 }
+				 String resultado = "En validar usuario\n\n";
+				 resultado += "Usuario validado correctamente";
+				 resultado += "\n Operación terminada";
+				 panelDatos.actualizarInterfaz(resultado);
+				 return usuario;
+			 }
+		 } catch (Exception e) {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+		 return null;
+	 }
 
-	/**
-	 * Obtiene las regiones registradas en vacuandes
-	 * @return un arreglo de tamaño fijo de String con las regiones registradas
-	 */
-	private String[] darRegiones() {
-		List<String> regiones = vacuAndes.darRegiones();
-		String[] retorno = new String[regiones.size()];
-		regiones.toArray(retorno);
-		return retorno;
-	}
+	 /**
+	  * Obtiene las regiones registradas en vacuandes
+	  * @return un arreglo de tamaño fijo de String con las regiones registradas
+	  */
+	 private String[] darRegiones() {
+		 List<String> regiones = vacuAndes.darRegiones();
+		 String[] retorno = new String[regiones.size()];
+		 regiones.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Obtiene los roles registrados en vacuandes
-	 * @return un arreglo de tamaño fijo de String con las regiones registradas
-	 */
-	private String[] darRoles() {
-		List<String> roles = new LinkedList();
-		for ( Rol actual : vacuAndes.darRoles() ) {
-			roles.add( actual.getId() + ":" +actual.getRol() );
-		}
-		String[] retorno = new String[roles.size()];
-		roles.toArray(retorno);
-		return retorno;
-	}
+	 /**
+	  * Obtiene los roles registrados en vacuandes
+	  * @return un arreglo de tamaño fijo de String con las regiones registradas
+	  */
+	 private String[] darRoles() {
+		 List<String> roles = new LinkedList();
+		 for ( Rol actual : vacuAndes.darRoles() ) {
+			 roles.add( actual.getId() + ":" +actual.getRol() );
+		 }
+		 String[] retorno = new String[roles.size()];
+		 roles.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Obtiene los estados registrados en vacuandes
-	 * @return un arreglo de tamaño fijo de String con los estados registradas
-	 */
-	private String[] darEstados() {
-		List<String> estados = new LinkedList<>();
-		for ( Estado actual: vacuAndes.darEstados()) {
-			estados.add( actual.getId() + ": " + actual.getDescripcion() );
-		}
-		String[] retorno = new String[estados.size()];
-		estados.toArray(retorno);
-		return retorno; 
-	}
+	 /**
+	  * Obtiene los estados registrados en vacuandes
+	  * @return un arreglo de tamaño fijo de String con los estados registradas
+	  */
+	 private String[] darEstados() {
+		 List<String> estados = new LinkedList<>();
+		 for ( Estado actual: vacuAndes.darEstados()) {
+			 estados.add( actual.getId() + ": " + actual.getDescripcion() );
+		 }
+		 String[] retorno = new String[estados.size()];
+		 estados.toArray(retorno);
+		 return retorno; 
+	 }
 
-	/**
-	 * Obtiene las EPS registradas en vacuandes
-	 * @return un arreglo de tamaño fijo de String con las EPS registradas
-	 */
-	private String[] darTodasEps() {
-		List<String> eps = new LinkedList<>();
-		for ( EPS actual: vacuAndes.darEPSs()) {
-			eps.add( actual.getId() );
-		}
-		String[] retorno = new String[eps.size()];
-		eps.toArray(retorno);
-		return retorno;
-	}
-	
-	/**
-	 * Obtiene los Puntos de vacunación registrados en vacuandes
-	 * @return un arreglo de tamaño fijo de String con los Puntos registrados
-	 */
-	private String[] darPuntos() {
-		List<String> puntos = new LinkedList<>();
-		for ( Punto actual: vacuAndes.darPuntos() ) {
-			puntos.add( actual.getId() );
-		}
-		String[] retorno = new String[puntos.size()];
-		puntos.toArray(retorno);
-		return retorno;
-	}
-	
-	/**
-	 * Obtiene las tecnologías de las vacunas registradas en vacuandes
-	 * @return un arreglo de tamaño fijo de String con las tecnologías registrados
-	 */
-	private String[] darTecnologiaVacunas() {
-		List<String> tecnologias = new LinkedList<>();
-		for ( String actual: vacuAndes.darTecnologiasVacunas() ) {
-			tecnologias.add( actual );
-		}
-		String[] retorno = new String[tecnologias.size()];
-		tecnologias.toArray(retorno);
-		return retorno;
-	}
+	 /**
+	  * Obtiene las EPS registradas en vacuandes
+	  * @return un arreglo de tamaño fijo de String con las EPS registradas
+	  */
+	 private String[] darTodasEps() {
+		 List<String> eps = new LinkedList<>();
+		 for ( EPS actual: vacuAndes.darEPSs()) {
+			 eps.add( actual.getId() );
+		 }
+		 String[] retorno = new String[eps.size()];
+		 eps.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Obtiene las condigicones de priorización registradas en vacuandes
-	 * @return un arreglo de tamaño fijo de String con las condiciones de priorización registradas
-	 */
-	private String[] darGruposDePriorizacion() {
-		List<String> grupos = new LinkedList<>();
-		for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
-			grupos.add( actual.getDescripcion() );
-		}
-		String[] retorno = new String[grupos.size()];
-		grupos.toArray(retorno);
-		return retorno;
-	}
+	 /**
+	  * Obtiene los Puntos de vacunación registrados en vacuandes
+	  * @return un arreglo de tamaño fijo de String con los Puntos registrados
+	  */
+	 private String[] darPuntos() {
+		 List<String> puntos = new LinkedList<>();
+		 for ( Punto actual: vacuAndes.darPuntos() ) {
+			 puntos.add( actual.getId() );
+		 }
+		 String[] retorno = new String[puntos.size()];
+		 puntos.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
-	 * @param e - La excepción recibida
-	 * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
-	 */
-	private String darDetalleException(Exception e) 
-	{
-		String resp = "";
-		if (e.getClass().getName().equals("javax.jdo.JDODataStoreException"))
-		{
-			JDODataStoreException je = (javax.jdo.JDODataStoreException) e;
-			return je.getNestedExceptions() [0].getMessage();
-		}
-		return resp;
-	}
+	 /**
+	  * Obtiene las tecnologías de las vacunas registradas en vacuandes
+	  * @return un arreglo de tamaño fijo de String con las tecnologías registrados
+	  */
+	 private String[] darTecnologiaVacunas() {
+		 List<String> tecnologias = new LinkedList<>();
+		 for ( String actual: vacuAndes.darTecnologiasVacunas() ) {
+			 tecnologias.add( actual );
+		 }
+		 String[] retorno = new String[tecnologias.size()];
+		 tecnologias.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Genera una cadena para indicar al usuario que hubo un error en la aplicación
-	 * @param e - La excepción generada
-	 * @return La cadena con la información de la excepción y detalles adicionales
-	 */
-	private String generarMensajeError(Exception e) 
-	{
-		String resultado = "************ Error en la ejecución\n";
-		resultado += e.getLocalizedMessage() + ", " + darDetalleException(e);
-		resultado += "\n\nRevise datanucleus.log y vacuandes.log para más detalles";
-		return resultado;
-	}
+	 /**
+	  * Obtiene las condigicones de priorización registradas en vacuandes
+	  * @return un arreglo de tamaño fijo de String con las condiciones de priorización registradas
+	  */
+	 private String[] darGruposDePriorizacion() {
+		 List<String> grupos = new LinkedList<>();
+		 for ( CondicionPriorizacion actual: vacuAndes.darCondicionesPriorizacion()) {
+			 grupos.add( actual.getDescripcion() );
+		 }
+		 String[] retorno = new String[grupos.size()];
+		 grupos.toArray(retorno);
+		 return retorno;
+	 }
 
-	/**
-	 * Limpia el contenido de un archivo dado su nombre
-	 * @param nombreArchivo - El nombre del archivo que se quiere borrar
-	 * @return true si se pudo limpiar
-	 */
-	private boolean limpiarArchivo(String nombreArchivo) 
-	{
-		BufferedWriter bw;
-		try 
-		{
-			bw = new BufferedWriter(new FileWriter(new File (nombreArchivo)));
-			bw.write ("");
-			bw.close ();
-			return true;
-		} 
-		catch (IOException e) 
-		{
-			//			e.printStackTrace();
-			return false;
-		}
-	}
+	 /**
+	  * Genera una cadena de caracteres con la descripción de la excepcion e, haciendo énfasis en las excepcionsde JDO
+	  * @param e - La excepción recibida
+	  * @return La descripción de la excepción, cuando es javax.jdo.JDODataStoreException, "" de lo contrario
+	  */
+	 private String darDetalleException(Exception e) 
+	 {
+		 String resp = "";
+		 if (e.getClass().getName().equals("javax.jdo.JDODataStoreException"))
+		 {
+			 JDODataStoreException je = (javax.jdo.JDODataStoreException) e;
+			 return je.getNestedExceptions() [0].getMessage();
+		 }
+		 return resp;
+	 }
 
-	/**
-	 * Abre el archivo dado como parámetro con la aplicación por defecto del sistema
-	 * @param nombreArchivo - El nombre del archivo que se quiere mostrar
-	 */
-	private void mostrarArchivo (String nombreArchivo)
-	{
-		try
-		{
-			Desktop.getDesktop().open(new File(nombreArchivo));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+	 /**
+	  * Genera una cadena para indicar al usuario que hubo un error en la aplicación
+	  * @param e - La excepción generada
+	  * @return La cadena con la información de la excepción y detalles adicionales
+	  */
+	 private String generarMensajeError(Exception e) 
+	 {
+		 String resultado = "************ Error en la ejecución\n";
+		 resultado += e.getLocalizedMessage() + ", " + darDetalleException(e);
+		 resultado += "\n\nRevise datanucleus.log y vacuandes.log para más detalles";
+		 return resultado;
+	 }
 
-	/**
-	 * Inicializa la etapa de VacuAndes en caso de que no haya sido inicializada previamente
-	 */
-	private void inicializarEtapa() {
-		try {
-			if ( vacuAndes.darEtapaVacuAndes() == null ) {
-				String etapa = JOptionPane.showInputDialog (this, "Ingrese la etapa actual de vacuAndes", "Etapa VacuAndes", JOptionPane.QUESTION_MESSAGE);
-				if ( etapa != null && !etapa.trim().equals("") ) {
-					Long numero_etapa = Long.parseLong(etapa);
-					if ( vacuAndes.darEtapa(numero_etapa) != null ) {
-						if ( vacuAndes.adicionarEtapaVacuAndes(numero_etapa) == null ) {
-							throw new Exception ("La etapa no se pudo adicionar");
-						}
-						String resultado = "En inicializarEtapa\n\n"; 
-						resultado += "Etapa adicionada correctamente: " + numero_etapa; 
-						resultado += "\n Operación terminada"; 
-						panelDatos.actualizarInterfaz(resultado);
-					}
-				}
-			}
-		}
-		catch (Exception e) {
-			//			e.printStackTrace(); 
-			String resultado = generarMensajeError(e);
-			panelDatos.actualizarInterfaz(resultado);
-		}
-	}
+	 /**
+	  * Limpia el contenido de un archivo dado su nombre
+	  * @param nombreArchivo - El nombre del archivo que se quiere borrar
+	  * @return true si se pudo limpiar
+	  */
+	 private boolean limpiarArchivo(String nombreArchivo) 
+	 {
+		 BufferedWriter bw;
+		 try 
+		 {
+			 bw = new BufferedWriter(new FileWriter(new File (nombreArchivo)));
+			 bw.write ("");
+			 bw.close ();
+			 return true;
+		 } 
+		 catch (IOException e) 
+		 {
+			 //			e.printStackTrace();
+			 return false;
+		 }
+	 }
 
-	/* ****************************************************************
-	 * 			Métodos de la Interacción
-	 *****************************************************************/
-	/**
-	 * Método para la ejecución de los eventos que enlazan el menú con los métodos de negocio
-	 * Invoca al método correspondiente según el evento recibido
-	 * @param pEvento - El evento del usuario
-	 */
-	@Override
-	public void actionPerformed(ActionEvent pEvento)
-	{
-		String evento = pEvento.getActionCommand( );		
-		try 
-		{
-			Method req = InterfazVacuAndesApp.class.getMethod ( evento );			
-			req.invoke ( this );
-		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		} 
-	}
+	 /**
+	  * Abre el archivo dado como parámetro con la aplicación por defecto del sistema
+	  * @param nombreArchivo - El nombre del archivo que se quiere mostrar
+	  */
+	 private void mostrarArchivo (String nombreArchivo)
+	 {
+		 try
+		 {
+			 Desktop.getDesktop().open(new File(nombreArchivo));
+		 }
+		 catch (IOException e)
+		 {
+			 e.printStackTrace();
+		 }
+	 }
 
-	/* ****************************************************************
-	 * 			Programa principal
-	 *****************************************************************/
-	/**
-	 * Este método ejecuta la aplicación, creando una nueva interfaz
-	 * @param args Arreglo de argumentos que se recibe por línea de comandos
-	 */
-	public static void main( String[] args )
-	{
-		try
-		{
+	 /**
+	  * Inicializa la etapa de VacuAndes en caso de que no haya sido inicializada previamente
+	  */
+	 private void inicializarEtapa() {
+		 try {
+			 if ( vacuAndes.darEtapaVacuAndes() == null ) {
+				 String etapa = JOptionPane.showInputDialog (this, "Ingrese la etapa actual de vacuAndes", "Etapa VacuAndes", JOptionPane.QUESTION_MESSAGE);
+				 if ( etapa != null && !etapa.trim().equals("") ) {
+					 Long numero_etapa = Long.parseLong(etapa);
+					 if ( vacuAndes.darEtapa(numero_etapa) != null ) {
+						 if ( vacuAndes.adicionarEtapaVacuAndes(numero_etapa) == null ) {
+							 throw new Exception ("La etapa no se pudo adicionar");
+						 }
+						 String resultado = "En inicializarEtapa\n\n"; 
+						 resultado += "Etapa adicionada correctamente: " + numero_etapa; 
+						 resultado += "\n Operación terminada"; 
+						 panelDatos.actualizarInterfaz(resultado);
+					 }
+				 }
+			 }
+		 }
+		 catch (Exception e) {
+			 //			e.printStackTrace(); 
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
+	 }
 
-			// Unifica la interfaz para Mac y para Windows.
-			UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName( ) );
-			new InterfazVacuAndesApp( );
+	 /* ****************************************************************
+	  * 			Métodos de la Interacción
+	  *****************************************************************/
+	 /**
+	  * Método para la ejecución de los eventos que enlazan el menú con los métodos de negocio
+	  * Invoca al método correspondiente según el evento recibido
+	  * @param pEvento - El evento del usuario
+	  */
+	 @Override
+	 public void actionPerformed(ActionEvent pEvento)
+	 {
+		 String evento = pEvento.getActionCommand( );		
+		 try 
+		 {
+			 Method req = InterfazVacuAndesApp.class.getMethod ( evento );			
+			 req.invoke ( this );
+		 } 
+		 catch (Exception e) 
+		 {
+			 e.printStackTrace();
+		 } 
+	 }
 
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace( );
-		}
-	}
+	 /* ****************************************************************
+	  * 			Programa principal
+	  *****************************************************************/
+	 /**
+	  * Este método ejecuta la aplicación, creando una nueva interfaz
+	  * @param args Arreglo de argumentos que se recibe por línea de comandos
+	  */
+	 public static void main( String[] args )
+	 {
+		 try
+		 {
+
+			 // Unifica la interfaz para Mac y para Windows.
+			 UIManager.setLookAndFeel( UIManager.getCrossPlatformLookAndFeelClassName( ) );
+			 new InterfazVacuAndesApp( );
+
+		 }
+		 catch( Exception e )
+		 {
+			 e.printStackTrace( );
+		 }
+	 }
 }

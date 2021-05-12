@@ -133,6 +133,22 @@ public class SQLCita {
 	}
 	
 	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la informacion de las CITAS de un ciudadan en un punto 
+	 * específico dado su id y el documento del ciudadano de la base de datos de VacuAndes
+	 * @param pm- El manejador de persistencia
+	 * @param id- el id del punto de vacunacion
+	 * @param documento - documento del ciudadano
+	 * @return Una lista de objetos CITA
+	 */
+	public List<Cita> darCitasCiudadanoPunto( PersistenceManager pm, String id, String documento)
+	{
+		Query q = pm.newQuery(SQL, "SELECT * FROM "+ pp.darTablaCita()+ " WHERE ID_PUNTO = ? AND DOCUMENTO_CIUDADANO = ?");
+		q.setParameters(id, documento);		
+		q.setResultClass( Cita.class );
+		return (List<Cita>) q.executeList();
+	}
+	
+	/**
 	 * Crea y ejecuta la sentencia SQL para encontrar la informacion de las CITAS de un punto 
 	 * específico dado su id de la base de datos de VacuAndes
 	 * @param pm- El manejador de persistencia
