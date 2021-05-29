@@ -1924,6 +1924,75 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			 panelDatos.actualizarInterfaz(resultado);
 		 }
 	 }
+	 
+	 /**
+	  * Busca los ciudadanos no vacunados de la base de datos
+	  */
+	 public void ciudadanosNoVacunados()
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L)) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+			 
+			 JList<String> list = new JList<>( new String[]{"EPS","Condiciones de priorización","Punto de vac."} );
+			 JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar la búsqueda (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			 List<String> seleccionados = list.getSelectedValuesList();
+			 
+			 String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+			 String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE)+ " 00:00";
+			 String eps = null;
+			 String punto = null;
+			 String condiprior = null;
+			 
+			 if(seleccionados.contains("EPS"))
+			 {
+				 eps = JOptionPane.showInputDialog(this, "Ingrese el Id de la EPS", "Hallar ciudadanos no vacunados", JOptionPane.QUESTION_MESSAGE);
+			 }
+			 if(seleccionados.contains("Punto de vac."))
+			 {
+				 punto = JOptionPane.showInputDialog(this, "Ingrese el Id del Punto de vacunación", "Hallar ciudadanos no vacunados", JOptionPane.QUESTION_MESSAGE);
+			 }
+			 if(seleccionados.contains("Condiciones de priorización"))
+			 {
+				 List<CondicionPriorizacion> condiciones = vacuAndes.darCondicionesPriorizacion();
+				 String[] lista = new String[condiciones.size()];
+				 int i =0;
+				 for(CondicionPriorizacion condicion: condiciones){
+					 lista[i]=(condicion.toString());
+					 i++;
+				 }
+				 JList<String> liste = new JList<String>( lista );
+				 JOptionPane.showMessageDialog(null, liste, "Seleccione la condicion de priorización (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
+				 String con = list.getSelectedValue();
+				 
+				 String[] condi = con.split("=");
+				 condiprior= condi[2];
+			 }
+			 
+			 List<Ciudadano> listaCiud = vacuAndes.darCiudadanosNoVacunados(punto, eps, condiprior, fecha1, fecha2);
+			 
+			 String mensaje = "Los ciudadanos no vacunados son: \n";
+			 
+			 for(Ciudadano ciudadano: listaCiud){
+				 mensaje+= ciudadano.toString()+"\n";
+			 }
+			 
+			 panelDatos.actualizarInterfaz(mensaje);
+		 }
+			 catch (Exception e) {
+				 //			e.printStackTrace();
+				 String resultado = generarMensajeError(e);
+				 panelDatos.actualizarInterfaz(resultado);
+			 }
+	 }
 
 	 /* ****************************************************************
 	  * 			Métodos administrativos

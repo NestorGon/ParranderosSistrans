@@ -92,6 +92,14 @@
 				{
 					"label": "Ciudadanos en contacto",
 					"event": "ciudadanosContacto"
+				},
+                                {
+					"label": "Ciudadanos vacunados",
+					"event": "ciudadanosVacunados"
+				},
+                                {
+					"label": "Ciudadanos no vacunados",
+					"event": "ciudadanosNoVacunados"
 				}
 			]
 		},

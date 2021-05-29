@@ -2584,6 +2584,15 @@ public class PersistenciaVacuAndes
 		return sqlUtil.ciudadanosContacto(pm, fecha1, fecha2, id_punto, fechahora);
 	}
     
+	/**
+	 * Consulta los ciudadanos no vacunados en un rango de fechas
+	 */
+	public List<Ciudadano> darCiudadanosNoVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2){
+		
+		PersistenceManager pm = pmf.getPersistenceManager();
+		return sqlUtil.darCiudadanosNoVacunados(pm, punto, eps, condiprior, fecha1, fecha2);
+		
+	}
 	/* ****************************************************************
 	 * 			Métodos para administración
 	 *****************************************************************/

@@ -1743,6 +1743,22 @@ public class VacuAndes
 		log.info("Cohorte analizado");
 		return ciudadanos;
 	}
+	
+	/**
+	 * Método que consulta los ciudadanos no vacunados
+	 * @param punto - id del punto de vacunacion
+	 * @param eps - id de la eps
+	 * @param condiprior - condicion de priorizacion
+	 * @param fecha1 - fecha 1 del rango
+	 * @param fecha2 - fecha2 del rango
+	 */
+	public List<Ciudadano> darCiudadanosNoVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2)
+	{
+		log.info("Buscando ciudadanos no vacunados");
+		List<Ciudadano> ciudadanos= pp.darCiudadanosNoVacunados(punto, eps, condiprior, fecha1, fecha2);
+		log.info("Ciudadanos no vacunados hallados");
+		return ciudadanos;
+	}
 
 	/* ****************************************************************
 	 * 			Métodos para administración
