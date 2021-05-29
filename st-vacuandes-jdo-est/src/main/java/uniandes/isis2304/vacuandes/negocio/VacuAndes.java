@@ -961,6 +961,28 @@ public class VacuAndes
 		return activas; 
 	}
 	
+	/** 
+	 * Retorna la cantidad de citas finalizadas de un punto dado su id entre un rango de fechas
+	 */ 
+	public Long darCitasFinalizadasFechasPunto(String id, String fecha1, String fecha2) 
+	{ 
+		log.info("Buscando cantidad de citas finalizadas en el rango de fechas de un Punto id: "+id); 
+		Long finalizadas = pp.darCitasFinalizadasFechasPunto(id, fecha1, fecha2); 
+		log.info("Citas finalizadas en el rango de fechas del punto encontrada: "+finalizadas); 
+		return finalizadas; 
+	}
+	
+	/**
+	 * Retorna una lista con los ids de los puntos de la base de datos
+	 */
+	public List<String> darIdsPuntos()
+	{
+		log.info("Buscando los ids de los puntos de la base de datos");
+		List<String> ids = pp.darIdsPuntos();
+		log.info("Lista d eids de los puntos hallada");
+		return ids;
+	}
+	
 	/**
 	 * Método que cambia el estado de habilitado de un punto de vacunacion dado su id
 	 * @param id - El identificador del punto de vacunacion

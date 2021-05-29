@@ -77,6 +77,10 @@
 					"label": "Índice de vacunación",
 					"event": "mostrarIndiceGrupoPoblacional"
 				},
+                                {
+					"label": "Puntos con dosis disponibles",
+					"event": "puntosDosisDisponibles"
+				},
 				{
 					"label": "Analizar operación de VacuAndes",
 					"event": "analizarOperacion"

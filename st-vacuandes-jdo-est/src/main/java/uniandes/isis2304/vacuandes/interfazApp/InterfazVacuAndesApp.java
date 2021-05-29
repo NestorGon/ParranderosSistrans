@@ -1574,6 +1574,52 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 
 	}
+	
+	/**
+	 * Consulta la base de datos para hallar los puntos de vacunación con dosis disponibles en un rango de fechas y una hora
+	 */
+	public void puntosDosisDisponibles(){
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)
+						 && !usuario.getId_roles().equals(4L) && !usuario.getId_roles().equals(5L) && !usuario.getId_roles().equals(6L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			
+			String hora = JOptionPane.showInputDialog(this, "Ingrese la hora en el formato HH24:MI", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE);
+			String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE) + " "+hora;
+			String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE)+ " "+ hora;
+			
+			List<String> ids = vacuAndes.darIdsPuntos();
+			
+			String mensaje = "Los puntos con dosis disponibles en el rango de fechas dado son: ";
+			
+			for(int i=0; i<ids.size(); i++)
+			{
+				String actual = ids.get(i);
+				Long vacunas = vacuAndes.darVacunasPunto(actual);
+				Long gastadas= vacuAndes.darCitasFinalizadasFechasPunto(actual, fecha1, fecha2);
+				
+				if((vacunas-gastadas) > 0){
+				   mensaje+=actual+" - Dosis disponibles entre las fechas dadas: "+ (vacunas-gastadas)+ "\n" ;
+				}
+			}
+			
+			panelDatos.actualizarInterfaz(mensaje);
+			
+		}	
+			catch (Exception e) {
+				//			e.printStackTrace();
+				String resultado = generarMensajeError(e);
+				panelDatos.actualizarInterfaz(resultado);
+			}
+	}
 
 	/**
 	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano

@@ -148,6 +148,33 @@ public class SQLPunto {
 			return 0L;
 		return resp.longValue();
 	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la lista de ids de los puntos
+	 * @param pm - El manejador de persistencia
+	 * @return Una lista de strings con los ids de todos los puntos
+	 */
+	public List<String> darIdsPuntos( PersistenceManager pm){
+		Query q= pm.newQuery( SQL , "SELECT ID FROM PUNTO ORDER BY TO_NUMBER(ID)");
+		return q.executeList();	
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar las citas finalizadas de un punto entre un rango de fechas
+	 * dado su ID
+	 * @param id - Id del punto de vacunacion
+	 * @param fecha1 - fecha 1 del rango
+	 * @param fecha2 - fecha 2 del rango 
+	 * @return El objeto Long de las citas activas del punto
+	 */
+	public Long darCitasFinalizadasFechasPunto( PersistenceManager pm, String id, String fecha1, String fecha2){
+		Query q = pm.newQuery( SQL, "SELECT COUNT(*)CANTIDAD FROM "+ pp.darTablaCita()+ " WHERE ID_PUNTO= ? AND FINALIZADA = 'T' AND FECHAHORA BETWEEN TO_DATE (?, 'DD-MM-YYYY HH24:MI') AND TO_DATE (?, 'DD-MM-YYYY HH24:MI') GROUP BY ID_PUNTO" );
+		q.setParameters( id, fecha1, fecha2 );
+		BigDecimal resp = (BigDecimal) q.executeUnique();
+		if(resp == null)
+			return 0L;
+		return resp.longValue();
+	}
 
 	/**
 	 * Crea y ejecuta la sentencia SQL para encontrar la información de los PUNTOS de la 

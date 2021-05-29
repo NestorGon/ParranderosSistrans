@@ -1595,6 +1595,28 @@ public class PersistenciaVacuAndes
 	{ 
 		return sqlPunto.darCitasActivasPunto( pmf.getPersistenceManager(), id ); 
 	}
+	
+	/** 
+	 * Método que consulta la cantidad de citas finalizadas de un PUNTO dado su id en un rango de fechas
+	 * @param id - el id del punto a buscar 
+	 * @param fecha1 - la fecha1 del rango
+	 * @param fecha2 - la fecha2 del rango 
+	 * @return El objeto Long, construidos con base en las tuplas de la tabla PUNTO 
+	 */ 
+	public Long darCitasFinalizadasFechasPunto( String id, String fecha1, String fecha2 ) 
+	{ 
+		return sqlPunto.darCitasFinalizadasFechasPunto( pmf.getPersistenceManager(), id, fecha1, fecha2 ); 
+	}
+	
+	/**
+	 * Método que consulta la lista de Ids de todos los puntos de la base de datos
+     *@return La lista de tipos tsring con todos los ids de los puntos de la base de datos	 
+	 */
+	public List<String> darIdsPuntos(){
+		return sqlPunto.darIdsPuntos(pmf.getPersistenceManager());
+	}
+	
+	
 
 	/**
 	 * Método que cambia el estado de habilitado de un punto de vacunacion dado su id
