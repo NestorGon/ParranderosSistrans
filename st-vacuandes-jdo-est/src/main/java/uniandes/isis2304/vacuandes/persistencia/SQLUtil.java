@@ -24,6 +24,7 @@ import javax.jdo.Query;
 import org.datanucleus.store.rdbms.query.ForwardQueryResult;
 
 import uniandes.isis2304.vacuandes.negocio.Ciudadano;
+import uniandes.isis2304.vacuandes.negocio.Tupla;
 
 /**
  * Clase que encapsula los métodos que hacen acceso a la base de datos para la secuencia y limpieza de VacuAndes
@@ -725,6 +726,37 @@ class SQLUtil
 		Query q = pm.newQuery( SQL, sql1+sql2);
 		q.setResultClass( Ciudadano.class );
 		return (List<Ciudadano>) q.executeList();		
+	}
+	
+	/**
+	 * Crea y ejecuta la sentencia que busca la cantidad de citas por punto en las semanas del año
+	 * @param pm - manejador de persistencia
+	 */
+	public List<Tupla> citasPuntosSemanas(PersistenceManager pm, String eps)
+	{
+		String sqlBase = "SELECT ID_PUNTO, COUNT(*) AS CANTIDADCITAS, TO_CHAR(FECHAHORA, 'WW') AS SEMANA"
+                        +" FROM CITA";
+         String sqlWhere= " WHERE NOT FINALIZADA = 'C'";
+		
+        String sqlBase2 = " GROUP BY TO_CHAR(FECHAHORA, 'WW'), ID_PUNTO"
+                + " ORDER BY SEMANA, CANTIDADCITAS DESC";
+		String sqlEPS = " JOIN PUNTO ON PUNTO.ID = CITA.ID_PUNTO";
+		String consultaEps = " AND PUNTO.ID_EPS = '"+eps+"'";
+		
+		String sqlFinal = "";
+		
+		if(eps!=null)
+		{
+			sqlFinal+= sqlBase+sqlEPS+sqlWhere+consultaEps+sqlBase2;
+		}
+		else if(eps == null)
+		{
+			sqlFinal+= sqlBase+sqlWhere+sqlBase2;
+		}
+		
+		Query q= pm.newQuery( SQL, sqlFinal );
+		q.setResultClass(Tupla.class);
+		return (List<Tupla>) q.executeList();
 	}
 	
 }

@@ -44,6 +44,7 @@ import uniandes.isis2304.vacuandes.negocio.InfoUsuario;
 import uniandes.isis2304.vacuandes.negocio.Priorizacion;
 import uniandes.isis2304.vacuandes.negocio.Punto;
 import uniandes.isis2304.vacuandes.negocio.Rol;
+import uniandes.isis2304.vacuandes.negocio.Tupla;
 import uniandes.isis2304.vacuandes.negocio.Usuario;
 import uniandes.isis2304.vacuandes.negocio.VOCiudadano;
 import uniandes.isis2304.vacuandes.negocio.Vacuna;
@@ -2603,6 +2604,16 @@ public class PersistenciaVacuAndes
 		return sqlUtil.darCiudadanosNoVacunados(pm, punto, eps, condiprior, fecha1, fecha2);
 		
 	}
+	
+	/**
+	 * Consulta la cantidad de citas de los puntos en las semanas del año
+	 */
+	public List<Tupla> citasPuntosSemanas(String eps)
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+		return sqlUtil.citasPuntosSemanas(pm, eps);
+	}
+	
 	/* ****************************************************************
 	 * 			Métodos para administración
 	 *****************************************************************/
