@@ -1002,7 +1002,7 @@ public class PersistenciaVacuAndes
 
 			log.trace( "Inserción de ciudadano: " + documento + " - " + nombre + ": " + tuplasInsertadas + " tuplas insertadas" );
 
-			return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
+			return new Ciudadano( documento, nombre, new Timestamp(nacimiento.getTime()), habilitado, BigDecimal.valueOf(estado), eps, BigDecimal.valueOf(etapa), sexo );
 		}
 		catch( Exception e )
 		{
@@ -1043,7 +1043,7 @@ public class PersistenciaVacuAndes
 
 			log.trace( "Actualización de ciudadano: " + documento + " - " + nombre + ": " + tuplasActualizadas + " tuplas actualizadas" );
 
-			return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
+			return new Ciudadano( documento, nombre, new Timestamp(nacimiento.getTime()), habilitado, BigDecimal.valueOf(estado), eps, BigDecimal.valueOf(etapa), sexo );
 		}
 		catch( Exception e )
 		{

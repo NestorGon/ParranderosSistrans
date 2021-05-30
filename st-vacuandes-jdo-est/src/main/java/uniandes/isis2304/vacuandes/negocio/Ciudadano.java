@@ -14,6 +14,8 @@
 
 package uniandes.isis2304.vacuandes.negocio;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -72,14 +74,14 @@ public class Ciudadano implements VOCiudadano {
 	public Ciudadano() {
 	}
 
-	public Ciudadano( String documento, String nombre, Date nacimiento, String habilitado, Long id_estado, String id_eps, Integer numero_etapa, String sexo ) {
+	public Ciudadano( String documento, String nombre, Timestamp nacimiento, String habilitado, BigDecimal id_estado, String id_eps, BigDecimal numero_etapa, String sexo ) {
 		this.documento = documento;
 		this.nombre = nombre;
 		this.nacimiento = nacimiento;
 		this.habilitado = habilitado;
-		this.id_estado = id_estado;
+		this.id_estado = id_estado.longValue();
 		this.id_eps = id_eps;
-		this.numero_etapa = numero_etapa;
+		this.numero_etapa = numero_etapa.intValue();
 		this.sexo = sexo;
 	}
 
@@ -103,7 +105,7 @@ public class Ciudadano implements VOCiudadano {
 		return nacimiento;
 	}
 
-	public void setNacimiento( Date nacimiento ) {
+	public void setNacimiento( Timestamp nacimiento ) {
 		this.nacimiento = nacimiento;
 	}
 
@@ -119,8 +121,8 @@ public class Ciudadano implements VOCiudadano {
 		return id_estado;
 	}
 
-	public void setId_estado( Long id_estado ) {
-		this.id_estado = id_estado;
+	public void setId_estado( BigDecimal id_estado ) {
+		this.id_estado = id_estado.longValue();
 	}
 
 	public String getId_eps() {
@@ -135,8 +137,8 @@ public class Ciudadano implements VOCiudadano {
 		return numero_etapa;
 	}
 
-	public void setNumero_etapa( Integer numero_etapa ) {
-		this.numero_etapa = numero_etapa;
+	public void setNumero_etapa( BigDecimal numero_etapa ) {
+		this.numero_etapa = numero_etapa.intValue();
 	}
 	
 	public String getSexo() {

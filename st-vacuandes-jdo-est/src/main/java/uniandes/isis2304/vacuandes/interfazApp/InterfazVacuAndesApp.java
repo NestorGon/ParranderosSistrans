@@ -2301,12 +2301,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						 mensaje+="Los 5 puntos con más afluencia de la semana fueron: \n";
 						 for (int j=0; j<5; j++)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ids.get(j)+"\n";
 						 }
 						 mensaje+="Los 5 puntos con menos afluencia de la semana fueron: \n";
 						 for (int j=ids.size()-1; j>ids.size()-6; j--)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ids.get(j)+"\n";
 						 }
 					 } 
 					 else if(ids.size()<10 && ids.size()>4)
@@ -2314,12 +2314,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						 mensaje+="Los 2 puntos con más afluencia de la semana fueron: \n";
 						 for(int j=0; j<2; j++)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ ids.get(j)+"\n";
 						 }
 						 mensaje+="Los 2 puntos con menos afluencia de la semana fueron: \n";
 						 for (int j=ids.size()-1; j>ids.size()-3; j--)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ ids.get(j)+"\n";
 						 }
 					 }
 					 else if(ids.size()<=4)
@@ -2374,12 +2374,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						 mensaje+="Los 5 puntos con más afluencia de la semana fueron: \n";
 						 for (int j=0; j<5; j++)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ids.get(j)+"\n";
 						 }
 						 mensaje+="Los 5 puntos con menos afluencia de la semana fueron: \n";
 						 for (int j=ids.size()-1; j>ids.size()-6; j--)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ids.get(j)+"\n";
 						 }
 					 } 
 					 else if(ids.size()<10 && ids.size()>4)
@@ -2387,12 +2387,12 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 						 mensaje+="Los 2 puntos con más afluencia de la semana fueron: \n";
 						 for(int j=0; j<2; j++)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ ids.get(j)+"\n";
 						 }
 						 mensaje+="Los 2 puntos con menos afluencia de la semana fueron: \n";
 						 for (int j=ids.size()-1; j>ids.size()-3; j--)
 						 {
-							 mensaje+= ids.get(j)+"\n";
+							 mensaje+= "- "+ids.get(j)+"\n";
 						 }
 					 }
 					 else if(ids.size()<=4)
