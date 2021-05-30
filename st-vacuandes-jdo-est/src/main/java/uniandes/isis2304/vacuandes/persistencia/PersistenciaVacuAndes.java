@@ -1523,6 +1523,16 @@ public class PersistenciaVacuAndes
 	{
 		return sqlPunto.darPuntosHabilitadosEPS( pmf.getPersistenceManager(), id );
 	}
+	
+	/**
+	 * Método que consulta todas las tuplas en la tabla PUNTO 
+	 * @return La lista de objetos Punto, construidos con base en las tuplas de la tabla PUNTO
+	 */
+	public List<Punto> darPuntosEPS(String id)
+	{
+		return sqlPunto.darPuntosEPS( pmf.getPersistenceManager(), id );
+	}
+
 
 	/**
 	 * Método que cambia el numero de vacunas de un Punto dado su id

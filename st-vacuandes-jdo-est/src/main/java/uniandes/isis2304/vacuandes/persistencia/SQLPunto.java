@@ -204,6 +204,20 @@ public class SQLPunto {
 	}
 	
 	/**
+	 * Crea y ejecuta la sentencia SQL para encontrar la información de los PUNTOS de la 
+	 * base de datos de VacuAndes
+	 * @param pm - El manejador de persistencia
+	 * @return Una lista de objetos PUNTO
+	 */
+	public List<Punto> darPuntosEPS( PersistenceManager pm, String id_eps)
+	{
+		Query q = pm.newQuery( SQL, "SELECT * FROM " + pp.darTablaPunto() + " WHERE ID_EPS = ?" );
+		q.setParameters(id_eps);
+		q.setResultClass( Punto.class );
+		return (List<Punto>) q.executeList();
+	}
+	
+	/**
 	 * Crea y ejecuta la sentencia SQL para aumentar la cantidad de vacunas de un punto dado su id
 	 * @param pm - El manejador de persistencia
 	 * @param id - id del punto al que se le aumentará el numero de vacunas

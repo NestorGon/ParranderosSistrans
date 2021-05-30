@@ -153,7 +153,7 @@ public class Punto implements VOPunto{
 	 * @return cadena de caracteres con todos los atributos del punto
 	 */
 	public String toString() {
-		return "Punto[id = "+ id+", region = "+ region+", direccion = "+ direccion+", aplicadas = "+aplicadas+"capacidad = "+capacidad+", id_eps = "+ id_eps+""
+		return "Punto[id = "+ id+", region = "+ region+", direccion = "+ direccion+", aplicadas = "+aplicadas+", capacidad = "+capacidad+", id_eps = "+ id_eps+""
 				+ " capacidad vacunas = "+capacidadVacunas+", vacunas = "+vacunas+", habilitado = "+habilitado+"]";
 	}
 

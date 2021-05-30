@@ -901,6 +901,19 @@ public class VacuAndes
 	 * Adiciona entradas al log de la aplicación
 	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
 	 */
+	public List<Punto> darPuntosEPS( String id )
+	{
+		log.info ("Consultando Puntos  de una EPS");
+		List<Punto> puntos = pp.darPuntosEPS(id);	
+		log.info ("Consultando Puntos  de una EPS: " + puntos.size() + " existentes");
+		return puntos;
+	}
+	
+	/**
+	 * Encuentra todas los puntos habilitados en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
+	 */
 	public List<Punto> darPuntosHabilitadosEPS( String id )
 	{
 		log.info ("Consultando Puntos habilitados de una EPS");
