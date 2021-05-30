@@ -1574,6 +1574,52 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 		}
 
 	}
+	
+	/**
+	 * Consulta la base de datos para hallar los puntos de vacunación con dosis disponibles en un rango de fechas y una hora
+	 */
+	public void puntosDosisDisponibles(){
+		try 
+		{
+			VOInfoUsuario usuario = panelValidacionUsuario();
+			if ( usuario != null ) {
+				if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L) && !usuario.getId_roles().equals(3L)
+						 && !usuario.getId_roles().equals(4L) && !usuario.getId_roles().equals(5L) && !usuario.getId_roles().equals(6L)) {
+					throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				}
+			}
+			else {
+				return;
+			}
+			
+			String hora = JOptionPane.showInputDialog(this, "Ingrese la hora en el formato HH24:MI", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE);
+			String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE) + " "+hora;
+			String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE)+ " "+ hora;
+			
+			List<String> ids = vacuAndes.darIdsPuntos();
+			
+			String mensaje = "Los puntos con dosis disponibles en el rango de fechas dado son: ";
+			
+			for(int i=0; i<ids.size(); i++)
+			{
+				String actual = ids.get(i);
+				Long vacunas = vacuAndes.darVacunasPunto(actual);
+				Long gastadas= vacuAndes.darCitasFinalizadasFechasPunto(actual, fecha1, fecha2);
+				
+				if((vacunas-gastadas) > 0){
+				   mensaje+=actual+" - Dosis disponibles entre las fechas dadas: "+ (vacunas-gastadas)+ "\n" ;
+				}
+			}
+			
+			panelDatos.actualizarInterfaz(mensaje);
+			
+		}	
+			catch (Exception e) {
+				//			e.printStackTrace();
+				String resultado = generarMensajeError(e);
+				panelDatos.actualizarInterfaz(resultado);
+			}
+	}
 
 	/**
 	 * Consulta la base de datos para hallar los ciudadanos que entraron en contacto con otro ciudadano
@@ -1877,6 +1923,155 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			 String resultado = generarMensajeError(e);
 			 panelDatos.actualizarInterfaz(resultado);
 		 }
+	 }
+	 
+	 /**
+	  * Busca los ciudadanos no vacunados de la base de datos
+	  */
+	 public void ciudadanosNoVacunados()
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L) && !usuario.getId_roles().equals(2L)) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+			 
+			 if(usuario.getId_roles().equals(1L))
+			 {
+			 
+			 JList<String> list = new JList<>( new String[]{"EPS","Condiciones de priorización","Punto de vac."} );
+			 JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar la búsqueda (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+			 List<String> seleccionados = list.getSelectedValuesList();
+			 
+			 String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+			 String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE)+ " 00:00";
+			 String eps = null;
+			 String punto = null;
+			 String condiprior = null;
+			 
+			 if(seleccionados.contains("EPS"))
+			 {
+				 eps = JOptionPane.showInputDialog(this, "Ingrese el Id de la EPS", "Hallar ciudadanos no vacunados", JOptionPane.QUESTION_MESSAGE);
+			 }
+			 if(seleccionados.contains("Punto de vac."))
+			 {
+				 punto = JOptionPane.showInputDialog(this, "Ingrese el Id del Punto de vacunación", "Hallar ciudadanos no vacunados", JOptionPane.QUESTION_MESSAGE);
+			 }
+			 if(seleccionados.contains("Condiciones de priorización"))
+			 {
+				 List<CondicionPriorizacion> condiciones = vacuAndes.darCondicionesPriorizacion();
+				 String[] lista = new String[condiciones.size()];
+				 int i =0;
+				 for(CondicionPriorizacion condicion: condiciones){
+					 lista[i]=(condicion.toString());
+					 i++;
+				 }
+				 JList<String> liste = new JList<String>( lista );
+				 JOptionPane.showMessageDialog(null, liste, "Seleccione la condicion de priorización (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
+				 String con = liste.getSelectedValue();
+				 
+				 String[] condi = con.split("=");
+				 condiprior= condi[2].trim();
+				 condiprior = condiprior.substring(0, condiprior.length()-1);
+				 System.out.println(condiprior);
+			 }
+			 
+			 List<Ciudadano> listaCiud = vacuAndes.darCiudadanosNoVacunados(punto, eps, condiprior, fecha1, fecha2);
+			 
+			 String mensaje = "Los ciudadanos no vacunados son: \n";
+			 
+			 if(listaCiud.size()==0)
+			 {
+				 panelDatos.actualizarInterfaz("No hay ciudadanos no vacunados con los datos ingresados");
+				 return;
+			 }
+			 
+			 for(Ciudadano ciudadano: listaCiud){
+				 mensaje+= ciudadano.toString()+"\n";
+			 }
+			 
+			 panelDatos.actualizarInterfaz(mensaje);
+			 }
+			 else
+			 {
+				 JList<String> list = new JList<>( new String[]{"Condiciones de priorización","Punto de vac."} );
+				 JOptionPane.showMessageDialog(null, list, "Selecccione las opciones para filtrar la búsqueda (cmd o ctrl sostenido para seleeccionar varias)", JOptionPane.PLAIN_MESSAGE);
+				 List<String> seleccionados = list.getSelectedValuesList();
+				 
+				 String fecha1 = JOptionPane.showInputDialog(this, "Ingrese la primera fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE) + " 00:00";
+				 String fecha2 = JOptionPane.showInputDialog(this, "Ingrese la segunda fecha en formato DD-MM-YYYY", "Hallar puntos con dosis disponibles", JOptionPane.QUESTION_MESSAGE)+ " 00:00";
+				 String punto = null;
+				 String condiprior = null;
+				 
+	
+				 if(seleccionados.contains("Punto de vac."))
+				 {
+					 String IdEPS = JOptionPane.showInputDialog(this, "Ingrese el Id de la eps que opera", "Hallar ciudadanos no vacunados", JOptionPane.QUESTION_MESSAGE);
+					 List<Punto> puntos = vacuAndes.darPuntosEPS(IdEPS);
+					 String[] lista = new String[puntos.size()];
+					 int i =0;
+					 for(Punto puntoo: puntos){
+						 lista[i]=(puntoo.toString());
+						 i++;
+					 }
+					 JList<String> liste = new JList<String>( lista );
+					 JOptionPane.showMessageDialog(null, liste, "Seleccione el punto (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
+					 String con = liste.getSelectedValue();
+					 
+					 String[] p = con.split(",");
+					 String pu= p[0].trim();
+					 String[] pun = pu.split("=");
+					 punto = pun[1].trim();
+					 punto = punto.substring(0, punto.length()-1);
+					 System.out.println(punto);
+					
+				 }
+				 if(seleccionados.contains("Condiciones de priorización"))
+				 {
+					 List<CondicionPriorizacion> condiciones = vacuAndes.darCondicionesPriorizacion();
+					 String[] lista = new String[condiciones.size()];
+					 int i =0;
+					 for(CondicionPriorizacion condicion: condiciones){
+						 lista[i]=(condicion.toString());
+						 i++;
+					 }
+					 JList<String> liste = new JList<String>( lista );
+					 JOptionPane.showMessageDialog(null, liste, "Seleccione la condicion de priorización (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
+					 String con = liste.getSelectedValue();
+					 
+					 String[] condi = con.split("=");
+					 condiprior= condi[2].trim();
+					 condiprior = condiprior.substring(0, condiprior.length()-1);
+				 }
+				 
+				 List<Ciudadano> listaCiud = vacuAndes.darCiudadanosNoVacunados(punto, null, condiprior, fecha1, fecha2);
+				 
+				 String mensaje = "Los ciudadanos no vacunados son: \n";
+				 
+				 if(listaCiud.size()==0)
+				 {
+					 panelDatos.actualizarInterfaz("No hay ciudadanos no vacunados con los datos ingresados");
+					 return;
+				 }
+				 
+				 for(Ciudadano ciudadano: listaCiud){
+					 mensaje+= ciudadano.toString()+"\n";
+				 }
+				 
+				 panelDatos.actualizarInterfaz(mensaje);
+			 }
+		 }
+			 catch (Exception e) {
+				 //			e.printStackTrace();
+				 String resultado = generarMensajeError(e);
+				 panelDatos.actualizarInterfaz(resultado);
+			 }
 	 }
 
 	 /* ****************************************************************

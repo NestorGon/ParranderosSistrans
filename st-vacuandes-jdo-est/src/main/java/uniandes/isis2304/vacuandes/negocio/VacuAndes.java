@@ -901,6 +901,19 @@ public class VacuAndes
 	 * Adiciona entradas al log de la aplicación
 	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
 	 */
+	public List<Punto> darPuntosEPS( String id )
+	{
+		log.info ("Consultando Puntos  de una EPS");
+		List<Punto> puntos = pp.darPuntosEPS(id);	
+		log.info ("Consultando Puntos  de una EPS: " + puntos.size() + " existentes");
+		return puntos;
+	}
+	
+	/**
+	 * Encuentra todas los puntos habilitados en VacuAndes
+	 * Adiciona entradas al log de la aplicación
+	 * @return Una lista de objetos Punto con todos los puntos que conoce la aplicación
+	 */
 	public List<Punto> darPuntosHabilitadosEPS( String id )
 	{
 		log.info ("Consultando Puntos habilitados de una EPS");
@@ -959,6 +972,28 @@ public class VacuAndes
 		Long activas = pp.darCitasActivasPunto(id); 
 		log.info("Citas activas del punto encontrada: "+activas); 
 		return activas; 
+	}
+	
+	/** 
+	 * Retorna la cantidad de citas finalizadas de un punto dado su id entre un rango de fechas
+	 */ 
+	public Long darCitasFinalizadasFechasPunto(String id, String fecha1, String fecha2) 
+	{ 
+		log.info("Buscando cantidad de citas finalizadas en el rango de fechas de un Punto id: "+id); 
+		Long finalizadas = pp.darCitasFinalizadasFechasPunto(id, fecha1, fecha2); 
+		log.info("Citas finalizadas en el rango de fechas del punto encontrada: "+finalizadas); 
+		return finalizadas; 
+	}
+	
+	/**
+	 * Retorna una lista con los ids de los puntos de la base de datos
+	 */
+	public List<String> darIdsPuntos()
+	{
+		log.info("Buscando los ids de los puntos de la base de datos");
+		List<String> ids = pp.darIdsPuntos();
+		log.info("Lista d eids de los puntos hallada");
+		return ids;
 	}
 	
 	/**
@@ -1719,6 +1754,22 @@ public class VacuAndes
 		log.info("Analizando cohorte");
 		List<Ciudadano> ciudadanos = pp.analizarCohortes(edad, sexo, condiciones, region, eps, punto, dosis, tecnologiaVac);
 		log.info("Cohorte analizado");
+		return ciudadanos;
+	}
+	
+	/**
+	 * Método que consulta los ciudadanos no vacunados
+	 * @param punto - id del punto de vacunacion
+	 * @param eps - id de la eps
+	 * @param condiprior - condicion de priorizacion
+	 * @param fecha1 - fecha 1 del rango
+	 * @param fecha2 - fecha2 del rango
+	 */
+	public List<Ciudadano> darCiudadanosNoVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2)
+	{
+		log.info("Buscando ciudadanos no vacunados");
+		List<Ciudadano> ciudadanos= pp.darCiudadanosNoVacunados(punto, eps, condiprior, fecha1, fecha2);
+		log.info("Ciudadanos no vacunados hallados");
 		return ciudadanos;
 	}
 
