@@ -1971,15 +1971,23 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 				 }
 				 JList<String> liste = new JList<String>( lista );
 				 JOptionPane.showMessageDialog(null, liste, "Seleccione la condicion de priorización (Seleccione solo uno)", JOptionPane.PLAIN_MESSAGE);
-				 String con = list.getSelectedValue();
+				 String con = liste.getSelectedValue();
 				 
 				 String[] condi = con.split("=");
-				 condiprior= condi[2];
+				 condiprior= condi[2].trim();
+				 condiprior = condiprior.substring(0, condiprior.length()-1);
+				 System.out.println(condiprior);
 			 }
 			 
 			 List<Ciudadano> listaCiud = vacuAndes.darCiudadanosNoVacunados(punto, eps, condiprior, fecha1, fecha2);
 			 
 			 String mensaje = "Los ciudadanos no vacunados son: \n";
+			 
+			 if(listaCiud.size()==0)
+			 {
+				 panelDatos.actualizarInterfaz("No hay ciudadanos no vacunados con los datos ingresados");
+				 return;
+			 }
 			 
 			 for(Ciudadano ciudadano: listaCiud){
 				 mensaje+= ciudadano.toString()+"\n";
