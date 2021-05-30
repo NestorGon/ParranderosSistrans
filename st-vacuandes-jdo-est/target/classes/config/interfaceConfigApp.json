@@ -100,6 +100,10 @@
                                 {
 					"label": "Ciudadanos no vacunados",
 					"event": "ciudadanosNoVacunados"
+				},
+                                {
+					"label": "Consultar Funcionamiento",
+					"event": "consultarFuncionamiento"
 				}
 			]
 		},
