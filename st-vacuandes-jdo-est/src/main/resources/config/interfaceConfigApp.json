@@ -104,6 +104,10 @@
                                 {
 					"label": "Consultar Funcionamiento",
 					"event": "consultarFuncionamiento"
+				},
+				{
+					"label": "Consultar Líderes en Gestión",
+					"event": "lideresGestion"
 				}
 			]
 		},

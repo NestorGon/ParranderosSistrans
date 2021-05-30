@@ -77,6 +77,10 @@
 					"label": "Índice de vacunación",
 					"event": "mostrarIndiceGrupoPoblacional"
 				},
+                                {
+					"label": "Puntos con dosis disponibles",
+					"event": "puntosDosisDisponibles"
+				},
 				{
 					"label": "Analizar operación de VacuAndes",
 					"event": "analizarOperacion"
@@ -88,6 +92,22 @@
 				{
 					"label": "Ciudadanos en contacto",
 					"event": "ciudadanosContacto"
+				},
+                                {
+					"label": "Ciudadanos vacunados",
+					"event": "ciudadanosVacunados"
+				},
+                                {
+					"label": "Ciudadanos no vacunados",
+					"event": "ciudadanosNoVacunados"
+				},
+                                {
+					"label": "Consultar Funcionamiento",
+					"event": "consultarFuncionamiento"
+				},
+				{
+					"label": "Consultar Líderes en Gestión",
+					"event": "lideresGestion"
 				}
 			]
 		},

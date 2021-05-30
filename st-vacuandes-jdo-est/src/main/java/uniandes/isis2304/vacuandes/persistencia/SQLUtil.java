@@ -814,4 +814,48 @@ class SQLUtil
 		return (List<Tupla>) q.executeList();
 	}
 	
+	public List<Object[]> lideresGestion1(PersistenceManager pm, String llegada, String fin, Double porcentaje)
+	{
+		Query q = pm.newQuery(SQL, 
+				"SELECT E.ID, E.REGION, COUNT( CASE WHEN V.LLEGADA = '"+llegada+"'  THEN 1 END ) AS TOTAL, COUNT( CASE WHEN V.FECHAAPLICADA <= '"+fin+"'  THEN 1 END ) AS APLICADAS "
+				+ "FROM EPS E JOIN ASIGNADA A ON A.ID_EPS = E.ID JOIN VACUNA V ON V.ID = A.ID_VACUNA "
+				+ "GROUP BY E.ID, E.REGION "
+				+ "HAVING COUNT( CASE WHEN V.LLEGADA = '"+llegada+"'  THEN 1 END )*"+porcentaje+" <= COUNT( CASE WHEN V.FECHAAPLICADA <= '"+fin+"' THEN 1 END )");
+		return q.executeList();
+	}
+	
+	public List<Object[]> lideresGestion2(PersistenceManager pm, String inicio, String fin)
+	{
+		Query q = pm.newQuery(SQL, 
+				"SELECT P.ID, P.REGION, COUNT(CASE WHEN C.FINALIZADA = 'T' THEN 1 END) VACUNADOS, P.CAPACIDAD, ROUND(COUNT(CASE WHEN C.FINALIZADA = 'T' THEN 1 END)/P.CAPACIDAD,2) PROPORCION "
+				+ "FROM PUNTO P JOIN CITA C ON P.ID = C.ID_PUNTO "
+				+ "WHERE C.FECHAHORA BETWEEN '"+inicio+"' AND '"+fin+" '"
+				+ "GROUP BY P.ID, P.REGION, P.CAPACIDAD "
+				+ "ORDER BY PROPORCION DESC");
+		return q.executeList();
+	}
+	
+	public List<Object[]> lideresGestion3(PersistenceManager pm, String inicio, String fin)
+	{
+		Query q = pm.newQuery(SQL, 
+				"SELECT P.ID, P.REGION, COUNT(CASE WHEN C.FINALIZADA = 'T' THEN 1 END) FINALIZADAS, COUNT(*) TOTAL, ROUND(COUNT(CASE WHEN C.FINALIZADA = 'T' THEN 1 END)/COUNT(*),2) PROPORCION "
+				+ "FROM PUNTO P JOIN CITA C ON P.ID = C.ID_PUNTO "
+				+ "WHERE C.FECHAHORA BETWEEN '"+inicio+"' AND '"+fin+"' "
+				+ "GROUP BY P.ID, P.REGION "
+				+ "ORDER BY FINALIZADAS/TOTAL DESC");
+		return q.executeList();
+	}
+	
+	public List<Object[]> lideresGestion4(PersistenceManager pm, Integer inicial, Integer fin, Integer etapa)
+	{
+		Query q = pm.newQuery(SQL, 
+				"SELECT E.ID, E.REGION, COUNT(CASE WHEN C.ID_ESTADO >= 7 THEN 1 END) VACUNADOS_2DOSIS, COUNT(*) TOTAL, ROUND(COUNT(CASE WHEN C.ID_ESTADO >= 7 THEN 1 END)/COUNT(*),2) PROPORCION "
+				+ "FROM EPS E JOIN CIUDADANO C ON C.ID_EPS = E.ID "
+				+ "WHERE TRUNC(MONTHS_BETWEEN(SYSDATE, NACIMIENTO)/12) BETWEEN "+inicial+" AND "+fin+" AND "
+				+ "C.NUMERO_ETAPA = "+etapa+" "
+				+ "GROUP BY E.ID, E.REGION "
+				+ "ORDER BY PROPORCION DESC");
+		return q.executeList();
+	}
+	
 }

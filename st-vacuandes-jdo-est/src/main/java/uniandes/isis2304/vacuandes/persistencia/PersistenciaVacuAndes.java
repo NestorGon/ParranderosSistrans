@@ -18,6 +18,7 @@ package uniandes.isis2304.vacuandes.persistencia;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -2739,6 +2740,93 @@ public class PersistenciaVacuAndes
 			pm.close();
 		}
 	}
-
-
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo al porcentaje de vacunación
+	 * @param llegada - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @param porcentaje - El porcentaje de vacunación
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion1(String llegada, String fin, Double porcentaje)
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+		List<String> retorno = new ArrayList<String>();
+		for ( Object[] actual: sqlUtil.lideresGestion1(pm, llegada, fin, porcentaje) )
+		{
+			String id = (String) actual[0];
+			String region = (String) actual[1];
+			BigDecimal total = (BigDecimal) actual[2];
+			BigDecimal aplicadas = (BigDecimal) actual[3];
+			retorno.add("[Id: " + id + ", Region: " + region + ", Total: " + total + ", Aplicadas: " + aplicadas + "]");
+		}
+		return retorno;
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo a la proporción de vacunación
+	 * @param inicio - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion2(String inicio, String fin)
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+		List<String> retorno = new ArrayList<String>();
+		for ( Object[] actual: sqlUtil.lideresGestion2(pm, inicio, fin) )
+		{
+			String id = (String) actual[0];
+			String region = (String) actual[1];
+			BigDecimal vacunados = (BigDecimal) actual[2];
+			BigDecimal capacidad = (BigDecimal) actual[3];
+			BigDecimal proporcion = (BigDecimal) actual[4];
+			retorno.add("[Id: " + id + ", Region: " + region + ", Vacunados: "+vacunados+", Capacidad: "+capacidad+", Proporcion: " + proporcion + "]");
+		}
+		return retorno;
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo a la proporción de citas completadas
+	 * @param inicio - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion3(String inicio, String fin)
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+		List<String> retorno = new ArrayList<String>();
+		for ( Object[] actual: sqlUtil.lideresGestion3(pm, inicio, fin) )
+		{
+			String id = (String) actual[0];
+			String region = (String) actual[1];
+			BigDecimal finalizadas = (BigDecimal) actual[2];
+			BigDecimal total = (BigDecimal) actual[3];
+			BigDecimal proporcion = (BigDecimal) actual[4];
+			retorno.add("[Id: " + id + ", Region: " + region + ", Finalizadas: " + finalizadas + ", Total: " + total + ", Proporcion: "+proporcion+"]");
+		}
+		return retorno;
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo al porcentaje de vacunación en segunda dosis
+	 * @param inicial - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @param etapa - El numero de la etapa de interés
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion4(Integer inicial, Integer fin, Integer etapa)
+	{
+		PersistenceManager pm = pmf.getPersistenceManager();
+		List<String> retorno = new ArrayList<String>();
+		for ( Object[] actual: sqlUtil.lideresGestion4(pm, inicial, fin, etapa) )
+		{
+			String id = (String) actual[0];
+			String region = (String) actual[1];
+			BigDecimal vacunados = (BigDecimal) actual[2];
+			BigDecimal total = (BigDecimal) actual[3];
+			BigDecimal proporcion = (BigDecimal) actual[4];
+			retorno.add("[Id: " + id + ", Region: " + region + ", Vacunados 2 Dosis: "+ vacunados + ", Total: "+ total +", Proporcion: " + proporcion + "]");
+		}
+		return retorno;
+	}
 }
