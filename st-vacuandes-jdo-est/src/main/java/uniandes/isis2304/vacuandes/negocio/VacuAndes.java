@@ -1859,4 +1859,54 @@ public class VacuAndes
 		log.info("Etapa de VacuAndes adicionada");
 		return resp;
 	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo al porcentaje de vacunación
+	 * @param llegada - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @param porcentaje - El porcentaje de vacunación
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion1(String llegada, String fin, Double porcentaje)
+	{
+		log.info("Consultando lideres en gestión 1");
+		return pp.lideresGestion1(llegada, fin, porcentaje);
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo a la proporción de vacunación
+	 * @param inicio - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion2(String inicio, String fin)
+	{
+		log.info("Consultando lideres en gestión 2");
+		return pp.lideresGestion2(inicio, fin);
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo a la proporción de citas completadas
+	 * @param inicio - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion3(String inicio, String fin)
+	{
+		log.info("Consultando lideres en gestión 3");
+		return pp.lideresGestion3(inicio, fin);
+	}
+	
+	/**
+	 * Método que consulta los líderes en gestión de acuerdo al porcentaje de vacunación en segunda dosis
+	 * @param inicial - La fecha de llegada
+	 * @param fin - La fecha final
+	 * @param etapa - El numero de la etapa de interés
+	 * @return lista de cadenas de texto con la información recuperada
+	 */
+	public List<String> lideresGestion4(Integer inicial, Integer fin, Integer etapa)
+	{
+		log.info("Consultando lideres en gestión 4");
+		return pp.lideresGestion4(inicial, fin, etapa);
+	}
 }
