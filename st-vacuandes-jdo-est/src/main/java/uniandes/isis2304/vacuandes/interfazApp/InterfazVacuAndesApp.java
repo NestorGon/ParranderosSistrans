@@ -25,11 +25,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -2412,6 +2410,121 @@ public class InterfazVacuAndesApp extends JFrame implements ActionListener
 			 panelDatos.actualizarInterfaz(resultado);
 		 }
 			 
+	 }
+	 
+	 public void lideresGestion()
+	 {
+		 try 
+		 {
+			 VOInfoUsuario usuario = panelValidacionUsuario();
+			 if ( usuario != null ) {
+				 if ( !usuario.getId_roles().equals(1L) ) {
+					 throw new Exception( "El usuario validado no tiene acceso a este requerimiento" );
+				 }
+			 }
+			 else {
+				 return;
+			 }
+			 String[] lista = {"1. Porcentaje de dosis recibidas y aplicadas", "2. Puestos de vacunación alto desempeño", "3. Puestos de alta tasa de cumplimiento", "4. EPS proporción segunda dosis"};
+			 JList<String> list = new JList<>( lista );
+			 JOptionPane.showMessageDialog(null, list, "Seleccione el tipo de liderazgo: ", JOptionPane.PLAIN_MESSAGE);
+			 String seleccionado = list.getSelectedValue();
+			 if ( seleccionado != null && !seleccionado.equals("") ) 
+			 {
+				 List<String> encontrados = null;
+				 
+				 if ( !seleccionado.startsWith("4") ) {
+					 String llegada = JOptionPane.showInputDialog(this, "Ingrese la fecha de búsqueda en formato DD-MMM-YYYY (Ej: 12-Dec-2021)", "Lideres Gestion", JOptionPane.QUESTION_MESSAGE);
+					 if ( llegada == null || llegada.equals("") ) {
+						 throw new Exception("Ingresó datos inválidos");
+					 }
+					 DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+					 LocalDate fecha = LocalDate.parse(llegada.trim(), format);
+					 
+					 if ( seleccionado.startsWith("1") ) {
+						 
+						 lista = new String[]{"3 días", "5 días", "10 días", "30 días"};
+						 list = new JList<>( lista );
+						 JOptionPane.showMessageDialog(null, list, "Seleccione la cantidad de días: ", JOptionPane.PLAIN_MESSAGE);
+						 seleccionado = list.getSelectedValue();
+						 
+						 
+						 if ( seleccionado == null || seleccionado.equals("")) {
+							 seleccionado = "30";
+						 } else {
+							 seleccionado = seleccionado.split(" ")[0];
+						 }
+						 Long days = Long.parseLong(seleccionado);
+						 
+						 String porcentajeR = JOptionPane.showInputDialog(this, "Ingrese el porcentaje de vacunas (Ej: 0.5, 0.8)", "Lideres Gestion", JOptionPane.QUESTION_MESSAGE);
+						 
+						 if ( porcentajeR == null || porcentajeR.equals("") ) {
+							 porcentajeR = "0.5";
+						 }
+						 Double porcentaje = Double.parseDouble(porcentajeR);
+						 fecha.plusDays(days).toString();
+						 encontrados = vacuAndes.lideresGestion1( llegada, fecha.plusDays(days).format(format), porcentaje);
+					 }
+					 else if ( seleccionado.startsWith("2") ) {
+						 lista = new String[]{"1 días", "3 días", "5 días", "30 días"};
+						 list = new JList<>( lista );
+						 JOptionPane.showMessageDialog(null, list, "Seleccione la cantidad de días: ", JOptionPane.PLAIN_MESSAGE);
+						 seleccionado = list.getSelectedValue();
+						 
+						 if ( seleccionado == null || seleccionado.equals("")) {
+							 seleccionado = "30";
+						 } else {
+							 seleccionado = seleccionado.split(" ")[0];
+						 }
+						 Long days = Long.parseLong(seleccionado);
+						 
+						 encontrados = vacuAndes.lideresGestion2( llegada, fecha.plusDays(days).format(format));
+					 }
+					 else if ( seleccionado.startsWith("3") ) {
+						 lista = new String[]{"7 días", "14 días", "30 días"};
+						 list = new JList<>( lista );
+						 JOptionPane.showMessageDialog(null, list, "Seleccione la cantidad de días: ", JOptionPane.PLAIN_MESSAGE);
+						 seleccionado = list.getSelectedValue();
+						 
+						 if ( seleccionado == null || seleccionado.equals("")) {
+							 seleccionado = "30";
+						 } else {
+							 seleccionado = seleccionado.split(" ")[0];
+						 }
+						 Long days = Long.parseLong(seleccionado);
+						 
+						 encontrados = vacuAndes.lideresGestion3( llegada, fecha.plusDays(days).format(format));
+					 }
+				 }
+				 else {
+					 String edades = JOptionPane.showInputDialog(null, "Ingrese el rango de edades (EDAD1-EDAD2)", "Edades", JOptionPane.QUESTION_MESSAGE);
+					 String etapa = JOptionPane.showInputDialog(null, "Ingrese el número de la etapa", "Etapa", JOptionPane.QUESTION_MESSAGE);
+					 if ( edades != null && !edades.equals("") && etapa != null && !etapa.equals("") ) {
+						 encontrados = vacuAndes.lideresGestion4(Integer.parseInt(edades.split("-")[0]), Integer.parseInt(edades.split("-")[1]), Integer.parseInt(etapa));
+					 }
+					 else {
+						 throw new Exception("Ingresó datos inválidos");
+					 }
+				 }
+				 String resultado = "En lideresGestion\n\n"; 
+				 for ( String actual: encontrados ) {
+					 resultado += actual + "\n";
+				 }
+				 resultado += "\n Operación terminada"; 
+				 panelDatos.actualizarInterfaz(resultado);
+			 }
+			 else
+			{
+				panelDatos.actualizarInterfaz("Operación cancelada por el usuario");
+			}
+				 
+			 
+		 }
+		 catch (Exception e) {
+			 //			e.printStackTrace();
+			 String resultado = generarMensajeError(e);
+			 panelDatos.actualizarInterfaz(resultado);
+		 }
 	 }
 
 	 /* ****************************************************************
