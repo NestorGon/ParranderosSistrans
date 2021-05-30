@@ -684,6 +684,59 @@ class SQLUtil
 	}
 	
 	/**
+	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos vacunados en un rango de fechas dado una serie de filtros
+	 * @param eps - id de la eps
+	 * @param punto - id del punto
+	 * @param condiprior - condicion de priorizacion
+	 * @param lab - lab de la vacuna
+	 * @return la lista de ciudadanos encontrados
+	 */
+	public List<Ciudadano> darCiudadanosVacunados(PersistenceManager pm, String punto, String eps, String condiprior, String fecha1, String fecha2, String lab){
+	
+		String sqlPuntoEPS = " LEFT OUTER JOIN VACUNACION V ON C.DOCUMENTO = V.DOCUMENTO_CIUDADANO";
+		String sqlPriorizacion = " LEFT OUTER JOIN PRIORIZACION P ON C.DOCUMENTO = P.DOCUMENTO_CIUDADANO";
+		String sqlLab = " LEFT OUTER JOIN ESTADO E ON E.ID = C.ID_ESTADO ";
+		String condicionPunto = " AND (V.ID_PUNTO = '"+punto+"')";
+		String condicionEPS = " AND (V.ID_EPS = '"+eps+"')";
+	    String condicionLab = " AND (E.DESCRIPCION LIKE '%"+lab+"')";
+		String condicionCondiPrior = " AND P.DESCRIPCION_CONDPRIOR= '"+condiprior+"'";
+		
+		String sql1 = "SELECT C.DOCUMENTO, C.NOMBRE, C.NACIMIENTO, C.HABILITADO, C.ID_ESTADO, C.ID_EPS, C.NUMERO_ETAPA, C.SEXO "
+		             +" FROM (CIUDADANO C LEFT OUTER JOIN CITA CI ON C.DOCUMENTO = CI.DOCUMENTO_CIUDADANO)";
+	    String sql2 = " WHERE ((CI.FINALIZADA = 'T') AND (CI.FECHAHORA BETWEEN TO_DATE('"+fecha1+"' , 'DD-MM-YYYY HH24:MI') AND TO_DATE('"+fecha2+"', 'DD-MM-YYYY HH24:MI')))";
+		
+		if(punto!= null || eps != null)
+		{
+			sql1+= sqlPuntoEPS;
+			
+			if(punto !=null)
+			{
+				sql2+= condicionPunto;
+			}
+			
+			if(eps != null)
+			{
+				sql2+= condicionEPS;
+			}
+		}
+		
+		if(condiprior!= null)
+		{
+			sql1+= sqlPriorizacion;
+			sql2+=condicionCondiPrior;
+		}
+		if(lab != null)
+		{
+			sql1+= sqlLab;
+			sql2+= condicionLab;
+		}
+		
+		Query q = pm.newQuery( SQL, sql1+sql2);
+		q.setResultClass( Ciudadano.class );
+		return (List<Ciudadano>) q.executeList();		
+	}
+	
+	/**
 	 * Crea y ejecuta la sentencia SQL para hallar los ciudadanos no vacunados en un rango de fechas dado una serie de filtros
 	 * @param eps - id de la eps
 	 * @param punto - id del punto

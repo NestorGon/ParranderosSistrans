@@ -1758,6 +1758,24 @@ public class VacuAndes
 	}
 	
 	/**
+	 * Método que consulta los ciudadanos  vacunados
+	 * @param punto - id del punto de vacunacion
+	 * @param eps - id de la eps
+	 * @param condiprior - condicion de priorizacion
+	 * @param fecha1 - fecha 1 del rango
+	 * @param fecha2 - fecha2 del rango
+	 * @param lab - laboratorio de la vacuna 
+	 * @return Lista de ciudadanos no vacunados
+	 */
+	public List<Ciudadano> darCiudadanosVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2, String lab)
+	{
+		log.info("Buscando ciudadanos vacunados");
+		List<Ciudadano> ciudadanos= pp.darCiudadanosVacunados(punto, eps, condiprior, fecha1, fecha2, lab);
+		log.info("Ciudadanos vacunados hallados");
+		return ciudadanos;
+	}
+	
+	/**
 	 * Método que consulta los ciudadanos no vacunados
 	 * @param punto - id del punto de vacunacion
 	 * @param eps - id de la eps

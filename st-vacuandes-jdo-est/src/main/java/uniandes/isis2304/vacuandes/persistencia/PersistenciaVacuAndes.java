@@ -2596,6 +2596,16 @@ public class PersistenciaVacuAndes
 	}
     
 	/**
+	 * Consulta los ciudadanos vacunados en un rango de fechas
+	 */
+	public List<Ciudadano> darCiudadanosVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2, String lab){
+		
+		PersistenceManager pm = pmf.getPersistenceManager();
+		return sqlUtil.darCiudadanosVacunados(pm, punto, eps, condiprior, fecha1, fecha2, lab);
+		
+	}
+	
+	/**
 	 * Consulta los ciudadanos no vacunados en un rango de fechas
 	 */
 	public List<Ciudadano> darCiudadanosNoVacunados( String punto, String eps, String condiprior, String fecha1, String fecha2){
