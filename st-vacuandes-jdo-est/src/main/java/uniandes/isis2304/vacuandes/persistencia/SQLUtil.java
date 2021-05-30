@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
+import org.datanucleus.FetchPlan;
 import org.datanucleus.store.rdbms.query.ForwardQueryResult;
 
 import uniandes.isis2304.vacuandes.negocio.Ciudadano;
@@ -778,6 +779,7 @@ class SQLUtil
 		
 		Query q = pm.newQuery( SQL, sql1+sql2);
 		q.setResultClass( Ciudadano.class );
+		q.getFetchPlan().setFetchSize(20);
 		return (List<Ciudadano>) q.executeList();		
 	}
 	

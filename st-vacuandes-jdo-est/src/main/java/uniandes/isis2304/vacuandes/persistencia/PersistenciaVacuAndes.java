@@ -15,6 +15,7 @@
 package uniandes.isis2304.vacuandes.persistencia;
 
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -1000,7 +1001,7 @@ public class PersistenciaVacuAndes
 
 			log.trace( "Inserción de ciudadano: " + documento + " - " + nombre + ": " + tuplasInsertadas + " tuplas insertadas" );
 
-			return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
+			return new Ciudadano( documento, nombre, new Timestamp(nacimiento.getTime()), habilitado, BigDecimal.valueOf(estado), eps, BigDecimal.valueOf(etapa), sexo );
 		}
 		catch( Exception e )
 		{
@@ -1041,7 +1042,7 @@ public class PersistenciaVacuAndes
 
 			log.trace( "Actualización de ciudadano: " + documento + " - " + nombre + ": " + tuplasActualizadas + " tuplas actualizadas" );
 
-			return new Ciudadano( documento, nombre, nacimiento, habilitado, estado, eps, etapa, sexo );
+			return new Ciudadano( documento, nombre, new Timestamp(nacimiento.getTime()), habilitado, BigDecimal.valueOf(estado), eps, BigDecimal.valueOf(etapa), sexo );
 		}
 		catch( Exception e )
 		{
